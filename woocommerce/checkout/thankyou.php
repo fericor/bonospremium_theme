@@ -116,7 +116,7 @@ get_header(); ?>
 .bp-thankyou-details { display: flex; flex-direction: column; gap: 20px; margin-bottom: 32px; }
 .bp-detail-card {
     background: var(--bp-card-bg); border: 1px solid var(--bp-border);
-    border-radius: 16px; padding: 24px;
+    border-radius: 0; padding: 24px;
 }
 .bp-detail-card h3 {
     font-size: 15px; font-weight: 600; color: var(--bp-text);
@@ -145,7 +145,7 @@ get_header(); ?>
 .bp-thankyou-actions { display: flex; gap: 12px; justify-content: center; }
 .bp-btn-primary, .bp-btn-secondary {
     display: inline-flex; align-items: center; gap: 8px;
-    padding: 12px 28px; border-radius: 12px;
+    padding: 12px 28px; border-radius: 0;
     font-size: 14px; font-weight: 600; text-decoration: none; transition: all .2s;
 }
 .bp-btn-primary { background: var(--bp-primary); color: #fff; }

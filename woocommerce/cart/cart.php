@@ -127,7 +127,7 @@ get_header(); ?>
 /* --- Tabla: 2 columnas --- */
 .bp-cart-table {
     width: 100%; border-collapse: collapse; background: var(--bp-card-bg);
-    border-radius: 16px; overflow: hidden;
+    border-radius: 0 overflow: hidden;
     border: 1px solid var(--bp-border);
 }
 .bp-cart-table thead th {
@@ -145,7 +145,7 @@ get_header(); ?>
     display: flex; align-items: center; gap: 16px;
 }
 .bp-prod-thumb {
-    width: 80px; height: 80px; border-radius: 12px; overflow: hidden; flex-shrink: 0;
+    width: 80px; height: 80px; border-radius: 0; overflow: hidden; flex-shrink: 0;
 }
 .bp-prod-thumb img { width: 100%; height: 100%; object-fit: cover; }
 .bp-prod-info {
@@ -167,7 +167,7 @@ get_header(); ?>
 }
 .bp-qty-selector {
     display: inline-flex; align-items: center; gap: 0;
-    border: 1px solid var(--bp-border); border-radius: 10px;
+    border: 1px solid var(--bp-border); border-radius: 0
     overflow: hidden; background: var(--bp-card-bg);
 }
 .bp-qty-btn {
@@ -209,7 +209,7 @@ get_header(); ?>
 .bp-cart-bottom { margin-top: 24px; display: flex; flex-direction: column; gap: 16px; }
 .bp-coupon-section {
     background: var(--bp-card-bg);
-    border: 1px solid var(--bp-border); border-radius: 16px;
+    border: 1px solid var(--bp-border); border-radius: 0
     padding: 16px 20px;
 }
 .bp-coupon-inner {
@@ -219,7 +219,7 @@ get_header(); ?>
 .bp-coupon-input {
     flex: 1; min-width: 0;
     padding: 14px 18px; border: 1px solid var(--bp-border);
-    border-radius: 10px; font-size: 15px; background: var(--bp-bg); color: var(--bp-text);
+    border-radius: 0; font-size: 15px; background: var(--bp-bg); color: var(--bp-text);
     outline: none; transition: border-color .2s;
 }
 .bp-coupon-input:focus { border-color: var(--bp-primary); }
@@ -233,14 +233,14 @@ get_header(); ?>
     display: flex; align-items: center; justify-content: center; gap: 8px;
     width: 100%; padding: 16px;
     background: var(--bp-primary); color: #fff;
-    border: none; border-radius: 12px;
+    border: none; border-radius: 0
     font-size: 16px; font-weight: 600;
     text-decoration: none; cursor: pointer; transition: background .2s;
 }
 .bp-checkout-btn:hover { background: var(--bp-primary-dark); color: #fff; }
 .bp-btn-primary, .bp-btn-secondary {
     display: inline-flex; align-items: center; gap: 8px;
-    padding: 12px 28px; border-radius: 12px; font-size: 14px; font-weight: 600;
+    padding: 12px 28px; border-radius: 0; font-size: 14px; font-weight: 600;
     text-decoration: none; transition: all .2s; border: none; cursor: pointer;
 }
 .bp-btn-primary { background: var(--bp-primary); color: #fff; }

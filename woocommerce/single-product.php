@@ -98,7 +98,7 @@ get_header(); ?>
                         width="100%" 
                         height="250" 
                         frameborder="0" 
-                        style="border:0; border-radius:12px;" 
+                        style="border:0; border-radius: 0" 
                         src="https://maps.google.com/maps?q=<?php echo esc_attr($mapa['lat']); ?>,<?php echo esc_attr($mapa['lng']); ?>&z=15&output=embed"
                         allowfullscreen loading="lazy">
                     </iframe>
@@ -116,7 +116,7 @@ get_header(); ?>
 <style>
 .bp-condiciones-panel {
     background: var(--bp-card-bg); border: 1px solid var(--bp-border);
-    border-radius: 16px; overflow: hidden; margin-top: 20px; box-shadow: 0 1px 3px rgba(0,0,0,.04);
+    border-radius: 0; overflow: hidden; margin-top: 20px; box-shadow: 0 1px 3px rgba(0,0,0,.04);
 }
 .bp-condiciones-toggle {
     width: 100%; padding: 14px 18px;

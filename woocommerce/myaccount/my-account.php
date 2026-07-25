@@ -136,7 +136,7 @@ get_header(); ?>
 .bp-auth-card {
     background: var(--bp-card-bg);
     border: 1px solid var(--bp-border);
-    border-radius: 20px;
+    border-radius: 0
     padding: 36px;
 }
 .bp-auth-title {
@@ -153,7 +153,7 @@ get_header(); ?>
 .bp-field .required { color: #ef4444; }
 .bp-input {
     width: 100%; padding: 12px 16px;
-    border: 1px solid var(--bp-border); border-radius: 10px;
+    border: 1px solid var(--bp-border); border-radius: 0
     font-size: 15px; background: var(--bp-bg); color: var(--bp-text);
     outline: none; transition: border-color .2s;
 }
@@ -174,7 +174,7 @@ get_header(); ?>
 }
 .bp-btn-primary {
     display: inline-flex; align-items: center; gap: 8px;
-    padding: 12px 28px; border-radius: 12px; font-size: 14px; font-weight: 600;
+    padding: 12px 28px; border-radius: 0; font-size: 14px; font-weight: 600;
     text-decoration: none; transition: all .2s; border: none; cursor: pointer;
 }
 .bp-btn-primary { background: var(--bp-primary); color: #fff; }
@@ -189,7 +189,7 @@ get_header(); ?>
 .bp-account-header {
     display: flex; align-items: center; gap: 20px;
     background: var(--bp-card-bg); border: 1px solid var(--bp-border);
-    border-radius: 20px; padding: 28px 32px; margin-bottom: 32px;
+    border-radius: 0; padding: 28px 32px; margin-bottom: 32px;
 }
 .bp-account-avatar img { border-radius: 50%; width: 60px; height: 60px; object-fit: cover; }
 .bp-account-greeting h1 { font-size: 22px; font-weight: 700; color: var(--bp-text); margin: 0; }
@@ -199,7 +199,7 @@ get_header(); ?>
 .bp-account-grid { display: grid; grid-template-columns: 220px 1fr; gap: 32px; }
 .bp-account-nav { display: flex; flex-direction: column; gap: 4px; }
 .bp-account-nav-item {
-    padding: 10px 16px; border-radius: 10px;
+    padding: 10px 16px; border-radius: 0
     font-size: 14px; font-weight: 500; color: var(--bp-text-light);
     text-decoration: none; transition: all .2s;
     display: flex; align-items: center; gap: 10px;
@@ -208,7 +208,7 @@ get_header(); ?>
 .bp-account-nav-item.active { background: var(--bp-primary); color: #fff; }
 .bp-account-content {
     background: var(--bp-card-bg); border: 1px solid var(--bp-border);
-    border-radius: 20px; padding: 28px 32px; min-height: 300px;
+    border-radius: 0; padding: 28px 32px; min-height: 300px;
 }
 
 /* --- Responsive --- */
