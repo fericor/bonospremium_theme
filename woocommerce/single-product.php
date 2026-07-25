@@ -8,11 +8,16 @@ get_header(); ?>
     <div class="bp-container">
         <?php while (have_posts()) : the_post();
             global $product;
-            $city = get_field('localidad') ?: get_post_meta(get_the_ID(), 'localidad', true);
+            $city                   = get_field('localidad') ?: get_post_meta(get_the_ID(), 'localidad', true);
             $nombre_establecimiento = get_field('nombre_establecimiento') ?: get_post_meta(get_the_ID(), 'nombre_establecimiento', true);
-            $excerpt = get_the_excerpt();
-            $regular_price = $product->get_regular_price();
-            $sale_price = $product->get_sale_price() ?: $regular_price;
+            $excerpt                = get_the_excerpt();
+            $regular_price          = $product->get_regular_price();
+            $sale_price             = $product->get_sale_price() ?: $regular_price;
+
+            $direccion   = get_field('direccion') ?: get_post_meta(get_the_ID(), 'direccion', true);
+            $telefono    = get_field('telefono') ?: get_post_meta(get_the_ID(), 'telefono', true);
+            $condiciones = get_field('condiciones_generales') ?: get_post_meta(get_the_ID(), 'condiciones_generales', true);
+            $mapa        = get_field('mapa') ?: get_post_meta(get_the_ID(), 'mapa', true);
         ?>
         <div class="bp-single-product">
             <div class="bp-single-gallery">
@@ -34,12 +39,16 @@ get_header(); ?>
                 </div>
             </div>
             <div class="bp-single-summary">
-                <div class="bp-single-categories">
+                <div class="bp-single-categories" style="display: none;">
                     <?php echo wc_get_product_category_list($product->get_id(), ', '); ?>
                 </div>
                 <h1 class="bp-single-title">
                     <?php echo esc_html($nombre_establecimiento ?: get_the_title()); ?>
                 </h1>
+                <h2 class="bp-single-name">
+                    <?php echo esc_html(get_the_title()); ?>
+                </h2>
+
                 <div class="bp-single-price">
                     <?php if ($regular_price && $regular_price != $sale_price) : ?>
                         <span class="bp-price-original"><?php echo wc_price($regular_price); ?></span>
@@ -51,17 +60,11 @@ get_header(); ?>
                 <?php if (!empty($excerpt)) : ?>
                     <div class="bp-single-desc"><?php echo apply_filters('the_excerpt', $excerpt); ?></div>
                 <?php endif; ?>
-                
-                <?php if (!empty($city)) : ?>
-                    <p class="bp-single-city"><i class="fas fa-map-marker-alt"></i> <?php echo esc_html($city); ?></p>
+
+                <?php if (!empty($condiciones)) : ?>
+                <h3 class="bp-section-title bp-color-primary">Condiciones</h3>
+                <div class="bp-condiciones"><?php echo wp_kses_post($condiciones); ?></div>
                 <?php endif; ?>
-                
-                <?php
-                $direccion = get_field('direccion') ?: get_post_meta(get_the_ID(), 'direccion', true);
-                $telefono = get_field('telefono') ?: get_post_meta(get_the_ID(), 'telefono', true);
-                $condiciones = get_field('condiciones_generales') ?: get_post_meta(get_the_ID(), 'condiciones_generales', true);
-                $mapa = get_field('mapa') ?: get_post_meta(get_the_ID(), 'mapa', true);
-                ?>
                 
                 <?php if (!empty($direccion) || !empty($telefono) || !empty($city)) : ?>
                 <div class="bp-contact-info">
@@ -82,11 +85,6 @@ get_header(); ?>
                 </div>
                 <?php endif; ?>
                 
-                <?php if (!empty($condiciones)) : ?>
-                <h3 class="bp-section-title bp-color-primary">Condiciones</h3>
-                <div class="bp-condiciones"><?php echo wp_kses_post($condiciones); ?></div>
-                <?php endif; ?>
-                
                 <?php if (!empty($mapa['lat']) && !empty($mapa['lng'])) : ?>
                 <div class="bp-map-wrap">
                     <iframe 
@@ -102,14 +100,10 @@ get_header(); ?>
                 <div class="bp-single-cart">
                     <?php woocommerce_template_single_add_to_cart(); ?>
                 </div>
-                <div class="bp-single-meta">
-                    <?php woocommerce_template_single_meta(); ?>
-                </div>
             </div>
         </div>
         <?php endwhile; ?>
     </div>
-    <div class="bp-cart-spacer"></div>
 </main>
 
 <?php get_footer(); ?>
