@@ -91,21 +91,16 @@ get_header(); ?>
 
                     <!-- Acciones inferiores -->
                     <div class="bp-cart-bottom">
-                        <!-- Cupón descuento colapsable -->
+                    <!-- Cupón descuento -->
                         <div class="bp-coupon-section">
-                            <button type="button" class="bp-coupon-toggle">
-                                <i class="fas fa-ticket-alt"></i> ¿Tienes un código de descuento?
-                                <i class="fas fa-chevron-down bp-coupon-arrow"></i>
-                            </button>
-                            <div class="bp-coupon-body" style="display:none;">
-                                <div class="bp-coupon-form">
-                                    <input type="text" name="coupon_code" class="bp-coupon-input" 
-                                           placeholder="Introduce tu código" value="" />
-                                    <button type="submit" class="bp-btn-primary bp-coupon-btn" name="apply_coupon" value="Aplicar">
-                                        Aplicar
-                                    </button>
-                                    <?php do_action('woocommerce_cart_coupon'); ?>
-                                </div>
+                            <div class="bp-coupon-inner">
+                                <i class="fas fa-ticket-alt"></i>
+                                <input type="text" name="coupon_code" class="bp-coupon-input" 
+                                       placeholder="Introduce tu código de descuento" value="" />
+                                <button type="submit" class="bp-btn-primary bp-coupon-btn" name="apply_coupon" value="Aplicar">
+                                    Aplicar
+                                </button>
+                                <?php do_action('woocommerce_cart_coupon'); ?>
                             </div>
                         </div>
 
@@ -212,36 +207,20 @@ get_header(); ?>
 .bp-cart-total-row th,
 .bp-cart-total-row td { font-weight: 700; color: var(--bp-text); font-size: 16px; border-top: 2px solid var(--bp-border); }
 
-/* --- Cupón descuento colapsable --- */
+/* --- Cupón descuento --- */
 .bp-cart-bottom { margin-top: 24px; display: flex; flex-direction: column; gap: 16px; }
 .bp-coupon-section {
-    padding: 0; background: var(--bp-card-bg);
+    background: var(--bp-card-bg);
     border: 1px solid var(--bp-border); border-radius: 16px;
-    overflow: hidden;
+    padding: 16px 20px;
 }
-.bp-coupon-toggle {
-    width: 100%; padding: 16px 20px;
-    display: flex; align-items: center; gap: 10px;
-    background: transparent; border: none; cursor: pointer;
-    font-size: 14px; font-weight: 600; color: var(--bp-text);
-    transition: background .2s;
+.bp-coupon-inner {
+    display: flex; align-items: center; gap: 12px;
 }
-.bp-coupon-toggle:hover { background: #f9fafb; }
-.bp-coupon-toggle i:first-child { color: var(--bp-primary); font-size: 16px; }
-.bp-coupon-arrow {
-    margin-left: auto; font-size: 12px; color: var(--bp-text-muted);
-    transition: transform .3s;
-}
-.bp-coupon-section.is-open .bp-coupon-arrow { transform: rotate(180deg); }
-.bp-coupon-body {
-    padding: 0 20px 16px;
-}
-.bp-coupon-form {
-    display: flex; align-items: center; gap: 10px;
-}
+.bp-coupon-inner > i:first-child { color: var(--bp-primary); font-size: 18px; flex-shrink: 0; }
 .bp-coupon-input {
     flex: 1; min-width: 0;
-    padding: 12px 16px; border: 1px solid var(--bp-border);
+    padding: 14px 18px; border: 1px solid var(--bp-border);
     border-radius: 10px; font-size: 15px; background: var(--bp-bg); color: var(--bp-text);
     outline: none; transition: border-color .2s;
 }
@@ -249,7 +228,7 @@ get_header(); ?>
 .bp-coupon-input::placeholder { color: var(--bp-text-muted); }
 .bp-coupon-btn {
     flex-shrink: 0;
-    padding: 12px 24px; border: none; cursor: pointer;
+    padding: 14px 28px; border: none; cursor: pointer;
     font-size: 14px; font-weight: 600;
 }
 .bp-checkout-btn {
@@ -285,7 +264,6 @@ get_header(); ?>
     .bp-cart-table td { display: flex; justify-content: space-between; padding: 6px 0; border: none; }
     .bp-product-row { flex-direction: row; }
     .bp-prod-thumb { width: 60px; height: 60px; }
-    .bp-coupon-form { flex-direction: column; }
     .bp-cart-table tfoot tr { display: flex; justify-content: space-between; padding: 10px 16px; }
     .bp-cart-table tfoot th, .bp-cart-table tfoot td { padding: 0; border: none; }
 }
@@ -317,14 +295,6 @@ jQuery(document).ready(function($) {
         timeout = setTimeout(bpUpdateCart, 400);
     });
     $('button[name="update_cart"]').hide();
-
-    // Cupón colapsable
-    $('.bp-coupon-toggle').on('click', function() {
-        var section = $(this).closest('.bp-coupon-section');
-        var body = section.find('.bp-coupon-body');
-        body.slideToggle(250);
-        section.toggleClass('is-open');
-    });
 });
 </script>
 
