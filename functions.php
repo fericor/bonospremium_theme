@@ -98,15 +98,21 @@ add_action('wp_head', function() {
 });
 
 // ===== QUANTITY EN PRODUCTO ÚNICO =====
-// Permitir cantidad 1-99 con botones +/- (WooCommerce default ya los incluye)
+// En single product: cantidad fija a 1, ocultar selector
 add_filter('woocommerce_quantity_input_args', function($args, $product) {
     if (is_product() && $product->is_type('simple') && !$product->is_type('variable')) {
         $args['min_value'] = 1;
-        $args['max_value'] = 99;
+        $args['max_value'] = 1;
         $args['input_value'] = 1;
     }
     return $args;
 }, 10, 2);
+
+add_action('wp_head', function() {
+    if (is_product()) {
+        echo '<style>.bp-product-page .quantity { display: none !important; }</style>';
+    }
+});
 
 // ===== INFINITE SCROLL =====
 remove_action('woocommerce_after_shop_loop', 'woocommerce_pagination', 10);
