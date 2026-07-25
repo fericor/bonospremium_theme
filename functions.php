@@ -78,6 +78,13 @@ add_filter('woocommerce_add_to_cart_redirect', function() {
 // Modificar el loop de WooCommerce - 4 columnas
 add_filter('loop_shop_columns', function() { return 4; });
 add_filter('loop_shop_per_page', function() { return 10; });
+
+// Forzar login visible en checkout
+add_action('wp_footer', function() {
+    if (is_checkout()) {
+        echo '<script>jQuery(function($){$(".woocommerce-form-login").attr("style","display:block").show();$(".showlogin").on("click",function(e){e.preventDefault();$(".woocommerce-form-login").toggle()})});</script>';
+    }
+});
 add_filter('woocommerce_output_related_products_args', function($args) {
     $args['posts_per_page'] = 4;
     $args['columns'] = 4;
