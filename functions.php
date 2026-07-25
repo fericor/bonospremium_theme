@@ -97,22 +97,16 @@ add_action('wp_head', function() {
     echo '<style>.wlfmc-add-to-wishlist { display: none !important; }</style>';
 });
 
-// ===== OCULTAR QUANTITY EN PRODUCTO ÚNICO =====
-// Forzar cantidad a 1 en single product (producto único, sin variaciones)
+// ===== QUANTITY EN PRODUCTO ÚNICO =====
+// Permitir cantidad 1-99 con botones +/- (WooCommerce default ya los incluye)
 add_filter('woocommerce_quantity_input_args', function($args, $product) {
     if (is_product() && $product->is_type('simple') && !$product->is_type('variable')) {
         $args['min_value'] = 1;
-        $args['max_value'] = 1;
+        $args['max_value'] = 99;
         $args['input_value'] = 1;
     }
     return $args;
 }, 10, 2);
-
-add_action('wp_head', function() {
-    if (is_product()) {
-        echo '<style>.bp-product-page .quantity { display: none !important; }</style>';
-    }
-});
 
 // ===== INFINITE SCROLL =====
 remove_action('woocommerce_after_shop_loop', 'woocommerce_pagination', 10);
