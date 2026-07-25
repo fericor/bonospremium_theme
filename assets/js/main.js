@@ -182,40 +182,10 @@ jQuery(document).ready(function($) {
         });
     }
 
-    // ===== CHECKOUT: NOTIFICACION FLOATING =====
-    $(document.body).on('updated_checkout', function() {
-        // Move notices from woocommerce-NoticeGroup-updateOrderReview to floating wrapper
-        var $noticeGroup = $('.woocommerce-NoticeGroup-updateOrderReview');
-        if ($noticeGroup.length) {
-            var $notices = $noticeGroup.find('.woocommerce-message, .woocommerce-info, .woocommerce-error');
-            if ($notices.length) {
-                // Move to the main notices wrapper
-                var $wrapper = $('.woocommerce-notices-wrapper');
-                if (!$wrapper.length) {
-                    $wrapper = $('<div class="woocommerce-notices-wrapper"></div>');
-                    $('.bp-checkout-page .bp-container').prepend($wrapper);
-                }
-                $notices.appendTo($wrapper);
-                $noticeGroup.empty();
-                // Auto-dismiss after 3s
-                $notices.each(function() {
-                    var $n = $(this);
-                    setTimeout(function() {
-                        $n.fadeOut(400, function() { $n.remove(); });
-                    }, 3000);
-                });
-            }
-        }
-    });
-
-    // ===== LOGIN TOGGLE FIX =====
-    $('.showlogin').off('click').on('click', function(e) {
-        e.preventDefault();
-        var $form = $('.woocommerce-form-login');
-        if ($form.length) {
-            $form.slideToggle(300);
-        }
-    });
+    // ===== LOGIN TOGGLE (WooCommerce nativo) =====
+    // El toggle lo maneja WooCommerce checkout.js nativamente.
+    // Solo nos aseguramos de que el formulario empiece oculto.
+    $('.woocommerce-form-login').hide();
 
     // ===== CONDICIONES TOGGLE (single product) =====
     $('.bp-condiciones-toggle').on('click', function() {
