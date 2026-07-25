@@ -1,7 +1,7 @@
 <?php
 /**
  * Custom checkout template for BonosPremium
- * Finalizar compra
+ * Finalizar compra - con login, cupón colapsable y facturación
  */
 get_header(); ?>
 
@@ -9,17 +9,69 @@ get_header(); ?>
     <div class="bp-container">
         <h1 class="bp-page-title">Finalizar compra</h1>
 
-        <?php if (!is_user_logged_in() && 'no' === get_option('woocommerce_enable_checkout_login_reminder')) : ?>
-            <div class="bp-checkout-login">
-                <p>¿Ya tienes cuenta? <a href="<?php echo esc_url(wc_get_page_permalink('myaccount')); ?>">Inicia sesión</a></p>
+        <?php if (!is_user_logged_in() && 'yes' === get_option('woocommerce_enable_checkout_login_reminder')) : ?>
+            <div class="bp-checkout-login-toggle">
+                <button type="button" class="bp-toggle-link" id="bp-show-login">
+                    <i class="fas fa-user"></i> ¿Ya tienes cuenta? <strong>Inicia sesión</strong>
+                </button>
+                <div id="bp-login-form" class="bp-login-form-wrap" style="display:none;">
+                    <?php
+                    $info = __('If you have shopped with us before, please enter your details below. If you are a new customer, please proceed to the Billing section.', 'woocommerce');
+                    ?>
+                    <form method="post" class="woocommerce-form woocommerce-form-login login">
+                        <?php do_action('woocommerce_login_form_start'); ?>
+                        <p class="form-row form-row-first">
+                            <label for="username">Usuario o email <span class="required">*</span></label>
+                            <input type="text" class="input-text" name="username" id="username" />
+                        </p>
+                        <p class="form-row form-row-last">
+                            <label for="password">Contraseña <span class="required">*</span></label>
+                            <input class="input-text" type="password" name="password" id="password" />
+                        </p>
+                        <div class="clear"></div>
+                        <?php do_action('woocommerce_login_form'); ?>
+                        <p class="form-row">
+                            <button type="submit" class="bp-btn-primary" name="login" value="<?php esc_attr_e('Login', 'woocommerce'); ?>">
+                                <i class="fas fa-sign-in-alt"></i> Iniciar sesión
+                            </button>
+                            <label class="woocommerce-form__label woocommerce-form__label-for-checkbox inline">
+                                <input class="woocommerce-form__input woocommerce-form__input-checkbox" name="rememberme" type="checkbox" value="forever" /> <span>Recordarme</span>
+                            </label>
+                        </p>
+                        <p class="lost_password">
+                            <a href="<?php echo esc_url(wp_lostpassword_url()); ?>">¿Olvidaste tu contraseña?</a>
+                        </p>
+                        <?php wp_nonce_field('woocommerce-login', 'woocommerce-login-nonce'); ?>
+                        <?php do_action('woocommerce_login_form_end'); ?>
+                    </form>
+                </div>
             </div>
         <?php endif; ?>
 
         <?php if (WC()->cart && !WC()->cart->is_empty()) : ?>
+
+            <!-- Cupón descuento colapsable -->
+            <div class="bp-coupon-section">
+                <button type="button" class="bp-coupon-toggle">
+                    <i class="fas fa-ticket-alt"></i> ¿Tienes un código de descuento?
+                    <i class="fas fa-chevron-down bp-coupon-arrow"></i>
+                </button>
+                <div class="bp-coupon-body" style="display:none;">
+                    <div class="bp-coupon-inner">
+                        <input type="text" name="coupon_code" class="bp-coupon-input" 
+                               placeholder="Introduce tu código de descuento" value="" />
+                        <button type="submit" class="bp-btn-primary bp-coupon-btn" name="apply_coupon" value="Aplicar">
+                            Aplicar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             <form name="checkout" method="post" class="checkout woocommerce-checkout" action="<?php echo esc_url(wc_get_checkout_url()); ?>" enctype="multipart/form-data">
                 <div class="bp-checkout-grid">
                     <!-- Columna izquierda: formulario -->
                     <div class="bp-checkout-form">
+
                         <?php if (WC()->cart->needs_shipping() && WC()->cart->show_shipping()) : ?>
                             <div class="bp-checkout-section">
                                 <h3 class="bp-section-title">Envío</h3>
@@ -128,9 +180,62 @@ get_header(); ?>
 <style>
 .bp-page-title { font-size: 24px; font-weight: 700; color: var(--bp-text); margin: 0 0 24px; }
 .bp-checkout-grid { display: grid; grid-template-columns: 1fr 380px; gap: 32px; align-items: start; }
-.bp-checkout-login { background: var(--bp-card-bg); border: 1px solid var(--bp-border); border-radius: 16px; padding: 20px 24px; margin-bottom: 24px; text-align: center; }
-.bp-checkout-login a { color: var(--bp-primary); font-weight: 600; text-decoration: none; }
-.bp-checkout-login a:hover { text-decoration: underline; }
+
+/* --- Login toggle --- */
+.bp-checkout-login-toggle { margin-bottom: 20px; }
+.bp-toggle-link {
+    width: 100%; padding: 14px 20px; text-align: center;
+    background: var(--bp-card-bg); border: 1px solid var(--bp-border);
+    border-radius: 12px; color: var(--bp-text); font-size: 14px;
+    cursor: pointer; transition: background .2s;
+}
+.bp-toggle-link:hover { background: #f9fafb; }
+.bp-toggle-link strong { color: var(--bp-primary); }
+.bp-login-form-wrap {
+    background: var(--bp-card-bg); border: 1px solid var(--bp-border);
+    border-top: none; border-radius: 0 0 12px 12px;
+    padding: 20px; margin-top: -6px;
+}
+.bp-login-form-wrap .form-row { margin-bottom: 14px; }
+.bp-login-form-wrap label { font-size: 14px; font-weight: 500; color: var(--bp-text-light); display: block; margin-bottom: 4px; }
+.bp-login-form-wrap input[type="text"],
+.bp-login-form-wrap input[type="password"] {
+    width: 100%; padding: 10px 14px;
+    border: 1px solid var(--bp-border); border-radius: 10px;
+    font-size: 14px; background: var(--bp-bg); color: var(--bp-text);
+    outline: none; transition: border-color .2s;
+}
+.bp-login-form-wrap input:focus { border-color: var(--bp-primary); }
+.bp-login-form-wrap .lost_password { margin: 12px 0 0; }
+.bp-login-form-wrap .lost_password a { color: var(--bp-primary); font-size: 13px; text-decoration: none; }
+
+/* --- Cupón colapsable --- */
+.bp-coupon-section {
+    background: var(--bp-card-bg); border: 1px solid var(--bp-border);
+    border-radius: 16px; overflow: hidden; margin-bottom: 20px;
+}
+.bp-coupon-toggle {
+    width: 100%; padding: 16px 20px;
+    display: flex; align-items: center; gap: 10px;
+    background: transparent; border: none; cursor: pointer;
+    font-size: 14px; font-weight: 600; color: var(--bp-text);
+    transition: background .2s;
+}
+.bp-coupon-toggle:hover { background: #f9fafb; }
+.bp-coupon-toggle i:first-child { color: var(--bp-primary); font-size: 16px; }
+.bp-coupon-arrow { margin-left: auto; font-size: 12px; color: var(--bp-text-muted); transition: transform .3s; }
+.bp-coupon-section.is-open .bp-coupon-arrow { transform: rotate(180deg); }
+.bp-coupon-body { padding: 0 20px 16px; }
+.bp-coupon-inner { display: flex; align-items: center; gap: 10px; }
+.bp-coupon-input {
+    flex: 1; min-width: 0; padding: 12px 16px;
+    border: 1px solid var(--bp-border); border-radius: 10px;
+    font-size: 14px; background: var(--bp-bg); color: var(--bp-text);
+    outline: none; transition: border-color .2s;
+}
+.bp-coupon-input:focus { border-color: var(--bp-primary); }
+.bp-coupon-btn { flex-shrink: 0; padding: 12px 24px; border: none; cursor: pointer; }
+
 .bp-section-title { font-size: 16px; font-weight: 700; color: var(--bp-text); margin: 0 0 16px; }
 
 /* --- Secciones del formulario --- */
@@ -193,21 +298,19 @@ get_header(); ?>
 }
 .bp-place-order:hover { background: var(--bp-primary-dark); }
 
-/* --- Botones genéricos --- */
 .bp-btn-primary {
     display: inline-flex; align-items: center; gap: 8px;
     padding: 12px 28px; border-radius: 12px;
     font-size: 14px; font-weight: 600; text-decoration: none; transition: all .2s;
-    background: var(--bp-primary); color: #fff;
+    background: var(--bp-primary); color: #fff; border: none; cursor: pointer;
 }
 .bp-btn-primary:hover { background: var(--bp-primary-dark); color: #fff; }
 
-/* --- Checkout vacío --- */
 .bp-checkout-empty { text-align: center; padding: 60px 20px; color: var(--bp-text-light); }
 
-/* --- Responsive --- */
 @media (max-width: 768px) {
     .bp-checkout-grid { grid-template-columns: 1fr; }
+    .bp-coupon-inner { flex-direction: column; }
 }
 </style>
 
@@ -217,6 +320,18 @@ jQuery(document).ready(function($) {
     $('input[name="payment_method"]').on('change', function() {
         $('.bp-payment-box').slideUp();
         $(this).closest('.bp-payment-method').find('.bp-payment-box').slideDown();
+    });
+
+    // Toggle login form
+    $('#bp-show-login').on('click', function() {
+        $('#bp-login-form').slideToggle(250);
+    });
+
+    // Cupón colapsable
+    $('.bp-coupon-toggle').on('click', function() {
+        var section = $(this).closest('.bp-coupon-section');
+        section.find('.bp-coupon-body').slideToggle(250);
+        section.toggleClass('is-open');
     });
 });
 </script>

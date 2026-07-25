@@ -108,8 +108,6 @@ get_header(); ?>
                             <i class="fas fa-lock"></i> Finalizar compra
                         </a>
                     </div>
-
-                    <?php do_action('woocommerce_proceed_to_checkout'); ?>
                 </div>
             </form>
         <?php else : ?>
