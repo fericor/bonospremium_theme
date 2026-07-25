@@ -978,6 +978,75 @@ form.woocommerce-form-login {
     .bp-checkout-page .bp-container { padding: 0; }
 }
 
+/* Floating notification for add-to-cart */
+.woocommerce-notices-wrapper .woocommerce-message,
+.woocommerce-notices-wrapper .woocommerce-info,
+.woocommerce-notices-wrapper .woocommerce-error {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 99999;
+    max-width: 400px;
+    width: calc(100% - 32px);
+    padding: 16px 20px !important;
+    border-radius: 14px !important;
+    border: none !important;
+    box-shadow: 0 8px 30px rgba(0,0,0,.15);
+    font-size: .9rem;
+    font-weight: 500;
+    color: #fff !important;
+    text-align: center;
+    animation: bp-notif-in .4s ease-out;
+}
+.woocommerce-notices-wrapper .woocommerce-message {
+    background: #34c759 !important;
+}
+.woocommerce-notices-wrapper .woocommerce-info {
+    background: var(--bp-primary) !important;
+}
+.woocommerce-notices-wrapper .woocommerce-error {
+    background: #ff3b30 !important;
+}
+.woocommerce-notices-wrapper .woocommerce-message a,
+.woocommerce-notices-wrapper .woocommerce-info a,
+.woocommerce-notices-wrapper .woocommerce-error a {
+    color: #fff !important;
+    font-weight: 700;
+    text-decoration: underline;
+}
+.woocommerce-notices-wrapper .woocommerce-message .button,
+.woocommerce-notices-wrapper .woocommerce-info .button,
+.woocommerce-notices-wrapper .woocommerce-error .button {
+    background: rgba(255,255,255,.2) !important;
+    color: #fff !important;
+    padding: 6px 16px !important;
+    border-radius: 8px !important;
+    font-size: .8rem !important;
+    margin-left: 10px !important;
+}
+
+@keyframes bp-notif-in {
+    from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.woocommerce-notices-wrapper .woocommerce-message,
+.woocommerce-notices-wrapper .woocommerce-info,
+.woocommerce-notices-wrapper .woocommerce-error {
+    animation: bp-notif-in .4s ease-out;
+}
+
+/* Remove default notice position */
+.bp-container .woocommerce { position: static; }
+.woocommerce-notices-wrapper {
+    position: static;
+}
+.woocommerce-notices-wrapper .woocommerce-message:first-child,
+.woocommerce-notices-wrapper .woocommerce-info:first-child {
+    margin: 0;
+}
+
 /* Empty cart */
 .bp-checkout-empty {
     text-align: center;

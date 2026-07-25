@@ -79,11 +79,21 @@ add_filter('woocommerce_add_to_cart_redirect', function() {
 add_filter('loop_shop_columns', function() { return 4; });
 add_filter('loop_shop_per_page', function() { return 10; });
 
-// Forzar login visible en checkout
+// Forzar login visible en checkout y toggle suave
 add_action('wp_footer', function() {
-    if (is_checkout()) {
-        echo '<script>jQuery(function($){$(".woocommerce-form-login").attr("style","display:block").show();$(".showlogin").on("click",function(e){e.preventDefault();$(".woocommerce-form-login").toggle()})});</script>';
+    if (is_checkout() || strpos($_SERVER['REQUEST_URI'], 'finalizar-compra') !== false) {
+        echo '<script>
+jQuery(function($){
+    $(".woocommerce-form-login").attr("style","display:block");
+    $(".showlogin").off("click").on("click",function(e){
+        e.preventDefault();
+        $(".woocommerce-form-login").slideToggle(300);
+    });
+});
+</script>';
     }
+    // Auto-dismiss notices after 3s (todas las páginas)
+    echo '<script>jQuery(function($){setTimeout(function(){$(".woocommerce-notices-wrapper .woocommerce-message, .woocommerce-notices-wrapper .woocommerce-info, .woocommerce-notices-wrapper .woocommerce-error").fadeOut(400,function(){$(this).remove()})},3000)});</script>';
 });
 add_filter('woocommerce_output_related_products_args', function($args) {
     $args['posts_per_page'] = 4;
