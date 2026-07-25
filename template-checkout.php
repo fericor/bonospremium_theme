@@ -8,15 +8,7 @@ get_header(); ?>
 <main class="bp-main-content bp-checkout-page">
     <div class="bp-container">
         <h1 class="bp-page-title">Finalizar compra</h1>
-
-        <?php if (!WC()->cart || WC()->cart->is_empty()) : ?>
-            <div class="bp-checkout-empty">
-                <p>Tu carrito está vacío.</p>
-                <a href="<?php echo esc_url(wc_get_page_permalink('shop')); ?>" class="bp-btn-primary">Ver productos</a>
-            </div>
-        <?php else : ?>
-            <?php wc_get_template('checkout/form-checkout.php'); ?>
-        <?php endif; ?>
+        <?php the_content(); ?>
     </div>
 </main>
 

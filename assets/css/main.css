@@ -840,6 +840,108 @@ p { margin-bottom: 1rem;     text-align: justify; }
 }
 .bp-place-order:hover { background: var(--bp-primary-dark); }
 
+/* Login toggle on checkout */
+.woocommerce-form-login-toggle {
+    margin-bottom: 20px;
+}
+.woocommerce-form-login-toggle a {
+    color: var(--bp-primary);
+    font-weight: 600;
+}
+
+/* Checkout login form */
+.woocommerce-form-login {
+    background: #f8f9fa;
+    border-radius: 12px !important;
+    padding: 20px !important;
+    margin-bottom: 20px !important;
+    border: none !important;
+}
+.woocommerce-form-login .form-row {
+    margin-bottom: 12px;
+}
+.woocommerce-form-login input[type="text"],
+.woocommerce-form-login input[type="password"] {
+    width: 100%;
+    padding: 12px 14px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: .9rem;
+}
+.woocommerce-form-login .button {
+    background: var(--bp-primary) !important;
+    color: #fff !important;
+    border: none !important;
+    padding: 12px 24px !important;
+    border-radius: 10px !important;
+    font-weight: 600 !important;
+}
+
+/* Coupon on checkout */
+.woocommerce-form-coupon-toggle {
+    margin-bottom: 15px;
+}
+.woocommerce-form-coupon-toggle a {
+    color: var(--bp-primary);
+    font-weight: 600;
+}
+.checkout_coupon {
+    background: #f8f9fa;
+    border-radius: 12px !important;
+    padding: 20px !important;
+    margin-bottom: 20px !important;
+    border: none !important;
+    display: flex !important;
+    gap: 10px;
+    align-items: center;
+}
+.checkout_coupon input[type="text"] {
+    flex: 1;
+    padding: 12px 14px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: .9rem;
+    min-width: 150px;
+}
+.checkout_coupon .button {
+    background: var(--bp-primary) !important;
+    color: #fff !important;
+    border: none !important;
+    padding: 12px 24px !important;
+    border-radius: 10px !important;
+    font-weight: 600 !important;
+    white-space: nowrap;
+}
+
+/* Create account */
+.woocommerce-account-fields {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+.woocommerce-account-fields label {
+    font-weight: 600;
+    color: #333;
+}
+
+/* Shipping fields */
+.woocommerce-shipping-fields {
+    margin-top: 20px;
+}
+.woocommerce-shipping-fields h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+.woocommerce-shipping-fields textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: .9rem;
+}
+
 /* Empty cart */
 .bp-checkout-empty {
     text-align: center;
