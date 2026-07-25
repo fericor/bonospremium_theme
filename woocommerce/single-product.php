@@ -62,8 +62,15 @@ get_header(); ?>
                 <?php endif; ?>
 
                 <?php if (!empty($condiciones)) : ?>
-                <h3 class="bp-section-title bp-color-primary">Condiciones</h3>
-                <div class="bp-condiciones"><?php echo wp_kses_post($condiciones); ?></div>
+                <div class="bp-condiciones-panel">
+                    <button type="button" class="bp-condiciones-toggle">
+                        <i class="fas fa-file-contract"></i> Condiciones de canje
+                        <i class="fas fa-chevron-down bp-cond-arrow"></i>
+                    </button>
+                    <div class="bp-condiciones-body" style="display:none;">
+                        <?php echo wp_kses_post($condiciones); ?>
+                    </div>
+                </div>
                 <?php endif; ?>
                 
                 <?php if (!empty($direccion) || !empty($telefono) || !empty($city)) : ?>
@@ -105,5 +112,37 @@ get_header(); ?>
         <?php endwhile; ?>
     </div>
 </main>
+
+<style>
+.bp-condiciones-panel {
+    background: var(--bp-card-bg); border: 1px solid var(--bp-border);
+    border-radius: 12px; overflow: hidden; margin-top: 20px;
+}
+.bp-condiciones-toggle {
+    width: 100%; padding: 14px 18px;
+    display: flex; align-items: center; gap: 10px;
+    background: transparent; border: none; cursor: pointer;
+    font-size: 14px; font-weight: 600; color: var(--bp-text);
+    transition: background .2s;
+}
+.bp-condiciones-toggle:hover { background: #f9fafb; }
+.bp-condiciones-toggle i:first-child { color: var(--bp-primary); }
+.bp-cond-arrow { margin-left: auto; font-size: 12px; color: var(--bp-text-muted); transition: transform .3s; }
+.bp-condiciones-panel.is-open .bp-cond-arrow { transform: rotate(180deg); }
+.bp-condiciones-body {
+    padding: 0 18px 16px; font-size: 13px; color: var(--bp-text-light); line-height: 1.6;
+}
+.bp-condiciones-body ul { padding-left: 24px; }
+</style>
+
+<script>
+jQuery(document).ready(function($) {
+    $('.bp-condiciones-toggle').on('click', function() {
+        var panel = $(this).closest('.bp-condiciones-panel');
+        panel.find('.bp-condiciones-body').slideToggle(250);
+        panel.toggleClass('is-open');
+    });
+});
+</script>
 
 <?php get_footer(); ?>
