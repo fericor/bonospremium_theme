@@ -3,6 +3,7 @@
  * Custom thank you / order received page
  * BonosPremium Theme
  */
+
 get_header(); ?>
 
 <main class="bp-main-content">
