@@ -70,6 +70,19 @@ add_filter('body_class', function($classes) {
     return $classes;
 });
 
+// Redirigir al checkout después de añadir al carrito
+add_filter('woocommerce_add_to_cart_redirect', function() {
+    return wc_get_checkout_url();
+});
+
+// Redirigir carrito al checkout
+add_action('template_redirect', function() {
+    if (is_cart() && !is_checkout()) {
+        wp_redirect(wc_get_checkout_url());
+        exit;
+    }
+});
+
 // Modificar el loop de WooCommerce - 4 columnas
 add_filter('loop_shop_columns', function() { return 4; });
 add_filter('loop_shop_per_page', function() { return 10; });
