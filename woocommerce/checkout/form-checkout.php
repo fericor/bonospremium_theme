@@ -45,8 +45,10 @@ $checkout = WC()->checkout();
 <script>
 jQuery(document).ready(function($) {
     $('input[name="payment_method"]').on('change', function() {
-        $('.bp-payment-box').slideUp();
-        $(this).closest('.bp-payment-method').find('.bp-payment-box').slideDown();
+        $('.bp-payment-box').slideUp(200);
+        $(this).closest('.wc_payment_method').find('.bp-payment-box').slideDown(200);
     });
+    // Ensure initial active payment method shows its box
+    $('input[name="payment_method"]:checked').closest('.wc_payment_method').find('.bp-payment-box').show();
 });
 </script>

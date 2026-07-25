@@ -1,7 +1,24 @@
 jQuery(document).ready(function($) {
+    // ===== HEADER DROPDOWN FOLLOW ON SCROLL =====
+    function updateDropdownPosition() {
+        if ($(window).width() > 768) return;
+        var $header = $('.bp-header');
+        if (!$header.length) return;
+        var headerBottom = $header.offset().top + $header.outerHeight();
+        document.documentElement.style.setProperty('--bp-dropdown-top', headerBottom + 'px');
+    }
+
+    // Update on scroll and resize
+    $(window).on('scroll resize', function() {
+        if ($('.bp-user-nav-menu').hasClass('open')) {
+            updateDropdownPosition();
+        }
+    });
+
     // Hamburger toggle - User menu dropdown
     $('.bp-menu-toggle').on('click', function(e) {
         e.stopPropagation();
+        updateDropdownPosition();
         $('.bp-user-nav-menu').toggleClass('open');
         $(this).toggleClass('active');
         if ($(this).hasClass('active')) {
@@ -56,33 +73,33 @@ jQuery(document).ready(function($) {
     // Infinite scroll - Auto load on scroll
     var loadingMore = false;
     var $loadWrap = $('.bp-load-more-wrap');
-    
+
     // Product image slider dots
     $('.bp-slider').each(function() {
         var $slider = $(this);
         var $track = $slider.find('.bp-slider-track');
         var $slides = $track.find('.bp-slide');
         var $dots = $slider.find('.bp-slider-dots');
-        
+
         if ($slides.length > 1) {
             // Create dots
             for (var i = 0; i < $slides.length; i++) {
                 $dots.append('<span data-index="' + i + '"></span>');
             }
             $dots.find('span:first').addClass('active');
-            
+
             // Update active dot on scroll
             $track.on('scroll', function() {
                 var index = Math.round($track.scrollLeft() / $track.outerWidth());
                 $dots.find('span').removeClass('active').eq(index).addClass('active');
             });
-            
+
             // Click dot to scroll
             $dots.on('click', 'span', function() {
                 var idx = $(this).data('index');
                 $track.animate({ scrollLeft: idx * $track.outerWidth() }, 300);
             });
-            
+
             // Mouse drag to scroll
             var isDown = false, startX = 0, scrollStart = 0;
             $slider.on('mousedown', function(e) {
@@ -109,7 +126,7 @@ jQuery(document).ready(function($) {
             });
         }
     });
-    
+
     // Sticky nav on scroll
     var $nav = $('.bp-nav');
     var navOffset = $nav.length ? $nav.offset().top : 0;
@@ -120,7 +137,7 @@ jQuery(document).ready(function($) {
         } else {
             $nav.removeClass('bp-nav-sticky');
         }
-        
+
         // Infinite scroll
         if ($loadWrap.length && !loadingMore) {
             var wrapTop = $loadWrap.offset().top;
@@ -131,7 +148,7 @@ jQuery(document).ready(function($) {
             }
         }
     });
-    
+
     function loadMoreProducts() {
         var $wrap = $('.bp-load-more-wrap');
         var page = parseInt($wrap.data('page')) + 1;
@@ -164,4 +181,46 @@ jQuery(document).ready(function($) {
             loadingMore = false;
         });
     }
+
+    // ===== CHECKOUT: NOTIFICACION FLOATING =====
+    $(document.body).on('updated_checkout', function() {
+        // Move notices from woocommerce-NoticeGroup-updateOrderReview to floating wrapper
+        var $noticeGroup = $('.woocommerce-NoticeGroup-updateOrderReview');
+        if ($noticeGroup.length) {
+            var $notices = $noticeGroup.find('.woocommerce-message, .woocommerce-info, .woocommerce-error');
+            if ($notices.length) {
+                // Move to the main notices wrapper
+                var $wrapper = $('.woocommerce-notices-wrapper');
+                if (!$wrapper.length) {
+                    $wrapper = $('<div class="woocommerce-notices-wrapper"></div>');
+                    $('.bp-checkout-page .bp-container').prepend($wrapper);
+                }
+                $notices.appendTo($wrapper);
+                $noticeGroup.empty();
+                // Auto-dismiss after 3s
+                $notices.each(function() {
+                    var $n = $(this);
+                    setTimeout(function() {
+                        $n.fadeOut(400, function() { $n.remove(); });
+                    }, 3000);
+                });
+            }
+        }
+    });
+
+    // ===== LOGIN TOGGLE FIX =====
+    $('.showlogin').off('click').on('click', function(e) {
+        e.preventDefault();
+        var $form = $('.woocommerce-form-login');
+        if ($form.length) {
+            $form.slideToggle(300);
+        }
+    });
+
+    // ===== CONDICIONES TOGGLE (single product) =====
+    $('.bp-condiciones-toggle').on('click', function() {
+        var panel = $(this).closest('.bp-condiciones-panel');
+        panel.find('.bp-condiciones-body').slideToggle(250);
+        panel.toggleClass('is-open');
+    });
 });

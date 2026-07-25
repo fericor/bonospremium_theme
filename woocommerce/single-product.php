@@ -99,8 +99,8 @@ get_header(); ?>
                         height="250" 
                         frameborder="0" 
                         style="border:0; border-radius:12px;" 
-                        src="https://www.openstreetmap.org/export/embed.html?bbox=<?php echo esc_attr($mapa['lng'] - 0.01); ?>%2C<?php echo esc_attr($mapa['lat'] - 0.01); ?>%2C<?php echo esc_attr($mapa['lng'] + 0.01); ?>%2C<?php echo esc_attr($mapa['lat'] + 0.01); ?>&amp;layer=mapnik&amp;marker=<?php echo esc_attr($mapa['lat']); ?>%2C<?php echo esc_attr($mapa['lng']); ?>"
-                        allowfullscreen>
+                        src="https://maps.google.com/maps?q=<?php echo esc_attr($mapa['lat']); ?>,<?php echo esc_attr($mapa['lng']); ?>&z=15&output=embed"
+                        allowfullscreen loading="lazy">
                     </iframe>
                 </div>
                 <?php endif; ?>
@@ -116,7 +116,7 @@ get_header(); ?>
 <style>
 .bp-condiciones-panel {
     background: var(--bp-card-bg); border: 1px solid var(--bp-border);
-    border-radius: 12px; overflow: hidden; margin-top: 20px;
+    border-radius: 16px; overflow: hidden; margin-top: 20px; box-shadow: 0 1px 3px rgba(0,0,0,.04);
 }
 .bp-condiciones-toggle {
     width: 100%; padding: 14px 18px;
@@ -134,15 +134,5 @@ get_header(); ?>
 }
 .bp-condiciones-body ul { padding-left: 24px; }
 </style>
-
-<script>
-jQuery(document).ready(function($) {
-    $('.bp-condiciones-toggle').on('click', function() {
-        var panel = $(this).closest('.bp-condiciones-panel');
-        panel.find('.bp-condiciones-body').slideToggle(250);
-        panel.toggleClass('is-open');
-    });
-});
-</script>
 
 <?php get_footer(); ?>
