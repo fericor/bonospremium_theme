@@ -82,6 +82,31 @@ jQuery(document).ready(function($) {
                 var idx = $(this).data('index');
                 $track.animate({ scrollLeft: idx * $track.outerWidth() }, 300);
             });
+            
+            // Mouse drag to scroll
+            var isDown = false, startX = 0, scrollStart = 0;
+            $slider.on('mousedown', function(e) {
+                isDown = true;
+                $slider.addClass('bp-dragging');
+                startX = e.pageX - $slider.offset().left;
+                scrollStart = $track.scrollLeft();
+                e.preventDefault();
+            });
+            $slider.on('mousemove', function(e) {
+                if (!isDown) return;
+                e.preventDefault();
+                var x = e.pageX - $slider.offset().left;
+                var walk = (x - startX) * 1.5;
+                $track.scrollLeft(scrollStart - walk);
+            });
+            $(document).on('mouseup', function() {
+                isDown = false;
+                $slider.removeClass('bp-dragging');
+            });
+            $slider.on('mouseleave', function() {
+                isDown = false;
+                $slider.removeClass('bp-dragging');
+            });
         }
     });
     

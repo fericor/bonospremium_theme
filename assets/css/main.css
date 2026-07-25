@@ -468,6 +468,7 @@ li { list-style: none; }
     height: 100%;
     object-fit: contain;
 }
+.bp-dragging { cursor: grabbing !important; user-select: none; }
 .bp-slider-dots {
     position: absolute;
     bottom: 12px;
