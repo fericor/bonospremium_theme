@@ -46,7 +46,7 @@ if (!is_user_logged_in() && 'no' === get_option('woocommerce_enable_checkout_log
                     <tbody>
                         <?php foreach (WC()->cart->get_cart() as $cart_item_key => $cart_item) :
                             $_product = apply_filters('woocommerce_cart_item_product', $cart_item['data'], $cart_item, $cart_item_key);
-                            $product_name = apply_filters('woocommerce_cart_item_name', $_product->get_name(), $cart_item, $cart_item_key);
+                            $product_name = $_product->get_name();
                         ?>
                         <tr>
                             <td><?php echo esc_html($product_name); ?> <strong>× <?php echo esc_html($cart_item['quantity']); ?></strong></td>
