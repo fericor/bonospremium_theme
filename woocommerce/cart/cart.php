@@ -3,6 +3,7 @@
  * Custom Cart page for BonosPremium
  * Carrito con quantity +/- que actualiza automaticamente
  */
+
 get_header(); ?>
 
 <main class="bp-main-content">
@@ -15,15 +16,12 @@ get_header(); ?>
 
             <form class="bp-cart-form" action="<?php echo esc_url(wc_get_cart_url()); ?>" method="post">
                 <div class="bp-cart-layout">
-                    <!-- Tabla de productos con subtotal y total en footer -->
+                    <!-- Tabla de productos -->
                     <table class="bp-cart-table">
                         <thead>
                             <tr>
                                 <th class="bp-col-product">Producto</th>
-                                <th class="bp-col-price bp-text-right">Precio</th>
-                                <th class="bp-col-qty bp-text-center">Cantidad</th>
-                                <th class="bp-col-subtotal bp-text-right">Subtotal</th>
-                                <th class="bp-col-remove"></th>
+                                <th class="bp-col-qtyprice bp-text-center">Cantidad y Precio</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -33,68 +31,66 @@ get_header(); ?>
                                 $product_name = apply_filters('woocommerce_cart_item_name', $_product->get_name(), $cart_item, $cart_item_key);
                                 $thumbnail = apply_filters('woocommerce_cart_item_thumbnail', $_product->get_image('thumbnail'), $cart_item, $cart_item_key);
                                 $product_permalink = apply_filters('woocommerce_cart_item_permalink', $_product->is_visible() ? $_product->get_permalink($cart_item) : '', $cart_item, $cart_item_key);
+                                $product_price = WC()->cart->get_product_price($_product);
+                                $product_subtotal = WC()->cart->get_product_subtotal($_product, $cart_item['quantity']);
                             ?>
                             <tr>
+                                <!-- TD IZQUIERDA: imagen + nombre + eliminar (horizontal) -->
                                 <td class="bp-col-product">
-                                    <div class="bp-cart-product">
-                                        <div class="bp-cart-thumb">
+                                    <div class="bp-product-row">
+                                        <div class="bp-prod-thumb">
                                             <?php echo $thumbnail; ?>
                                         </div>
-                                        <div class="bp-cart-info">
-                                            <a href="<?php echo esc_url($product_permalink); ?>" class="bp-cart-name">
+                                        <div class="bp-prod-info">
+                                            <a href="<?php echo esc_url($product_permalink); ?>" class="bp-prod-name">
                                                 <?php echo $product_name; ?>
+                                            </a>
+                                            <a href="<?php echo esc_url(wc_get_cart_remove_url($cart_item_key)); ?>" class="bp-prod-remove" title="Eliminar">
+                                                <i class="fas fa-trash-alt"></i> Eliminar
                                             </a>
                                         </div>
                                     </div>
                                 </td>
-                                <td class="bp-col-price bp-text-right">
-                                    <?php echo WC()->cart->get_product_price($_product); ?>
-                                </td>
-                                <td class="bp-col-qty bp-text-center">
-                                    <div class="bp-qty-selector">
-                                        <button type="button" class="bp-qty-btn bp-qty-minus" data-key="<?php echo esc_attr($cart_item_key); ?>">−</button>
-                                        <input type="number" name="cart[<?php echo esc_attr($cart_item_key); ?>][qty]" 
-                                               value="<?php echo esc_attr($cart_item['quantity']); ?>" 
-                                               class="bp-qty-input" min="1" max="99" 
-                                               data-product-id="<?php echo esc_attr($_product->get_id()); ?>" />
-                                        <button type="button" class="bp-qty-btn bp-qty-plus" data-key="<?php echo esc_attr($cart_item_key); ?>">+</button>
+
+                                <!-- TD DERECHA: quantity (arriba) + precio (abajo) -->
+                                <td class="bp-col-qtyprice">
+                                    <div class="bp-qtyprice-stack">
+                                        <!-- Quantity +/- arriba -->
+                                        <div class="bp-qty-selector">
+                                            <button type="button" class="bp-qty-btn bp-qty-minus" data-key="<?php echo esc_attr($cart_item_key); ?>">−</button>
+                                            <input type="number" name="cart[<?php echo esc_attr($cart_item_key); ?>][qty]" 
+                                                   value="<?php echo esc_attr($cart_item['quantity']); ?>" 
+                                                   class="bp-qty-input" min="1" max="99" 
+                                                   data-product-id="<?php echo esc_attr($_product->get_id()); ?>" />
+                                            <button type="button" class="bp-qty-btn bp-qty-plus" data-key="<?php echo esc_attr($cart_item_key); ?>">+</button>
+                                        </div>
+                                        <!-- Precio debajo -->
+                                        <span class="bp-prod-price"><?php echo $product_price; ?></span>
                                     </div>
-                                </td>
-                                <td class="bp-col-subtotal bp-text-right" data-title="Subtotal">
-                                    <?php echo WC()->cart->get_product_subtotal($_product, $cart_item['quantity']); ?>
-                                </td>
-                                <td class="bp-col-remove">
-                                    <a href="<?php echo esc_url(wc_get_cart_remove_url($cart_item_key)); ?>" class="bp-remove-item" title="Eliminar">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </a>
                                 </td>
                             </tr>
                             <?php endforeach; ?>
                         </tbody>
                         <tfoot>
                             <tr class="bp-cart-subtotal-row">
-                                <th colspan="3" class="bp-text-right">Subtotal</th>
+                                <th class="bp-text-right">Subtotal</th>
                                 <td class="bp-text-right bp-cart-subtotal-val"><?php wc_cart_totals_subtotal_html(); ?></td>
-                                <td></td>
                             </tr>
                             <?php foreach (WC()->cart->get_coupons() as $code => $coupon) : ?>
                             <tr class="bp-cart-coupon-row">
-                                <th colspan="3" class="bp-text-right"><?php wc_cart_totals_coupon_label($coupon); ?></th>
+                                <th class="bp-text-right"><?php wc_cart_totals_coupon_label($coupon); ?></th>
                                 <td class="bp-text-right"><?php wc_cart_totals_coupon_html($coupon); ?></td>
-                                <td></td>
                             </tr>
                             <?php endforeach; ?>
                             <tr class="bp-cart-total-row">
-                                <th colspan="3" class="bp-text-right">Total</th>
+                                <th class="bp-text-right">Total</th>
                                 <td class="bp-text-right bp-cart-total-val"><?php wc_cart_totals_order_total_html(); ?></td>
-                                <td></td>
                             </tr>
                         </tfoot>
                     </table>
 
-                    <!-- Acciones inferiores: cupon + checkout -->
+                    <!-- Acciones inferiores -->
                     <div class="bp-cart-bottom">
-                        <!-- Cupón descuento -->
                         <div class="bp-coupon-section">
                             <h3><i class="fas fa-ticket-alt"></i> ¿Tienes un código de descuento?</h3>
                             <div class="bp-coupon-form">
@@ -107,7 +103,6 @@ get_header(); ?>
                             </div>
                         </div>
 
-                        <!-- Botón finalizar compra -->
                         <a href="<?php echo esc_url(wc_get_checkout_url()); ?>" class="bp-checkout-btn">
                             <i class="fas fa-lock"></i> Finalizar compra
                         </a>
@@ -129,9 +124,8 @@ get_header(); ?>
 
 <style>
 .bp-page-title { font-size: 24px; font-weight: 700; color: var(--bp-text); margin: 0 0 24px; }
-.bp-cart-layout { max-width: 100%; }
 
-/* --- Tabla --- */
+/* --- Tabla: 2 columnas --- */
 .bp-cart-table {
     width: 100%; border-collapse: collapse; background: var(--bp-card-bg);
     border-radius: 16px; overflow: hidden;
@@ -147,7 +141,56 @@ get_header(); ?>
 .bp-text-right { text-align: right; }
 .bp-text-center { text-align: center; }
 
-/* --- Footer totales en tabla --- */
+/* --- TD izquierda: imagen + nombre + eliminar (horizontal) --- */
+.bp-product-row {
+    display: flex; align-items: center; gap: 16px;
+}
+.bp-prod-thumb {
+    width: 80px; height: 80px; border-radius: 12px; overflow: hidden; flex-shrink: 0;
+}
+.bp-prod-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.bp-prod-info {
+    display: flex; flex-direction: column; gap: 6px;
+}
+.bp-prod-name {
+    font-size: 16px; font-weight: 600; color: var(--bp-text); text-decoration: none; line-height: 1.3;
+}
+.bp-prod-name:hover { color: var(--bp-primary); }
+.bp-prod-remove {
+    font-size: 13px; color: #d1d5db; text-decoration: none; transition: color .2s;
+    display: inline-flex; align-items: center; gap: 4px;
+}
+.bp-prod-remove:hover { color: #ef4444; }
+
+/* --- TD derecha: quantity arriba + precio abajo (stack) --- */
+.bp-qtyprice-stack {
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+}
+.bp-qty-selector {
+    display: inline-flex; align-items: center; gap: 0;
+    border: 1px solid var(--bp-border); border-radius: 10px;
+    overflow: hidden; background: var(--bp-card-bg);
+}
+.bp-qty-btn {
+    width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;
+    border: none; background: transparent; color: var(--bp-text);
+    font-size: 20px; font-weight: 600; cursor: pointer;
+    transition: background .15s, color .15s;
+}
+.bp-qty-btn:hover { background: var(--bp-primary); color: #fff; }
+.bp-qty-input {
+    width: 50px; height: 38px; border: none; border-left: 1px solid var(--bp-border);
+    border-right: 1px solid var(--bp-border); text-align: center;
+    font-size: 15px; font-weight: 600; color: var(--bp-text);
+    -moz-appearance: textfield; background: var(--bp-card-bg);
+}
+.bp-qty-input::-webkit-inner-spin-button,
+.bp-qty-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.bp-prod-price {
+    font-size: 18px; font-weight: 700; color: var(--bp-primary); white-space: nowrap;
+}
+
+/* --- Footer totales --- */
 .bp-cart-table tfoot th {
     padding: 14px 20px; font-size: 14px; color: var(--bp-text-light); font-weight: 500;
     border-top: 1px solid var(--bp-border);
@@ -163,42 +206,7 @@ get_header(); ?>
 .bp-cart-total-row th,
 .bp-cart-total-row td { font-weight: 700; color: var(--bp-text); font-size: 16px; border-top: 2px solid var(--bp-border); }
 
-/* --- Producto --- */
-.bp-cart-product { display: flex; align-items: center; gap: 16px; }
-.bp-cart-thumb { width: 72px; height: 72px; border-radius: 12px; overflow: hidden; flex-shrink: 0; }
-.bp-cart-thumb img { width: 100%; height: 100%; object-fit: cover; }
-.bp-cart-name { font-size: 15px; font-weight: 600; color: var(--bp-text); text-decoration: none; }
-.bp-cart-name:hover { color: var(--bp-primary); }
-.bp-col-price, .bp-col-subtotal { font-size: 15px; font-weight: 600; color: var(--bp-text); white-space: nowrap; }
-
-/* --- Quantity +/- --- */
-.bp-qty-selector {
-    display: inline-flex; align-items: center; gap: 0;
-    border: 1px solid var(--bp-border); border-radius: 10px;
-    overflow: hidden; background: var(--bp-card-bg);
-}
-.bp-qty-btn {
-    width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
-    border: none; background: transparent; color: var(--bp-text);
-    font-size: 18px; font-weight: 600; cursor: pointer;
-    transition: background .15s, color .15s;
-}
-.bp-qty-btn:hover { background: var(--bp-primary); color: #fff; }
-.bp-qty-input {
-    width: 48px; height: 36px; border: none; border-left: 1px solid var(--bp-border);
-    border-right: 1px solid var(--bp-border); text-align: center;
-    font-size: 14px; font-weight: 600; color: var(--bp-text);
-    -moz-appearance: textfield; background: var(--bp-card-bg);
-}
-.bp-qty-input::-webkit-inner-spin-button,
-.bp-qty-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-
-/* --- Eliminar --- */
-.bp-col-remove { width: 40px; text-align: center; }
-.bp-remove-item { color: #d1d5db; font-size: 16px; transition: color .2s; }
-.bp-remove-item:hover { color: #ef4444; }
-
-/* --- Cupón descuento --- */
+/* --- Cupón + Checkout --- */
 .bp-cart-bottom { margin-top: 24px; display: flex; flex-direction: column; gap: 16px; }
 .bp-coupon-section {
     padding: 20px; background: var(--bp-card-bg);
@@ -217,8 +225,6 @@ get_header(); ?>
 }
 .bp-coupon-input:focus { border-color: var(--bp-primary); }
 .bp-coupon-btn { white-space: nowrap; padding: 10px 20px; border: none; cursor: pointer; }
-
-/* --- Botón finalizar compra --- */
 .bp-checkout-btn {
     display: flex; align-items: center; justify-content: center; gap: 8px;
     width: 100%; padding: 16px;
@@ -228,8 +234,6 @@ get_header(); ?>
     text-decoration: none; cursor: pointer; transition: background .2s;
 }
 .bp-checkout-btn:hover { background: var(--bp-primary-dark); color: #fff; }
-
-/* --- Botones genéricos --- */
 .bp-btn-primary, .bp-btn-secondary {
     display: inline-flex; align-items: center; gap: 8px;
     padding: 12px 28px; border-radius: 12px; font-size: 14px; font-weight: 600;
@@ -245,18 +249,15 @@ get_header(); ?>
 .bp-empty-icon { font-size: 64px; color: #d1d5db; margin-bottom: 16px; }
 .bp-cart-empty h2 { font-size: 22px; font-weight: 700; color: var(--bp-text); margin: 0 0 8px; }
 .bp-cart-empty p { color: var(--bp-text-light); margin: 0 0 24px; }
-
-/* --- Spinner loading --- */
 .bp-cart-updating { opacity: .6; pointer-events: none; }
 
 /* --- Responsive --- */
 @media (max-width: 768px) {
     .bp-cart-table thead { display: none; }
     .bp-cart-table tr { display: block; padding: 16px; border-bottom: 1px solid var(--bp-border); }
-    .bp-cart-table td { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border: none; }
-    .bp-cart-product { flex-direction: column; align-items: flex-start; gap: 8px; }
-    .bp-cart-thumb { width: 56px; height: 56px; }
-    .bp-qty-selector { margin: 0 auto; }
+    .bp-cart-table td { display: flex; justify-content: space-between; padding: 6px 0; border: none; }
+    .bp-product-row { flex-direction: row; }
+    .bp-prod-thumb { width: 60px; height: 60px; }
     .bp-coupon-form { flex-direction: column; }
     .bp-cart-table tfoot tr { display: flex; justify-content: space-between; padding: 10px 16px; }
     .bp-cart-table tfoot th, .bp-cart-table tfoot td { padding: 0; border: none; }
@@ -266,36 +267,21 @@ get_header(); ?>
 <script>
 jQuery(document).ready(function($) {
     var timeout;
-
     function bpUpdateCart() {
         $('.bp-cart-form').addClass('bp-cart-updating');
-        // Disparar la actualización nativa de WooCommerce via form submit
         $('button[name="update_cart"]').prop('disabled', false);
         $('.bp-cart-form').submit();
     }
-
-    // Quantity +/- buttons con actualización automática
     $('.bp-qty-plus').on('click', function() {
         var input = $(this).siblings('.bp-qty-input');
         var val = parseInt(input.val(), 10) || 1;
-        if (val < 99) {
-            input.val(val + 1);
-            clearTimeout(timeout);
-            timeout = setTimeout(bpUpdateCart, 400);
-        }
+        if (val < 99) { input.val(val + 1); clearTimeout(timeout); timeout = setTimeout(bpUpdateCart, 400); }
     });
-
     $('.bp-qty-minus').on('click', function() {
         var input = $(this).siblings('.bp-qty-input');
         var val = parseInt(input.val(), 10) || 1;
-        if (val > 1) {
-            input.val(val - 1);
-            clearTimeout(timeout);
-            timeout = setTimeout(bpUpdateCart, 400);
-        }
+        if (val > 1) { input.val(val - 1); clearTimeout(timeout); timeout = setTimeout(bpUpdateCart, 400); }
     });
-
-    // También actualizar al cambiar manualmente el input
     $('.bp-qty-input').on('change', function() {
         var val = parseInt($(this).val(), 10) || 1;
         if (val < 1) $(this).val(1);
@@ -303,8 +289,6 @@ jQuery(document).ready(function($) {
         clearTimeout(timeout);
         timeout = setTimeout(bpUpdateCart, 400);
     });
-
-    // Ocultar botón update_cart que usamos como trigger
     $('button[name="update_cart"]').hide();
 });
 </script>
