@@ -141,13 +141,16 @@ jQuery(document).ready(function($) {
         }
     });
 
-    // Sticky nav appearance on scroll
+    // Sticky nav on scroll
     var $nav = $('.bp-nav');
     $(window).on('scroll', function() {
         var scrollTop = $(window).scrollTop();
+        var headerHeight = $('.bp-header').outerHeight() || 0;
+        
         // Activar cuando se ha scrolleado pasado el header
-        if (scrollTop > 60) {
+        if (scrollTop > headerHeight) {
             $nav.addClass('bp-nav-sticky');
+            document.documentElement.style.setProperty('--bp-nav-sticky-top', headerHeight + 'px');
         } else {
             $nav.removeClass('bp-nav-sticky');
         }

@@ -74,21 +74,21 @@
             </div>
         </div>
     </div>
-
-    <nav class="bp-nav">
-        <div class="bp-container">
-            <?php
-            wp_nav_menu([
-                'theme_location' => 'primary',
-                'container'      => false,
-                'menu_class'     => 'bp-nav-menu',
-                'fallback_cb'    => 'bp_lz_fallback_menu',
-                'depth'          => 1,
-            ]);
-            ?>
-        </div>
-    </nav>
 </header>
+
+<nav class="bp-nav">
+    <div class="bp-container">
+        <?php
+        wp_nav_menu([
+            'theme_location' => 'primary',
+            'container'      => false,
+            'menu_class'     => 'bp-nav-menu',
+            'fallback_cb'    => 'bp_lz_fallback_menu',
+            'depth'          => 1,
+        ]);
+        ?>
+    </div>
+</nav>
 
 <?php
 // Fallback menu si no hay menú asignado
