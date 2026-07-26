@@ -3,21 +3,8 @@ jQuery(document).ready(function($) {
     var $menuToggle = $('.bp-menu-toggle');
     var $userMenu = $('.bp-user-nav-menu');
 
-    function positionDropdown() {
-        if ($(window).width() > 768) return;
-        var headerHeight = $('.bp-header').outerHeight() || 56;
-        $userMenu.css('top', headerHeight + 'px');
-    }
-
-    $(window).on('scroll resize', function() {
-        if ($userMenu.hasClass('open')) {
-            positionDropdown();
-        }
-    });
-
     $menuToggle.on('click', function(e) {
         e.stopPropagation();
-        positionDropdown();
         $userMenu.toggleClass('open');
         $(this).toggleClass('active');
         if ($(this).hasClass('active')) {
@@ -135,7 +122,6 @@ jQuery(document).ready(function($) {
         // Activar cuando se ha scrolleado pasado el header
         if (scrollTop > headerHeight) {
             $nav.addClass('bp-nav-sticky');
-            document.documentElement.style.setProperty('--bp-nav-sticky-top', headerHeight + 'px');
         } else {
             $nav.removeClass('bp-nav-sticky');
         }
