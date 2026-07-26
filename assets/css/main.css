@@ -1507,7 +1507,6 @@ form.woocommerce-form-login.bp-login-open {
     .bp-user-nav-menu {
         display: none;
         position: fixed;
-        top: auto;
         left: 0;
         right: 0;
         width: 100%;

@@ -1,25 +1,24 @@
 jQuery(document).ready(function($) {
-    // ===== HEADER DROPDOWN FOLLOW ON SCROLL =====
-    function updateDropdownPosition() {
+    // ===== HEADER DROPDOWN (menú hamburguesa) =====
+    var $menuToggle = $('.bp-menu-toggle');
+    var $userMenu = $('.bp-user-nav-menu');
+
+    function positionDropdown() {
         if ($(window).width() > 768) return;
-        var $header = $('.bp-header');
-        if (!$header.length) return;
-        var headerBottom = $header.offset().top + $header.outerHeight();
-        document.documentElement.style.setProperty('--bp-dropdown-top', headerBottom + 'px');
+        var headerHeight = $('.bp-header').outerHeight() || 56;
+        $userMenu.css('top', headerHeight + 'px');
     }
 
-    // Update on scroll and resize
     $(window).on('scroll resize', function() {
-        if ($('.bp-user-nav-menu').hasClass('open')) {
-            updateDropdownPosition();
+        if ($userMenu.hasClass('open')) {
+            positionDropdown();
         }
     });
 
-    // Hamburger toggle - User menu dropdown
-    $('.bp-menu-toggle').on('click', function(e) {
+    $menuToggle.on('click', function(e) {
         e.stopPropagation();
-        updateDropdownPosition();
-        $('.bp-user-nav-menu').toggleClass('open');
+        positionDropdown();
+        $userMenu.toggleClass('open');
         $(this).toggleClass('active');
         if ($(this).hasClass('active')) {
             $(this).find('span').eq(0).css('transform', 'rotate(45deg) translate(4px, 4px)');
@@ -41,20 +40,6 @@ jQuery(document).ready(function($) {
     
     $('.bp-search-close').on('click', function() {
         $('.bp-search-overlay').removeClass('open');
-    });
-    
-    // Menu toggle (mobile only)
-    var $menuToggle = $('.bp-menu-toggle');
-    var $userMenu = $('.bp-user-nav-menu');
-    
-    $menuToggle.on('click', function() {
-        // Calcular posición actual del botón en la ventana
-        var toggleTop = $menuToggle.offset().top;
-        var toggleHeight = $menuToggle.outerHeight();
-        var headerHeight = $('.bp-header').outerHeight() || 56;
-        // Usar la posición real del botón o la altura del header como fallback
-        var top = Math.min(toggleTop + toggleHeight, headerHeight);
-        $userMenu.css('top', top + 'px').toggleClass('open');
     });
 
     // Close on escape
