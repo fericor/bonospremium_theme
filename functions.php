@@ -272,8 +272,38 @@ function bp_get_wishlist() {
     return [];
 }
 
-// Pasar wishlist del usuario logueado al JS (ya incluido en bp_lz_ajax)
-// AJAX: toggle wishlist (solo logueados)
+// Endpoint "favoritos" en Mi Cuenta
+add_action('init', function() {
+    add_rewrite_endpoint('favoritos', EP_ROOT | EP_PAGES);
+});
+add_filter('woocommerce_account_menu_items', function($items) {
+    $items['favoritos'] = 'Mis Favoritos';
+    return $items;
+});
+add_action('woocommerce_account_favoritos_endpoint', function() {
+    $wishlist = bp_get_wishlist();
+    if (empty($wishlist)) {
+        echo '<p>No tienes productos favoritos aún.</p>';
+        return;
+    }
+    echo '<div class="bp-products-grid">';
+    foreach ($wishlist as $product_id) {
+        $product = wc_get_product($product_id);
+        if ($product) {
+            $city = get_field('localidad', $product_id) ?: get_post_meta($product_id, 'localidad', true);
+            $nombre_establecimiento = get_field('nombre_establecimiento', $product_id) ?: get_post_meta($product_id, 'nombre_establecimiento', true);
+            echo '<div class="bp-product-card">';
+            echo '<div class="bp-product-image-wrap"><a href="' . get_permalink($product_id) . '">' . $product->get_image('medium_large') . '</a></div>';
+            echo '<div class="bp-product-info">';
+            echo '<h3 class="bp-product-title"><a href="' . get_permalink($product_id) . '">' . esc_html($nombre_establecimiento ?: $product->get_title()) . '</a></h3>';
+            echo '<div class="bp-product-bottom"><div class="bp-product-price">' . $product->get_price_html() . '</div></div>';
+            echo '</div></div>';
+        }
+    }
+    echo '</div>';
+});
+// Refresh rewrite rules on theme switch
+add_action('after_switch_theme', function() { flush_rewrite_rules(); });
 add_action('wp_ajax_bp_toggle_wishlist', 'bp_toggle_wishlist');
 function bp_toggle_wishlist() {
     $product_id = (int)($_POST['product_id'] ?? 0);
