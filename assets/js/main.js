@@ -182,10 +182,22 @@ jQuery(document).ready(function($) {
         });
     }
 
-    // ===== LOGIN TOGGLE (WooCommerce nativo) =====
-    // El toggle lo maneja WooCommerce checkout.js nativamente.
-    // Solo nos aseguramos de que el formulario empiece oculto.
-    $('.woocommerce-form-login').hide();
+    // ===== LOGIN TOGGLE (colapsible) =====
+    $('.showlogin').off('click').on('click', function(e) {
+        e.preventDefault();
+        $('.woocommerce-form-login').slideToggle(300).toggleClass('bp-login-open');
+    });
+    
+    // ===== COUPON TOGGLE (colapsible) =====
+    $('.showcoupon').off('click').on('click', function(e) {
+        e.preventDefault();
+        $('.checkout_coupon').slideToggle(300).toggleClass('bp-coupon-open');
+    });
+    
+    // ===== AUTO-DISMISS NOTICES =====
+    setTimeout(function() {
+        $('.woocommerce-notices-wrapper .woocommerce-message, .woocommerce-notices-wrapper .woocommerce-info, .woocommerce-notices-wrapper .woocommerce-error').fadeOut(400, function() { $(this).remove(); });
+    }, 3000);
 
     // ===== CONDICIONES TOGGLE (single product) =====
     $('.bp-condiciones-toggle').on('click', function() {

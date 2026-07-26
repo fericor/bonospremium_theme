@@ -79,7 +79,6 @@ add_filter('woocommerce_add_to_cart_redirect', function() {
 add_filter('loop_shop_columns', function() { return 4; });
 add_filter('loop_shop_per_page', function() { return 10; });
 
-// Forzar login visible en checkout y toggle suave
 // Nota: el toggle del login y auto-dismiss de notices están ahora en assets/js/main.js
 add_filter('woocommerce_output_related_products_args', function($args) {
     $args['posts_per_page'] = 4;
