@@ -25,6 +25,8 @@
     --bp-button-bg: #039CDC;
     --bp-button-hover: #027ba8;
     --bp-sale-color: #039CDC;
+    --bp-nav-sticky-top: 0;
+    
 }
 
 /* === RESET & BASE === */
