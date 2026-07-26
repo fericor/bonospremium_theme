@@ -694,8 +694,8 @@ p { margin-bottom: 1rem;     text-align: justify; }
     display: none;
 }
 
-/* Checkout grid - app style */
-.bp-checkout-grid {
+/* Checkout - flujo vertical app */
+.bp-checkout-page .checkout {
     display: flex;
     flex-direction: column;
     gap: 0;
@@ -781,13 +781,10 @@ p { margin-bottom: 1rem;     text-align: justify; }
     font-size: 1rem;
 }
 
-/* Sidebar - order review */
-.bp-checkout-sidebar {
-    order: -1;
-}
+/* Order review card */
 .bp-checkout-card {
     background: #fff;
-    border-radius: 0
+    border-radius: 0;
     padding: 20px 16px;
     box-shadow: 0 1px 3px rgba(0,0,0,.04);
     border: 1px solid #f0f0f0;
@@ -1165,10 +1162,6 @@ form.woocommerce-form-login.bp-login-open {
 }
 .bp-btn-primary:hover { background: var(--bp-primary-dark); color: #fff; }
 
-@media (max-width: 768px) {
-    .bp-checkout-grid { grid-template-columns: 1fr; }
-    .bp-checkout-card { position: static; }
-}
 
 /* === MY ACCOUNT - APP STYLE === */
 .bp-account-page .bp-container {
