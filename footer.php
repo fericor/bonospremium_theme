@@ -6,6 +6,7 @@
 <!-- Wave shape at top -->
 <div class="bp-footer-wave">
     <svg viewBox="0 0 1440 100" preserveAspectRatio="none" class="bp-wave-svg">
+        <path d="M0,20 C180,70 360,10 540,30 C720,50 900,0 1080,20 C1260,40 1440,10 1440,10 L1440,100 L0,100 Z" fill="var(--bp-primary)" opacity="0.35"></path>
         <path d="M0,40 C320,100 640,0 960,50 C1280,100 1440,20 1440,20 L1440,100 L0,100 Z" fill="var(--bp-primary)" opacity="0.06"></path>
         <path d="M0,55 C240,90 560,10 960,55 C1280,100 1440,40 1440,40 L1440,100 L0,100 Z" fill="var(--bp-primary)" opacity="0.12"></path>
         <path d="M0,70 C180,85 480,20 960,70 C1280,100 1440,60 1440,60 L1440,100 L0,100 Z" fill="var(--bp-primary)" opacity="0.2"></path>
