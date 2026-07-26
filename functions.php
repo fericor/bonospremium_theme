@@ -31,6 +31,19 @@ add_action('after_setup_theme', function() {
     ]);
 });
 
+// Mejorar calidad de imágenes de productos
+add_filter('woocommerce_get_image_size_shop_catalog', function($size) {
+    return ['width' => 600, 'height' => 600, 'crop' => 1];
+});
+add_filter('woocommerce_get_image_size_shop_single', function($size) {
+    return ['width' => 800, 'height' => 800, 'crop' => 0];
+});
+add_filter('woocommerce_get_image_size_shop_thumbnail', function($size) {
+    return ['width' => 300, 'height' => 300, 'crop' => 1];
+});
+// JPEG quality al máximo
+add_filter('jpeg_quality', function($quality) { return 90; });
+
 // Cargar estilos y scripts
 add_action('wp_enqueue_scripts', function() {
     // Google Fonts: Inter
@@ -212,7 +225,7 @@ add_action('woocommerce_before_shop_loop_item', function() {
     echo '<div class="bp-product-card">';
     echo '<div class="bp-product-image-wrap">';
     echo '<a href="' . get_permalink() . '">';
-    echo woocommerce_get_product_thumbnail();
+    echo $product->get_image('medium_large');
     echo '</a>';
     echo '<a href="#" class="bp-wishlist-btn" data-product-id="' . get_the_ID() . '"><i class="far fa-heart"></i></a>';
     echo '</div>';
