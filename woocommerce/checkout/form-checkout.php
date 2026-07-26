@@ -8,7 +8,7 @@ if (!defined('ABSPATH')) exit;
 $checkout = WC()->checkout();
 ?>
 
-<?php wc_get_template('checkout/form-login.php', array('checkout' => $checkout)); ?>
+
 
 <?php wc_get_template('checkout/form-coupon.php', array('checkout' => $checkout)); ?>
 
@@ -22,8 +22,9 @@ $checkout = WC()->checkout();
                 </div>
             <?php endif; ?>
 
+            <?php wc_get_template('checkout/form-login.php', array('checkout' => $checkout)); ?>
+
             <div class="bp-checkout-section">
-                <h3 class="bp-section-title">Datos de facturación</h3>
                 <?php do_action('woocommerce_checkout_billing', $checkout); ?>
             </div>
 
