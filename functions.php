@@ -272,6 +272,16 @@ function bp_get_wishlist() {
     return [];
 }
 
+// Cupón entre el total del pedido y los métodos de pago en checkout
+add_action('woocommerce_checkout_order_review', 'bp_checkout_coupon_form', 15);
+function bp_checkout_coupon_form() {
+    if (wc_coupons_enabled()) {
+        echo '<div class="bp-checkout-coupon-wrap">';
+        wc_get_template('checkout/form-coupon.php');
+        echo '</div>';
+    }
+}
+
 // Endpoint "favoritos" en Mi Cuenta
 add_action('init', function() {
     add_rewrite_endpoint('favoritos', EP_ROOT | EP_PAGES);
