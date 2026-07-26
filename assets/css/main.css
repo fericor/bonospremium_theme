@@ -821,7 +821,7 @@ p { margin-bottom: 1rem;     text-align: justify; }
     margin: 0;
 }
 .wc_payment_method {
-    margin-bottom: 8px;
+    display: flex;
     padding: 14px 16px;
     background: #fff;
     border-radius: 0;
@@ -899,13 +899,19 @@ p { margin-bottom: 1rem;     text-align: justify; }
 .woocommerce-form-login-toggle .woocommerce-info:hover {
     background: #ffffff !important;
 }
+.woocommerce-billing-fields label, .woocommerce-shipping-fields label {
+    font-size: .75rem;
+    color: #000;
+    display: block;
+    margin-bottom: 4px;
+}
+#add_payment_method #payment, .woocommerce-cart #payment, .woocommerce-checkout #payment { }
+ul.wc_payment_methods.payment_methods.methods { padding: 0 !important;}
 
 /* Login form - app style */
 form.woocommerce-form-login {
-    background: #f5f5f7;
-    border-radius: 0 0 14px 14px !important;
-    padding: 0 20px 20px !important;
-    margin: 0 16px 12px !important;
+    background: #ffffff;
+    margin: 0 0 12px !important;
     border: none !important;
     display: none;
     overflow: hidden;
@@ -983,7 +989,6 @@ form.woocommerce-form-login.bp-login-open {
 .checkout_coupon.bp-coupon-open {
     display: flex !important;
 }
-}
 .checkout_coupon input[type="text"] {
     flex: 1;
     padding: 12px;
@@ -1003,14 +1008,7 @@ form.woocommerce-form-login.bp-login-open {
 }
 
 /* Create account */
-.woocommerce-account-fields {
-    background: #fff;
-    border-radius: 16px;
-    padding: 16px;
-    margin: 12px 0;
-    border: 1px solid #f0f0f0;
-    box-shadow: 0 1px 3px rgba(0,0,0,.04);
-}
+.woocommerce-account-fields { }
 
 /* Coupon inside sidebar (entre total y payment) */
 .bp-checkout-coupon-wrap {
