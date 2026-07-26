@@ -155,17 +155,25 @@ p { margin-bottom: 1rem;     text-align: justify; }
 .bp-nav {
     background: #fff;
     border-bottom: 1px solid #eee;
-    transition: box-shadow .3s;
-    position: sticky;
-    top: 0;
-    z-index: 999;
+    transition: all .3s;
 }
 .bp-nav.bp-nav-sticky {
+    position: sticky;
+    top: var(--bp-nav-sticky-top, 0);
+    z-index: 999;
+    background: var(--bp-primary);
     box-shadow: 0 2px 8px rgba(0,0,0,.1);
+    border-bottom-color: transparent;
 }
 
 .bp-nav.bp-nav-sticky .bp-nav-menu a {
     color: var(--bp-text-white);
+}
+
+.bp-nav.bp-nav-sticky .bp-nav-menu a:hover,
+.bp-nav.bp-nav-sticky .bp-nav-menu .current-menu-item a {
+    color: #fff;
+    background: rgba(255,255,255,.15);
 }
 
 .bp-nav-menu {

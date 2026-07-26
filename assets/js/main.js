@@ -143,11 +143,14 @@ jQuery(document).ready(function($) {
 
     // Sticky nav on scroll
     var $nav = $('.bp-nav');
-    var navOffset = $nav.length ? $nav.offset().top : 0;
     $(window).on('scroll', function() {
         var scrollTop = $(window).scrollTop();
-        if (scrollTop >= navOffset) {
+        var headerHeight = $('.bp-header').outerHeight() || 0;
+        
+        // Activar cuando se ha scrolleado pasado el header
+        if (scrollTop > headerHeight) {
             $nav.addClass('bp-nav-sticky');
+            document.documentElement.style.setProperty('--bp-nav-sticky-top', headerHeight + 'px');
         } else {
             $nav.removeClass('bp-nav-sticky');
         }
