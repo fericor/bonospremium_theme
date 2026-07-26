@@ -80,6 +80,18 @@ add_filter('loop_shop_columns', function() { return 4; });
 add_filter('loop_shop_per_page', function() { return 10; });
 
 // Nota: el toggle del login y auto-dismiss de notices están ahora en assets/js/main.js
+
+// Mi cuenta - wrapper estilo app
+add_action('template_redirect', function() {
+    if (!is_account_page()) return;
+    ob_start(function($html) {
+        if (!is_user_logged_in()) {
+            $html = str_replace('class="woocommerce"', 'class="woocommerce bp-account-app"', $html);
+        }
+        return $html;
+    });
+});
+
 add_filter('woocommerce_output_related_products_args', function($args) {
     $args['posts_per_page'] = 4;
     $args['columns'] = 4;

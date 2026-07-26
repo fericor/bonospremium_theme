@@ -1121,63 +1121,72 @@ form.woocommerce-form-login.bp-login-open {
     .bp-checkout-card { position: static; }
 }
 
-/* === MY ACCOUNT === */
+/* === MY ACCOUNT - APP STYLE === */
 .bp-account-page .bp-container {
-    padding-top: 30px;
-    padding-bottom: 40px;
+    max-width: 480px;
+    padding: 0;
 }
-.bp-account-wrap {
+.bp-account-app {
+    min-height: 100vh;
     background: #fff;
-    border-radius: 0
-    box-shadow: 0 1px 3px rgba(0,0,0,.06);
-    border: 1px solid #f0f0f0;
-    overflow: hidden;
 }
-.bp-account-header {
+
+/* Profile header */
+.bp-prof-header {
     display: flex;
     align-items: center;
-    gap: 15px;
-    padding: 25px;
+    gap: 16px;
+    padding: 24px 20px;
     background: var(--bp-primary);
     color: #fff;
 }
-.bp-account-avatar img { border-radius: 50%; border: 3px solid rgba(255,255,255,.3); }
-.bp-account-greeting h1 { font-size: 1.3rem; font-weight: 700; margin: 0; color: #fff; }
-.bp-account-greeting p { font-size: .85rem; opacity: .8; margin: 2px 0 0; }
-.bp-account-grid {
-    display: grid;
-    grid-template-columns: 220px 1fr;
-    min-height: 400px;
+.bp-prof-avatar img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 3px solid rgba(255,255,255,.3);
+    object-fit: cover;
 }
-.bp-account-nav {
-    background: #f8f9fa;
-    padding: 15px 0;
-    border-right: 1px solid #f0f0f0;
+.bp-prof-info h2 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0;
 }
-.bp-account-nav-item {
+.bp-prof-info p {
+    font-size: .8rem;
+    color: rgba(255,255,255,.7);
+    margin: 2px 0 0;
+}
+
+/* App-style menu */
+.bp-prof-menu {
+    padding: 8px 16px;
+}
+.bp-prof-menu-item {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 12px 20px;
-    color: #555;
-    font-size: .9rem;
+    gap: 12px;
+    padding: 14px 12px;
+    color: #333;
+    font-size: .95rem;
     text-decoration: none;
+    border-bottom: 1px solid #f0f0f0;
     transition: all .2s;
-    border-left: 3px solid transparent;
 }
-.bp-account-nav-item:hover { background: #f0f1f3; color: var(--bp-primary); }
-.bp-account-nav-item.active {
-    background: #fff;
-    color: var(--bp-primary);
-    font-weight: 600;
-    border-left-color: var(--bp-primary);
+.bp-prof-menu-item:last-child { border-bottom: none; }
+.bp-prof-menu-item:hover { background: #f5f5f7; }
+.bp-prof-menu-item.active { color: var(--bp-primary); font-weight: 600; }
+.bp-prof-icon { font-size: 1.2rem; width: 28px; text-align: center; }
+.bp-prof-label { flex: 1; }
+.bp-prof-arrow { color: #ccc; font-size: 1.3rem; font-weight: 300; }
+
+/* Content area */
+.bp-prof-content {
+    padding: 0 20px 30px;
 }
-.bp-nav-icon { font-size: 1.1rem; width: 20px; text-align: center; }
-.bp-account-content {
-    padding: 30px;
-}
-.bp-account-content h2,
-.bp-account-content h3 {
+.bp-prof-content h2,
+.bp-prof-content h3 {
     font-size: 1.1rem;
     font-weight: 700;
     color: #222;
@@ -1185,19 +1194,127 @@ form.woocommerce-form-login.bp-login-open {
     padding-bottom: 8px;
     border-bottom: 2px solid var(--bp-primary);
 }
+.woocommerce-order-details { margin-top: 20px; }
+.woocommerce-order-details table { width: 100%; font-size: .85rem; }
+.woocommerce-order-details th,
+.woocommerce-order-details td { padding: 8px 0; border-bottom: 1px solid #f0f0f0; }
 .woocommerce-MyAccount-orders thead th,
-.woocommerce-MyAccount-orders td {
-    padding: 10px 12px;
-    font-size: .85rem;
-}
+.woocommerce-MyAccount-orders td { padding: 8px 8px; font-size: .8rem; }
 .woocommerce-MyAccount-orders .button {
     background: var(--bp-primary) !important;
     color: #fff !important;
-    padding: 6px 14px !important;
-    border-radius: 0
-    font-size: .8rem !important;
+    padding: 6px 12px !important;
+    border-radius: 8px !important;
+    font-size: .75rem !important;
+    border: none !important;
 }
 .woocommerce-MyAccount-orders .button:hover { background: var(--bp-primary-dark) !important; }
+
+/* Auth tabs */
+.bp-auth-app {
+    padding: 0;
+}
+.bp-auth-tabs {
+    display: flex;
+    background: #f5f5f7;
+    margin: 0;
+    padding: 4px;
+    border-radius: 0;
+}
+.bp-auth-tab {
+    flex: 1;
+    padding: 14px;
+    border: none;
+    background: transparent;
+    font-size: .9rem;
+    font-weight: 600;
+    color: #888;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: all .2s;
+}
+.bp-auth-tab.active {
+    background: #fff;
+    color: var(--bp-primary);
+    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+}
+.bp-auth-panel {
+    display: none;
+    padding: 24px 20px 30px;
+}
+.bp-auth-panel.active { display: block; }
+
+/* Floating label fields */
+.bp-app-field {
+    position: relative;
+    margin-bottom: 20px;
+}
+.bp-app-input {
+    width: 100%;
+    padding: 16px 14px 6px;
+    border: none;
+    border-bottom: 1.5px solid #e0e0e0;
+    border-radius: 0;
+    font-size: 1rem;
+    background: transparent;
+    outline: none;
+    transition: border-color .2s;
+    box-sizing: border-box;
+}
+.bp-app-input:focus { border-color: var(--bp-primary); }
+.bp-app-field label {
+    position: absolute;
+    top: 16px;
+    left: 14px;
+    font-size: 1rem;
+    color: #999;
+    transition: all .2s;
+    pointer-events: none;
+}
+.bp-app-input:focus + label,
+.bp-app-input:not(:placeholder-shown) + label {
+    top: 0;
+    font-size: .75rem;
+    color: var(--bp-primary);
+}
+.bp-app-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: .85rem;
+    color: #666;
+    margin-bottom: 20px;
+    cursor: pointer;
+}
+.bp-app-check input { accent-color: var(--bp-primary); width: 18px; height: 18px; }
+
+/* App button */
+.bp-app-btn {
+    width: 100%;
+    padding: 16px;
+    background: var(--bp-primary);
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .2s;
+    box-shadow: 0 4px 12px rgba(3,156,220,.3);
+}
+.bp-app-btn:hover { background: var(--bp-primary-dark); transform: translateY(-1px); }
+.bp-app-links {
+    text-align: center;
+    margin: 16px 0 0;
+    font-size: .8rem;
+    color: #888;
+}
+.bp-app-links a { color: var(--bp-primary); font-weight: 500; }
+
+@media (max-width: 768px) {
+    .bp-prof-content { padding: 0 16px 30px; }
+    .bp-auth-panel { padding: 24px 16px 30px; }
+}
 
 /* === THANK YOU === */
 .bp-thankyou-wrap {
@@ -1380,7 +1497,7 @@ form.woocommerce-form-login.bp-login-open {
     .bp-user-nav-menu {
         display: none;
         position: fixed;
-        top: var(--bp-dropdown-top, 56px);
+        top: auto;
         left: 0;
         right: 0;
         width: 100%;
@@ -1388,7 +1505,7 @@ form.woocommerce-form-login.bp-login-open {
         z-index: 9999;
         padding: 0;
         margin: 0;
-        max-height: calc(100vh - var(--bp-dropdown-top, 56px));
+        max-height: 100vh;
         overflow-y: auto;
     }
     .bp-user-nav-menu.open { display: block; }

@@ -38,9 +38,23 @@ jQuery(document).ready(function($) {
             $('.bp-search-overlay input[type="search"]').focus();
         }, 100);
     });
-
+    
     $('.bp-search-close').on('click', function() {
         $('.bp-search-overlay').removeClass('open');
+    });
+    
+    // Menu toggle (mobile only)
+    var $menuToggle = $('.bp-menu-toggle');
+    var $userMenu = $('.bp-user-nav-menu');
+    
+    $menuToggle.on('click', function() {
+        // Calcular posición actual del botón en la ventana
+        var toggleTop = $menuToggle.offset().top;
+        var toggleHeight = $menuToggle.outerHeight();
+        var headerHeight = $('.bp-header').outerHeight() || 56;
+        // Usar la posición real del botón o la altura del header como fallback
+        var top = Math.min(toggleTop + toggleHeight, headerHeight);
+        $userMenu.css('top', top + 'px').toggleClass('open');
     });
 
     // Close on escape
