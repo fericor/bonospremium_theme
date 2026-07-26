@@ -141,12 +141,12 @@ jQuery(document).ready(function($) {
         }
     });
 
-    // Sticky nav on scroll
+    // Sticky nav appearance on scroll
     var $nav = $('.bp-nav');
-    var navOffset = $nav.length ? $nav.offset().top : 0;
     $(window).on('scroll', function() {
         var scrollTop = $(window).scrollTop();
-        if (scrollTop >= navOffset) {
+        // Activar cuando se ha scrolleado pasado el header
+        if (scrollTop > 60) {
             $nav.addClass('bp-nav-sticky');
         } else {
             $nav.removeClass('bp-nav-sticky');
