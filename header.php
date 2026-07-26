@@ -10,6 +10,7 @@
     <?php wp_head(); ?>
 </head>
 <body <?php body_class(); ?>>
+<?php get_template_part('loader'); ?>
 <?php wp_body_open(); ?>
 
 <header class="bp-header">
