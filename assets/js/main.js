@@ -48,12 +48,23 @@ jQuery(document).ready(function($) {
         }
     });
 
-    // Wishlist button
+    // Wishlist button - con persistencia AJAX
     $('.bp-wishlist-btn').on('click', function(e) {
         e.preventDefault();
-        var $icon = $(this).find('i');
-        $icon.toggleClass('far fas');
-        $icon.css('color', $icon.hasClass('fas') ? '#e74c3c' : '');
+        var $btn = $(this);
+        var $icon = $btn.find('i');
+        var productId = $btn.data('product-id');
+        
+        $.post(bp_lz_ajax.ajax_url, {
+            action: 'bp_toggle_wishlist',
+            product_id: productId,
+        }, function(res) {
+            if (res.added) {
+                $icon.removeClass('far').addClass('fas').css('color', '#e74c3c');
+            } else {
+                $icon.removeClass('fas').addClass('far').css('color', '');
+            }
+        });
     });
 
     // Infinite scroll - Auto load on scroll

@@ -63,6 +63,8 @@ add_action('wp_enqueue_scripts', function() {
     wp_localize_script('bp-lz-main', 'bp_lz_ajax', [
         'ajax_url' => admin_url('admin-ajax.php'),
         'nonce' => wp_create_nonce('bp_lz_nonce'),
+        'user_id' => get_current_user_id(),
+        'wishlist' => bp_get_wishlist(),
     ]);
 });
 
@@ -258,3 +260,53 @@ add_action('woocommerce_before_main_content', function() {
 add_action('woocommerce_after_main_content', function() {
     echo '</div></main>';
 });
+
+// ===== WISHLIST (Favoritos) con persistencia =====
+// Obtener wishlist del usuario
+function bp_get_wishlist() {
+    $user_id = get_current_user_id();
+    if ($user_id) {
+        $wishlist = get_user_meta($user_id, 'bp_wishlist', true);
+        return is_array($wishlist) ? $wishlist : [];
+    }
+    return [];
+}
+
+// Marcar corazones en el loop
+add_action('wp_footer', function() {
+    if (is_shop() || is_product_category() || is_product_tag()) {
+        $wishlist = bp_get_wishlist();
+        if (!empty($wishlist)) {
+            echo '<script>
+jQuery(function($){
+    var ids = ' . json_encode($wishlist) . ';
+    ids.forEach(function(id) {
+        var $btn = $(".bp-wishlist-btn[data-product-id=\"" + id + "\"]");
+        $btn.find("i").removeClass("far").addClass("fas").css("color", "#e74c3c");
+    });
+});
+</script>';
+        }
+    }
+});
+
+// AJAX: toggle wishlist
+add_action('wp_ajax_bp_toggle_wishlist', 'bp_toggle_wishlist');
+function bp_toggle_wishlist() {
+    $product_id = (int)($_POST['product_id'] ?? 0);
+    if (!$product_id) wp_die('0');
+    
+    $wishlist = bp_get_wishlist();
+    $index = array_search($product_id, $wishlist);
+    
+    if ($index !== false) {
+        unset($wishlist[$index]);
+        $added = false;
+    } else {
+        $wishlist[] = $product_id;
+        $added = true;
+    }
+    
+    update_user_meta(get_current_user_id(), 'bp_wishlist', array_values($wishlist));
+    wp_send_json(['added' => $added, 'wishlist' => array_values($wishlist)]);
+}
