@@ -50,7 +50,7 @@
                     <?php endif; ?>
                 </div>
                 <?php if (class_exists('WooCommerce')): ?>
-                <a href="#" class="bp-header-action bp-wishlist-icon" title="Favoritos">
+                <a href="<?php echo esc_url(wc_get_page_permalink('myaccount') . 'favoritos/'); ?>" class="bp-header-action bp-wishlist-icon" title="Favoritos">
                     <i class="far fa-heart"></i>
                 </a>
                 <?php endif; ?>
