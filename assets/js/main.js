@@ -48,23 +48,70 @@ jQuery(document).ready(function($) {
         }
     });
 
-    // Wishlist button - con persistencia AJAX
-    $('.bp-wishlist-btn').on('click', function(e) {
-        e.preventDefault();
-        var $btn = $(this);
-        var $icon = $btn.find('i');
-        var productId = $btn.data('product-id');
-        
-        $.post(bp_lz_ajax.ajax_url, {
-            action: 'bp_toggle_wishlist',
-            product_id: productId,
-        }, function(res) {
-            if (res.added) {
+    // ===== WISHLIST (Favoritos) con localStorage + servidor =====
+    var wishlistKey = 'bp_wishlist';
+    
+    // Cargar wishlist: localStorage (todos) + servidor (logueados)
+    function bpLoadWishlist() {
+        var ids = [];
+        // Guests: desde localStorage
+        try {
+            var local = JSON.parse(localStorage.getItem(wishlistKey));
+            if (Array.isArray(local)) ids = local;
+        } catch(e) {}
+        // Logueados: desde el server (sobrescribe)
+        if (bp_lz_ajax.wishlist && bp_lz_ajax.wishlist.length) {
+            ids = bp_lz_ajax.wishlist;
+        }
+        return ids;
+    }
+    
+    // Guardar wishlist
+    function bpSaveWishlist(ids) {
+        localStorage.setItem(wishlistKey, JSON.stringify(ids));
+    }
+    
+    // Marcar corazones en la página
+    function bpMarkHearts(ids) {
+        $('.bp-wishlist-btn').each(function() {
+            var $icon = $(this).find('i');
+            var pid = parseInt($(this).data('product-id'));
+            if (ids.indexOf(pid) !== -1) {
                 $icon.removeClass('far').addClass('fas').css('color', '#e74c3c');
             } else {
                 $icon.removeClass('fas').addClass('far').css('color', '');
             }
         });
+    }
+    
+    // Inicializar corazones al cargar
+    bpMarkHearts(bpLoadWishlist());
+    
+    // Click en corazón
+    $('.bp-wishlist-btn').on('click', function(e) {
+        e.preventDefault();
+        var $btn = $(this);
+        var $icon = $btn.find('i');
+        var productId = parseInt($btn.data('product-id'));
+        var ids = bpLoadWishlist();
+        var idx = ids.indexOf(productId);
+        
+        if (idx !== -1) {
+            ids.splice(idx, 1);
+        } else {
+            ids.push(productId);
+        }
+        
+        bpSaveWishlist(ids);
+        bpMarkHearts(ids);
+        
+        // Sincronizar con servidor si está logueado
+        if (bp_lz_ajax.user_id > 0) {
+            $.post(bp_lz_ajax.ajax_url, {
+                action: 'bp_toggle_wishlist',
+                product_id: productId,
+            });
+        }
     });
 
     // Infinite scroll - Auto load on scroll

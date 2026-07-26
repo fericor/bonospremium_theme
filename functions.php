@@ -262,7 +262,7 @@ add_action('woocommerce_after_main_content', function() {
 });
 
 // ===== WISHLIST (Favoritos) con persistencia =====
-// Obtener wishlist del usuario
+// Obtener wishlist del usuario logueado (desde user_meta)
 function bp_get_wishlist() {
     $user_id = get_current_user_id();
     if ($user_id) {
@@ -272,25 +272,8 @@ function bp_get_wishlist() {
     return [];
 }
 
-// Marcar corazones en el loop
-add_action('wp_footer', function() {
-    if (is_shop() || is_product_category() || is_product_tag()) {
-        $wishlist = bp_get_wishlist();
-        if (!empty($wishlist)) {
-            echo '<script>
-jQuery(function($){
-    var ids = ' . json_encode($wishlist) . ';
-    ids.forEach(function(id) {
-        var $btn = $(".bp-wishlist-btn[data-product-id=\"" + id + "\"]");
-        $btn.find("i").removeClass("far").addClass("fas").css("color", "#e74c3c");
-    });
-});
-</script>';
-        }
-    }
-});
-
-// AJAX: toggle wishlist
+// Pasar wishlist del usuario logueado al JS (ya incluido en bp_lz_ajax)
+// AJAX: toggle wishlist (solo logueados)
 add_action('wp_ajax_bp_toggle_wishlist', 'bp_toggle_wishlist');
 function bp_toggle_wishlist() {
     $product_id = (int)($_POST['product_id'] ?? 0);
@@ -301,12 +284,10 @@ function bp_toggle_wishlist() {
     
     if ($index !== false) {
         unset($wishlist[$index]);
-        $added = false;
     } else {
         $wishlist[] = $product_id;
-        $added = true;
     }
     
     update_user_meta(get_current_user_id(), 'bp_wishlist', array_values($wishlist));
-    wp_send_json(['added' => $added, 'wishlist' => array_values($wishlist)]);
+    wp_send_json(['wishlist' => array_values($wishlist)]);
 }
