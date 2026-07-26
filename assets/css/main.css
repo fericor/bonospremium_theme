@@ -161,7 +161,7 @@ p { margin-bottom: 1rem;     text-align: justify; }
 }
 .bp-nav.bp-nav-sticky {
     position: sticky;
-    top: var(--bp-nav-sticky-top, 0);
+    top: 0;
     z-index: 999;
     background: var(--bp-primary);
     box-shadow: 0 2px 8px rgba(0,0,0,.1);
@@ -1504,8 +1504,8 @@ form.woocommerce-form-login.bp-login-open {
     .bp-user-nav { position: static; }
     .bp-user-nav-menu {
         display: none;
-        position: fixed;
-        top: auto;
+        position: absolute;
+        top: 100%;
         left: 0;
         right: 0;
         width: 100%;
@@ -1513,7 +1513,7 @@ form.woocommerce-form-login.bp-login-open {
         z-index: 9999;
         padding: 0;
         margin: 0;
-        max-height: 100vh;
+        max-height: calc(100vh - 56px);
         overflow-y: auto;
     }
     .bp-user-nav-menu.open { display: block; }

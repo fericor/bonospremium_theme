@@ -31,6 +31,19 @@ add_action('after_setup_theme', function() {
     ]);
 });
 
+// Mejorar calidad de imágenes de productos
+add_filter('woocommerce_get_image_size_shop_catalog', function($size) {
+    return ['width' => 600, 'height' => 600, 'crop' => 1];
+});
+add_filter('woocommerce_get_image_size_shop_single', function($size) {
+    return ['width' => 800, 'height' => 800, 'crop' => 0];
+});
+add_filter('woocommerce_get_image_size_shop_thumbnail', function($size) {
+    return ['width' => 300, 'height' => 300, 'crop' => 1];
+});
+// JPEG quality al máximo
+add_filter('jpeg_quality', function($quality) { return 90; });
+
 // Cargar estilos y scripts
 add_action('wp_enqueue_scripts', function() {
     // Google Fonts: Inter
@@ -50,6 +63,8 @@ add_action('wp_enqueue_scripts', function() {
     wp_localize_script('bp-lz-main', 'bp_lz_ajax', [
         'ajax_url' => admin_url('admin-ajax.php'),
         'nonce' => wp_create_nonce('bp_lz_nonce'),
+        'user_id' => get_current_user_id(),
+        'wishlist' => bp_get_wishlist(),
     ]);
 });
 
@@ -212,7 +227,7 @@ add_action('woocommerce_before_shop_loop_item', function() {
     echo '<div class="bp-product-card">';
     echo '<div class="bp-product-image-wrap">';
     echo '<a href="' . get_permalink() . '">';
-    echo woocommerce_get_product_thumbnail();
+    echo $product->get_image('medium_large');
     echo '</a>';
     echo '<a href="#" class="bp-wishlist-btn" data-product-id="' . get_the_ID() . '"><i class="far fa-heart"></i></a>';
     echo '</div>';
@@ -245,3 +260,34 @@ add_action('woocommerce_before_main_content', function() {
 add_action('woocommerce_after_main_content', function() {
     echo '</div></main>';
 });
+
+// ===== WISHLIST (Favoritos) con persistencia =====
+// Obtener wishlist del usuario logueado (desde user_meta)
+function bp_get_wishlist() {
+    $user_id = get_current_user_id();
+    if ($user_id) {
+        $wishlist = get_user_meta($user_id, 'bp_wishlist', true);
+        return is_array($wishlist) ? $wishlist : [];
+    }
+    return [];
+}
+
+// Pasar wishlist del usuario logueado al JS (ya incluido en bp_lz_ajax)
+// AJAX: toggle wishlist (solo logueados)
+add_action('wp_ajax_bp_toggle_wishlist', 'bp_toggle_wishlist');
+function bp_toggle_wishlist() {
+    $product_id = (int)($_POST['product_id'] ?? 0);
+    if (!$product_id) wp_die('0');
+    
+    $wishlist = bp_get_wishlist();
+    $index = array_search($product_id, $wishlist);
+    
+    if ($index !== false) {
+        unset($wishlist[$index]);
+    } else {
+        $wishlist[] = $product_id;
+    }
+    
+    update_user_meta(get_current_user_id(), 'bp_wishlist', array_values($wishlist));
+    wp_send_json(['wishlist' => array_values($wishlist)]);
+}

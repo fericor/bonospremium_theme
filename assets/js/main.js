@@ -1,25 +1,11 @@
 jQuery(document).ready(function($) {
-    // ===== HEADER DROPDOWN FOLLOW ON SCROLL =====
-    function updateDropdownPosition() {
-        if ($(window).width() > 768) return;
-        var $header = $('.bp-header');
-        if (!$header.length) return;
-        var headerBottom = $header.offset().top + $header.outerHeight();
-        document.documentElement.style.setProperty('--bp-dropdown-top', headerBottom + 'px');
-    }
+    // ===== HEADER DROPDOWN (menú hamburguesa) =====
+    var $menuToggle = $('.bp-menu-toggle');
+    var $userMenu = $('.bp-user-nav-menu');
 
-    // Update on scroll and resize
-    $(window).on('scroll resize', function() {
-        if ($('.bp-user-nav-menu').hasClass('open')) {
-            updateDropdownPosition();
-        }
-    });
-
-    // Hamburger toggle - User menu dropdown
-    $('.bp-menu-toggle').on('click', function(e) {
+    $menuToggle.on('click', function(e) {
         e.stopPropagation();
-        updateDropdownPosition();
-        $('.bp-user-nav-menu').toggleClass('open');
+        $userMenu.toggleClass('open');
         $(this).toggleClass('active');
         if ($(this).hasClass('active')) {
             $(this).find('span').eq(0).css('transform', 'rotate(45deg) translate(4px, 4px)');
@@ -42,20 +28,6 @@ jQuery(document).ready(function($) {
     $('.bp-search-close').on('click', function() {
         $('.bp-search-overlay').removeClass('open');
     });
-    
-    // Menu toggle (mobile only)
-    var $menuToggle = $('.bp-menu-toggle');
-    var $userMenu = $('.bp-user-nav-menu');
-    
-    $menuToggle.on('click', function() {
-        // Calcular posición actual del botón en la ventana
-        var toggleTop = $menuToggle.offset().top;
-        var toggleHeight = $menuToggle.outerHeight();
-        var headerHeight = $('.bp-header').outerHeight() || 56;
-        // Usar la posición real del botón o la altura del header como fallback
-        var top = Math.min(toggleTop + toggleHeight, headerHeight);
-        $userMenu.css('top', top + 'px').toggleClass('open');
-    });
 
     // Close on escape
     $(document).on('keyup', function(e) {
@@ -76,12 +48,70 @@ jQuery(document).ready(function($) {
         }
     });
 
-    // Wishlist button
+    // ===== WISHLIST (Favoritos) con localStorage + servidor =====
+    var wishlistKey = 'bp_wishlist';
+    
+    // Cargar wishlist: localStorage (todos) + servidor (logueados)
+    function bpLoadWishlist() {
+        var ids = [];
+        // Guests: desde localStorage
+        try {
+            var local = JSON.parse(localStorage.getItem(wishlistKey));
+            if (Array.isArray(local)) ids = local;
+        } catch(e) {}
+        // Logueados: desde el server (sobrescribe)
+        if (bp_lz_ajax.wishlist && bp_lz_ajax.wishlist.length) {
+            ids = bp_lz_ajax.wishlist;
+        }
+        return ids;
+    }
+    
+    // Guardar wishlist
+    function bpSaveWishlist(ids) {
+        localStorage.setItem(wishlistKey, JSON.stringify(ids));
+    }
+    
+    // Marcar corazones en la página
+    function bpMarkHearts(ids) {
+        $('.bp-wishlist-btn').each(function() {
+            var $icon = $(this).find('i');
+            var pid = parseInt($(this).data('product-id'));
+            if (ids.indexOf(pid) !== -1) {
+                $icon.removeClass('far').addClass('fas').css('color', '#e74c3c');
+            } else {
+                $icon.removeClass('fas').addClass('far').css('color', '');
+            }
+        });
+    }
+    
+    // Inicializar corazones al cargar
+    bpMarkHearts(bpLoadWishlist());
+    
+    // Click en corazón
     $('.bp-wishlist-btn').on('click', function(e) {
         e.preventDefault();
-        var $icon = $(this).find('i');
-        $icon.toggleClass('far fas');
-        $icon.css('color', $icon.hasClass('fas') ? '#e74c3c' : '');
+        var $btn = $(this);
+        var $icon = $btn.find('i');
+        var productId = parseInt($btn.data('product-id'));
+        var ids = bpLoadWishlist();
+        var idx = ids.indexOf(productId);
+        
+        if (idx !== -1) {
+            ids.splice(idx, 1);
+        } else {
+            ids.push(productId);
+        }
+        
+        bpSaveWishlist(ids);
+        bpMarkHearts(ids);
+        
+        // Sincronizar con servidor si está logueado
+        if (bp_lz_ajax.user_id > 0) {
+            $.post(bp_lz_ajax.ajax_url, {
+                action: 'bp_toggle_wishlist',
+                product_id: productId,
+            });
+        }
     });
 
     // Infinite scroll - Auto load on scroll
@@ -150,7 +180,6 @@ jQuery(document).ready(function($) {
         // Activar cuando se ha scrolleado pasado el header
         if (scrollTop > headerHeight) {
             $nav.addClass('bp-nav-sticky');
-            document.documentElement.style.setProperty('--bp-nav-sticky-top', headerHeight + 'px');
         } else {
             $nav.removeClass('bp-nav-sticky');
         }
