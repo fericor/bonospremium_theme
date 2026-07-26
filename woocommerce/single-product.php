@@ -125,14 +125,15 @@ get_header(); ?>
     font-size: 14px; font-weight: 600; color: var(--bp-text);
     transition: background .2s;
 }
-.bp-condiciones-toggle:hover { background: #f9fafb; }
+.bp-condiciones-toggle:hover { background: #ffffff; }
 .bp-condiciones-toggle i:first-child { color: var(--bp-primary); }
 .bp-cond-arrow { margin-left: auto; font-size: 12px; color: var(--bp-text-muted); transition: transform .3s; }
 .bp-condiciones-panel.is-open .bp-cond-arrow { transform: rotate(180deg); }
 .bp-condiciones-body {
     padding: 0 18px 16px; font-size: 13px; color: var(--bp-text-light); line-height: 1.6;
 }
-.bp-condiciones-body ul { padding-left: 24px; }
+.bp-condiciones-body ul { padding-left: 24px; padding-right: 20px; }
+.bp-condiciones-body ul li { padding-bottom: 15px; }
 </style>
 
 <?php get_footer(); ?>
