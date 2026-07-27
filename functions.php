@@ -65,6 +65,8 @@ add_action('wp_enqueue_scripts', function() {
         'nonce' => wp_create_nonce('bp_lz_nonce'),
         'user_id' => get_current_user_id(),
         'wishlist' => bp_get_wishlist(),
+        'wc_ajax_url' => WC()->ajax_url(),
+        'coupon_nonce' => wp_create_nonce('apply-coupon'),
     ]);
 });
 

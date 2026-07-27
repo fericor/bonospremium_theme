@@ -236,9 +236,10 @@ jQuery(document).ready(function($) {
     $(document.body).on('click', '.bp-coupon-apply', function() {
         var code = $('#coupon_code').val();
         if (code) {
-            var ajaxUrl = (bp_lz_ajax && bp_lz_ajax.ajax_url || window.location.origin).replace(/\/wp-admin\/admin-ajax\.php.*/, '');
-            $.post(ajaxUrl + '/?wc-ajax=apply_coupon', {
+            var wcAjax = (bp_lz_ajax && bp_lz_ajax.wc_ajax_url || window.location.origin + '/?wc-ajax=').replace(/\/?$/, '/');
+            $.post(wcAjax.replace('%%endpoint%%', 'apply_coupon'), {
                 coupon_code: code,
+                security: (bp_lz_ajax && bp_lz_ajax.coupon_nonce) || '',
             }, function() {
                 $(document.body).trigger('update_checkout');
             });
