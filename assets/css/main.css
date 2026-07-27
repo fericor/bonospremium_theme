@@ -909,41 +909,56 @@ form.woocommerce-form-login.bp-login-open {
     background: var(--bp-primary-dark) !important;
 }
 
-/* Coupon - app style collapsible */
+/* Coupon - app style collapsible (inside order review) */
 .woocommerce-form-coupon-toggle {
-    padding: 8px 16px;
+    margin: 0;
+    padding: 0;
 }
 .woocommerce-form-coupon-toggle .woocommerce-info {
     background: #f5f5f7 !important;
     border: none !important;
-    border-radius: 14px !important;
-    padding: 14px 16px !important;
-    margin: 0 !important;
-    font-size: .9rem;
+    border-radius: 12px !important;
+    padding: 12px 16px !important;
+    margin: 12px 0 !important;
+    font-size: .85rem;
     color: #333 !important;
+    cursor: pointer;
+    transition: all .2s;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    cursor: pointer;
-    transition: all .2s;
 }
-.woocommerce-form-coupon-toggle .woocommerce-info::before {
-    display: none !important;
-}
-.woocommerce-form-coupon-toggle .woocommerce-info:hover {
-    background: #eee !important;
-}
+.woocommerce-form-coupon-toggle .woocommerce-info::before { display: none !important; }
+.woocommerce-form-coupon-toggle .woocommerce-info:hover { background: #eee !important; }
+.woocommerce-form-coupon-toggle .woocommerce-info a { color: var(--bp-primary) !important; font-weight: 600; }
+
 .checkout_coupon {
     background: #f5f5f7;
-    border-radius: 0 0 14px 14px !important;
+    border-radius: 12px !important;
     padding: 16px !important;
-    margin: 0 16px 12px !important;
+    margin: 0 0 12px !important;
     border: none !important;
     display: none !important;
-    gap: 8px;
 }
-.checkout_coupon.bp-coupon-open {
-    display: flex !important;
+.checkout_coupon p { font-size: .8rem; color: #888; margin-bottom: 10px; }
+.checkout_coupon .input-text {
+    width: 100%;
+    padding: 12px;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: .85rem;
+    background: #fff;
+}
+.checkout_coupon .button {
+    width: 100%;
+    background: var(--bp-primary) !important;
+    color: #fff !important;
+    padding: 12px !important;
+    border-radius: 10px !important;
+    font-size: .85rem !important;
+    font-weight: 600 !important;
+    border: none !important;
+    margin-top: 8px;
 }
 .checkout_coupon input[type="text"] {
     flex: 1;
