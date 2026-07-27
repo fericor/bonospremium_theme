@@ -228,6 +228,23 @@ jQuery(document).ready(function($) {
         });
     }
 
+    // ===== CUPÓN COLAPSIBLE (checkout) =====
+    $(document.body).on('click', '.bp-coupon-toggle', function() {
+        $(this).closest('.bp-checkout-coupon-wrap').find('.bp-coupon-body').slideToggle(250);
+        $(this).closest('.bp-checkout-coupon-wrap').toggleClass('is-open');
+    });
+    $(document.body).on('click', '.bp-coupon-apply', function() {
+        var code = $('#coupon_code').val();
+        if (code) {
+            $.post(bp_lz_ajax.ajax_url, {
+                action: 'woocommerce_apply_coupon',
+                coupon_code: code,
+            }, function() {
+                $(document.body).trigger('update_checkout');
+            });
+        }
+    });
+
     // ===== CONDICIONES TOGGLE (single product) =====
     $('.bp-condiciones-toggle').on('click', function() {
         var panel = $(this).closest('.bp-condiciones-panel');

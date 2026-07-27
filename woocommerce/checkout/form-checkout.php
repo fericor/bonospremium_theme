@@ -26,14 +26,7 @@ $checkout = WC()->checkout();
     <!-- Tu pedido -->
     <div class="bp-checkout-section">
         <h3 class="bp-section-title">Tu pedido</h3>
-        <?php
-        // Solo la tabla del pedido (sin cupón ni pago)
-        remove_action('woocommerce_checkout_order_review', 'bp_checkout_coupon_form', 15);
-        remove_action('woocommerce_checkout_order_review', 'woocommerce_checkout_payment', 20);
-        woocommerce_order_review();
-        add_action('woocommerce_checkout_order_review', 'bp_checkout_coupon_form', 15);
-        add_action('woocommerce_checkout_order_review', 'woocommerce_checkout_payment', 20);
-        ?>
+        <?php wc_get_template('checkout/review-order.php'); ?>
     </div>
 
     <!-- Cupón descuento -->

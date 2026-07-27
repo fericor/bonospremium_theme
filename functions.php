@@ -289,25 +289,6 @@ function bp_checkout_coupon_form() {
                 </div>
             </div>
         </div>
-        <script>
-        jQuery(function($) {
-            $('.bp-coupon-toggle').on('click', function() {
-                $(this).closest('.bp-checkout-coupon-wrap').find('.bp-coupon-body').slideToggle(250);
-                $(this).closest('.bp-checkout-coupon-wrap').toggleClass('is-open');
-            });
-            $('.bp-coupon-apply').on('click', function() {
-                var code = $('#coupon_code').val();
-                if (code) {
-                    $.post(woocommerce_params.ajax_url, {
-                        action: 'woocommerce_apply_coupon',
-                        coupon_code: code,
-                    }, function() {
-                        $(document.body).trigger('update_checkout');
-                    });
-                }
-            });
-        });
-        </script>
         <?php
     }
 }
