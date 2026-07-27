@@ -45,8 +45,6 @@ defined( 'ABSPATH' ) || exit;
 
 		<?php if ( ! WC()->cart->needs_shipping() || wc_ship_to_billing_address_only() ) : ?>
 
-			<h3>Información adicional</h3>
-
 		<?php endif; ?>
 
 		<div class="woocommerce-additional-fields__field-wrapper">
