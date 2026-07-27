@@ -273,7 +273,7 @@ function bp_get_wishlist() {
 }
 
 // Cupón colapsible entre total y métodos de pago
-add_action('woocommerce_checkout_order_review', 'bp_checkout_coupon_form', 15);
+// Se llama directo desde form-checkout.php (no via hook)
 function bp_checkout_coupon_form() {
     if (wc_coupons_enabled()) {
         ?>
