@@ -236,8 +236,8 @@ jQuery(document).ready(function($) {
     $(document.body).on('click', '.bp-coupon-apply', function() {
         var code = $('#coupon_code').val();
         if (code) {
-            $.post(bp_lz_ajax.ajax_url, {
-                action: 'woocommerce_apply_coupon',
+            var ajaxUrl = (bp_lz_ajax && bp_lz_ajax.ajax_url || '').replace(/\/wp-admin\/admin-ajax\.php.*/, '');
+            $.post(ajaxUrl + '/?wc-ajax=apply_coupon', {
                 coupon_code: code,
             }, function() {
                 $(document.body).trigger('update_checkout');
