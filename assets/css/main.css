@@ -289,8 +289,8 @@ p { margin-bottom: 1rem;     text-align: justify; }
 
 /* Product card */
 .bp-coupon-apply {
-    background: var(--bp-primary);
-    color: var(--bp-text-white);
+    background: var(--bp-primary) !important;
+    color: var(--bp-text-white) !important;
 }
 .bp-product-card {
     background: #fff;
