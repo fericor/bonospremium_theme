@@ -909,10 +909,15 @@ form.woocommerce-form-login.bp-login-open {
     background: var(--bp-primary-dark) !important;
 }
 
-/* Coupon - app style collapsible (inside order review) */
-.woocommerce-form-coupon-toggle {
+/* Coupon collapsible wrap (inside order review) */
+.bp-checkout-coupon-wrap {
+    margin: 12px 0;
+    background: #f5f5f7;
+    border-radius: 12px;
+    overflow: hidden;
+}
+.bp-checkout-coupon-wrap .woocommerce-form-coupon-toggle {
     margin: 0;
-    padding: 0;
 }
 .woocommerce-form-coupon-toggle .woocommerce-info {
     background: #f5f5f7 !important;
