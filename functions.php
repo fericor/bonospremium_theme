@@ -272,13 +272,24 @@ function bp_get_wishlist() {
     return [];
 }
 
-// Cupón entre el total del pedido y los métodos de pago en checkout
-add_action('woocommerce_checkout_order_review', 'bp_checkout_coupon_form', 15);
+// Cupón colapsible entre total y métodos de pago
+// Se llama directo desde form-checkout.php (no via hook)
 function bp_checkout_coupon_form() {
     if (wc_coupons_enabled()) {
-        echo '<div class="bp-checkout-coupon-wrap">';
-        wc_get_template('checkout/form-coupon.php');
-        echo '</div>';
+        ?>
+        <div class="bp-checkout-coupon-wrap">
+            <button type="button" class="bp-coupon-toggle">
+                <i class="fas fa-ticket-alt"></i> ¿Tienes un cupón de descuento?
+                <i class="fas fa-chevron-down bp-coupon-arrow"></i>
+            </button>
+            <div class="bp-coupon-body" style="display:none;">
+                <div class="bp-coupon-form">
+                    <input type="text" name="coupon_code" class="bp-coupon-input" placeholder="Código del cupón" id="coupon_code" value="" />
+                    <button type="button" class="bp-coupon-apply" name="apply_coupon" value="Aplicar">Aplicar</button>
+                </div>
+            </div>
+        </div>
+        <?php
     }
 }
 
