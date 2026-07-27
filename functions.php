@@ -287,7 +287,7 @@ function bp_checkout_coupon_form() {
             <div class="bp-coupon-body" style="display:none;">
                 <div class="bp-coupon-form">
                     <input type="text" name="coupon_code" class="bp-coupon-input" placeholder="Código del cupón" id="coupon_code" value="" />
-                    <button type="button" class="button bp-coupon-apply" name="apply_coupon" value="Aplicar">Aplicar</button>
+                    <button type="button" class="bp-coupon-apply" name="apply_coupon" value="Aplicar">Aplicar</button>
                 </div>
             </div>
         </div>

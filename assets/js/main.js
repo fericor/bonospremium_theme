@@ -236,11 +236,11 @@ jQuery(document).ready(function($) {
     $(document.body).on('click', '.bp-coupon-apply', function() {
         var code = $('#coupon_code').val();
         if (code) {
-            var wcAjax = (bp_lz_ajax && bp_lz_ajax.wc_ajax_url || window.location.origin + '/?wc-ajax=').replace(/\/?$/, '/');
-            $.post(wcAjax.replace('%%endpoint%%', 'apply_coupon'), {
-                coupon_code: code,
-                security: (bp_lz_ajax && bp_lz_ajax.coupon_nonce) || '',
-            }, function() {
+            var url = window.location.origin + '/?wc-ajax=apply_coupon';
+            var data = new URLSearchParams();
+            data.append('coupon_code', code);
+            data.append('security', (bp_lz_ajax && bp_lz_ajax.coupon_nonce) || '');
+            fetch(url, { method: 'POST', body: data }).then(function() {
                 $(document.body).trigger('update_checkout');
             });
         }
