@@ -42,6 +42,9 @@ $checkout = WC()->checkout();
 
 <script>
 jQuery(function($) {
+    // Términos marcado por defecto
+    $('#terms').prop('checked', true);
+
     $('input[name="payment_method"]').on('change', function() {
         $('.bp-payment-box').slideUp();
         $(this).closest('.bp-payment-method').find('.bp-payment-box').slideDown();
