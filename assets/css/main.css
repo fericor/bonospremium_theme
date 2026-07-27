@@ -567,7 +567,7 @@ p { margin-bottom: 1rem;     text-align: justify; }
     background: var(--bp-primary) !important;
     border: none !important;
     padding: 14px 35px !important;
-    border-radius: 0
+    border-radius: 0;
     font-weight: 600 !important;
     font-size: 1rem !important;
     transition: all .2s !important;
@@ -1679,4 +1679,70 @@ input.qty { margin: 0px !important; }
   to {
     transform: rotate(360deg);
   }
+}
+
+/* Contenedor principal con estilo app */
+.woocommerce-notices-wrapper {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+/* Estilo de la tarjeta de error */
+.woocommerce-error {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12), 0 4px 10px rgba(0, 0, 0, 0.05);
+    padding: 20px 24px;
+    list-style: none;
+    border-left: 6px solid #e74c3c;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(4px);
+    font-size: 15px;
+    line-height: 1.5;
+    color: #2d3748;
+}
+
+/* Ícono decorativo (opcional) */
+.woocommerce-error::before {
+    content: "⚠️";
+    display: block;
+    font-size: 28px;
+    margin-bottom: 8px;
+}
+
+/* Elementos de lista */
+.woocommerce-error li {
+    margin-bottom: 4px;
+}
+
+/* Estilo para el texto en negrita */
+.woocommerce-error strong {
+    font-weight: 600;
+    color: #c0392b;
+}
+
+/* Enlace de "¿Has olvidado tu contraseña?" */
+.woocommerce-error a {
+    color: #3182ce;
+    text-decoration: none;
+    font-weight: 500;
+    border-bottom: 1px dashed #3182ce;
+    transition: color 0.2s, border-color 0.2s;
+}
+
+.woocommerce-error a:hover {
+    color: #2b6cb0;
+    border-bottom-color: #2b6cb0;
+}
+
+/* Ajuste para móviles */
+@media (max-width: 480px) {
+    .woocommerce-error {
+        padding: 16px 18px;
+        font-size: 14px;
+    }
+    .woocommerce-error::before {
+        font-size: 24px;
+    }
 }
