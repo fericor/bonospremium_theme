@@ -21,7 +21,7 @@ $checkout = WC()->checkout();
     <!-- Información adicional -->
     <div class="bp-checkout-section">
         <h3 class="bp-section-title">Información adicional</h3>
-        <?php do_action('woocommerce_checkout_shipping', $checkout); ?>
+        <?php wc_get_template('checkout/form-shipping.php', array('checkout' => $checkout)); ?>
     </div>
 
     <!-- Tu pedido -->
