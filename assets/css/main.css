@@ -984,6 +984,9 @@ form.woocommerce-form-login.bp-login-open {
 }
 
 /* Create account */
+#add_payment_method #payment ul.payment_methods li, .woocommerce-cart #payment ul.payment_methods li, .woocommerce-checkout #payment ul.payment_methods li {
+    line-height: 1 !important;
+}
 .woocommerce-account-fields { }
 
 /* Coupon inside sidebar (entre total y payment) */
@@ -1026,7 +1029,12 @@ form.woocommerce-form-login.bp-login-open {
     font-size: .8rem !important;
     font-weight: 600 !important;
 }
-.woocommerce-account-fields label { font-size: .85rem; }
+.woocommerce-account-fields label { 
+    font-size: .75rem;
+    color: #000;
+    display: block;
+    margin-bottom: 4px;
+}
 
 /* Shipping fields */
 .woocommerce-shipping-fields { margin-top: 0; }

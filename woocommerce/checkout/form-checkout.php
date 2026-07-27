@@ -13,7 +13,6 @@ $checkout = WC()->checkout();
     <div class="bp-checkout-grid">
         <div class="bp-checkout-form">
             <div class="bp-checkout-section">
-                <h3 class="bp-section-title">Datos de facturación</h3>
                 <?php do_action('woocommerce_checkout_billing', $checkout); ?>
             </div>
             <div class="bp-checkout-section">
