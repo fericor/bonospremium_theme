@@ -236,7 +236,7 @@ jQuery(document).ready(function($) {
     $(document.body).on('click', '.bp-coupon-apply', function() {
         var code = $('#coupon_code').val();
         if (code) {
-            var ajaxUrl = (bp_lz_ajax && bp_lz_ajax.ajax_url || '').replace(/\/wp-admin\/admin-ajax\.php.*/, '');
+            var ajaxUrl = (bp_lz_ajax && bp_lz_ajax.ajax_url || window.location.origin).replace(/\/wp-admin\/admin-ajax\.php.*/, '');
             $.post(ajaxUrl + '/?wc-ajax=apply_coupon', {
                 coupon_code: code,
             }, function() {
