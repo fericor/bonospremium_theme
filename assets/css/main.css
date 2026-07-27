@@ -675,11 +675,9 @@ p { margin-bottom: 1rem;     text-align: justify; }
 }
 .woocommerce-billing-fields label,
 .woocommerce-shipping-fields label {
-    font-size: .75rem;
+    font-size: .65rem;
     font-weight: 600;
-    color: #999;
-    display: block;
-    margin-bottom: 4px;
+    color: #000;
     text-transform: uppercase;
     letter-spacing: .3px;
 }
@@ -855,12 +853,6 @@ p { margin-bottom: 1rem;     text-align: justify; }
 .woocommerce-form-login-toggle .woocommerce-info:hover {
     background: #ffffff !important;
 }
-.woocommerce-billing-fields label, .woocommerce-shipping-fields label {
-    font-size: .75rem;
-    color: #000;
-    display: block;
-    margin-bottom: 4px;
-}
 #add_payment_method #payment, .woocommerce-cart #payment, .woocommerce-checkout #payment { background: transparent !important; }
 ul.wc_payment_methods.payment_methods.methods { padding: 0 !important;}
 
@@ -1032,10 +1024,11 @@ form.woocommerce-form-login.bp-login-open {
     border-color: var(--bp-primary);
 }
 .woocommerce-account-fields label { 
-    font-size: .75rem;
+    font-size: .65rem;
+    font-weight: 600;
     color: #000;
-    display: block;
-    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: .3px;
 }
 
 /* Create account */
