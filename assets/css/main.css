@@ -652,6 +652,11 @@ p { margin-bottom: 1rem;     text-align: justify; }
     gap: 0;
 }
 
+/* Ocultar notificaciones de WooCommerce */
+.woocommerce-notices-wrapper {
+    display: none !important;
+}
+
 /* Form sections */
 .bp-checkout-section {
     margin: 10px 0px 0px;
