@@ -272,13 +272,43 @@ function bp_get_wishlist() {
     return [];
 }
 
-// Cupón entre el total del pedido y los métodos de pago en checkout
+// Cupón colapsible entre total y métodos de pago
 add_action('woocommerce_checkout_order_review', 'bp_checkout_coupon_form', 15);
 function bp_checkout_coupon_form() {
     if (wc_coupons_enabled()) {
-        echo '<div class="bp-checkout-coupon-wrap">';
-        wc_get_template('checkout/form-coupon.php');
-        echo '</div>';
+        ?>
+        <div class="bp-checkout-coupon-wrap">
+            <button type="button" class="bp-coupon-toggle">
+                <i class="fas fa-ticket-alt"></i> ¿Tienes un cupón de descuento?
+                <i class="fas fa-chevron-down bp-coupon-arrow"></i>
+            </button>
+            <div class="bp-coupon-body" style="display:none;">
+                <div class="bp-coupon-form">
+                    <input type="text" name="coupon_code" class="bp-coupon-input" placeholder="Código del cupón" id="coupon_code" value="" />
+                    <button type="button" class="bp-coupon-apply" name="apply_coupon" value="Aplicar">Aplicar</button>
+                </div>
+            </div>
+        </div>
+        <script>
+        jQuery(function($) {
+            $('.bp-coupon-toggle').on('click', function() {
+                $(this).closest('.bp-checkout-coupon-wrap').find('.bp-coupon-body').slideToggle(250);
+                $(this).closest('.bp-checkout-coupon-wrap').toggleClass('is-open');
+            });
+            $('.bp-coupon-apply').on('click', function() {
+                var code = $('#coupon_code').val();
+                if (code) {
+                    $.post(woocommerce_params.ajax_url, {
+                        action: 'woocommerce_apply_coupon',
+                        coupon_code: code,
+                    }, function() {
+                        $(document.body).trigger('update_checkout');
+                    });
+                }
+            });
+        });
+        </script>
+        <?php
     }
 }
 
