@@ -10,6 +10,25 @@ $checkout = WC()->checkout();
 
 <?php wc_get_template('checkout/form-login.php', array('checkout' => $checkout)); ?>
 
+<?php if (wc_coupons_enabled()) : ?>
+<div class="woocommerce-form-coupon-toggle">
+    <div class="woocommerce-info">
+        <?php esc_html_e('¿Tienes un código de descuento?', 'woocommerce'); ?>
+        <a href="#" class="showcoupon"><?php esc_html_e('Haz clic aquí para introducirlo', 'woocommerce'); ?></a>
+    </div>
+</div>
+<form class="checkout_coupon woocommerce-form-coupon" method="post" style="display:none">
+    <p><?php esc_html_e('Si tienes un código de descuento, por favor introdúcelo a continuación.', 'woocommerce'); ?></p>
+    <p class="form-row form-row-first">
+        <input type="text" name="coupon_code" class="input-text" placeholder="<?php esc_attr_e('Código de descuento', 'woocommerce'); ?>" id="coupon_code" value="" />
+    </p>
+    <p class="form-row form-row-last">
+        <button type="submit" class="button" name="apply_coupon" value="<?php esc_attr_e('Aplicar cupón', 'woocommerce'); ?>"><?php esc_html_e('Aplicar cupón', 'woocommerce'); ?></button>
+    </p>
+    <div class="clear"></div>
+</form>
+<?php endif; ?>
+
 <form name="checkout" method="post" class="checkout woocommerce-checkout" action="<?php echo esc_url(wc_get_checkout_url()); ?>" enctype="multipart/form-data">
 
     <div class="bp-checkout-section">
