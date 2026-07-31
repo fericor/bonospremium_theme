@@ -1219,6 +1219,20 @@ input.qty { margin: 0px !important; }
     background: #fff;
 }
 
+/* Reset estilos globales dentro de Mi Cuenta */
+.bp-account-page .bp-account-app p {
+    text-align: left !important;
+    margin-bottom: 12px !important;
+}
+.bp-account-page .bp-account-app ul,
+.bp-account-page .bp-account-app li {
+    list-style: none;
+}
+.bp-account-page .bp-main-content {
+    padding-top: 0;
+    margin-top: 0;
+}
+
 /* ===== AUTH (no logueado) ===== */
 .bp-auth-app {
     padding: 0 16px 40px;
