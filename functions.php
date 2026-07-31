@@ -385,6 +385,76 @@ function bp_forms_config() {
     return apply_filters('bp_forms_config', $GLOBALS['bp_forms_config']);
 }
 
+// ============================================================
+// RECAPTCHA v3 — protege los formularios de spam
+// Las keys se definen en wp-config.php:
+//
+//   define('BP_RECAPTCHA_SITE_KEY', 'TU_SITE_KEY_V3');
+//   define('BP_RECAPTCHA_SECRET_KEY', 'TU_SECRET_KEY_V3');
+//
+// Puedes obtenerlas en: https://www.google.com/recaptcha/admin/create
+// (Tipo: reCAPTCHA v3)
+
+if (!defined('BP_RECAPTCHA_SITE_KEY'))    define('BP_RECAPTCHA_SITE_KEY', '');
+if (!defined('BP_RECAPTCHA_SECRET_KEY'))  define('BP_RECAPTCHA_SECRET_KEY', '');
+
+// Cargar script de reCAPTCHA v3 + token en los formularios
+add_action('wp_enqueue_scripts', function() {
+    if (empty(BP_RECAPTCHA_SITE_KEY)) return;
+    wp_enqueue_script('bp-recaptcha', 'https://www.google.com/recaptcha/api.js?render=' . BP_RECAPTCHA_SITE_KEY, [], null, true);
+});
+
+// Añadir token hidden a cada formulario via JS (se rellena al cargar)
+add_action('wp_footer', function() {
+    if (empty(BP_RECAPTCHA_SITE_KEY)) return;
+    ?>
+    <script>
+    jQuery(function($) {
+        if (typeof grecaptcha === 'undefined' || typeof grecaptcha.ready !== 'function') return;
+        grecaptcha.ready(function() {
+            function fillCaptcha() {
+                $('.bp-form').each(function() {
+                    var $form = $(this);
+                    if ($form.find('input[name="g-recaptcha-response"]').length) return;
+                    grecaptcha.execute('<?php echo esc_js(BP_RECAPTCHA_SITE_KEY); ?>', {action: 'submit'}).then(function(token) {
+                        if (!$form.find('input[name="g-recaptcha-response"]').length) {
+                            $('<input>').attr({type: 'hidden', name: 'g-recaptcha-response', value: token}).appendTo($form);
+                        } else {
+                            $form.find('input[name="g-recaptcha-response"]').val(token);
+                        }
+                    });
+                });
+            }
+            fillCaptcha();
+            // Regenerar token si ha pasado tiempo (cada 100s)
+            setInterval(fillCaptcha, 100000);
+        });
+    });
+    </script>
+    <?php
+});
+
+// Validar reCAPTCHA en el servidor al procesar el formulario
+function bp_verify_recaptcha() {
+    if (empty(BP_RECAPTCHA_SECRET_KEY)) return true; // no configurado, se permite
+
+    $token = $_POST['g-recaptcha-response'] ?? '';
+    if (empty($token)) return false;
+
+    $response = wp_remote_post('https://www.google.com/recaptcha/api/siteverify', [
+        'body' => [
+            'secret'   => BP_RECAPTCHA_SECRET_KEY,
+            'response' => $token,
+            'remoteip' => $_SERVER['REMOTE_ADDR'] ?? '',
+        ],
+    ]);
+
+    if (is_wp_error($response)) return false;
+    $result = json_decode(wp_remote_retrieve_body($response), true);
+    // score mínimo aceptable 0.5 (ajustable)
+    return !empty($result['success']) && ($result['score'] ?? 0) >= apply_filters('bp_recaptcha_min_score', 0.5);
+}
+
 // Configurar PHPMailer para SMTP Brevo (solo si hay credenciales definidas)
 add_action('phpmailer_init', function($phpmailer) {
     if (empty(BP_BREVO_USER) || empty(BP_BREVO_PASS)) return; // credenciales aún no configuradas
@@ -410,6 +480,11 @@ add_action('init', function() {
     // Nonce
     if (!wp_verify_nonce($_POST['bp_form_nonce'] ?? '', 'bp_form_' . $form)) {
         wp_die('Error de seguridad. Recarga la página e inténtalo de nuevo.');
+    }
+
+    // Verificar reCAPTCHA v3
+    if (!bp_verify_recaptcha()) {
+        wp_die('Error de verificación anti-spam. Recarga la página e inténtalo de nuevo.');
     }
 
     $fields = [

@@ -32,6 +32,24 @@ define('BP_BREVO_FROM', 'info@TU-DOMINIO.com');   // remitente de esa tienda
 
 > 💡 Si no hay credenciales definidas, el envío usa el `wp_mail()` normal de WordPress (sin SMTP). La web no se rompe, solo no se usa Brevo.
 
+### 2b. Configurar reCAPTCHA v3 (anti-spam)
+
+Los formularios están protegidos con **reCAPTCHA v3** (invisible, el usuario no ve ningún reto). Añade en `wp-config.php`:
+
+```php
+define('BP_RECAPTCHA_SITE_KEY',   'TU_SITE_KEY_V3');
+define('BP_RECAPTCHA_SECRET_KEY', 'TU_SECRET_KEY_V3');
+```
+
+> Cómo obtener las keys: https://www.google.com/recaptcha/admin/create → tipo **reCAPTCHA v3** → apunta a tu dominio.
+
+- Si NO están definidas, el formulario **funciona igual** (sin protección anti-spam). No se rompe.
+- Se valida el score (mínimo 0.5 por defecto). Ajustable con:
+  ```php
+  add_filter('bp_recaptcha_min_score', fn() => 0.3);
+  ```
+- El token se genera automáticamente al cargar el formulario y se regenera cada 100s.
+
 ### 3️⃣ Configurar el email de destino (a quién llegan los mensajes)
 
 Por defecto los 3 formularios envían a `info@bonospremium.com`. Para cambiar el destino en una tienda concreta, añade este código en `functions.php` de esa tienda (o un plugin snippet):
