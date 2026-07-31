@@ -344,3 +344,131 @@ function bp_toggle_wishlist() {
     update_user_meta(get_current_user_id(), 'bp_wishlist', array_values($wishlist));
     wp_send_json(['wishlist' => array_values($wishlist)]);
 }
+
+// ============================================================
+// FORMULARIOS: Contacto / Promociona tu negocio / Recibir ofertas
+// ============================================================
+
+// CONFIGURACIÓN SMTP BREVO
+// ⚠️ LAS CREDENCIALES SE DEFINEN EN wp-config.php
+// Añade esto a tu wp-config.php:
+//
+//   define('BP_BREVO_USER', 'tu_usuario_brevo@smtp-brevo.com');
+//   define('BP_BREVO_PASS', 'tu_smtp_key_brevo');
+//   define('BP_BREVO_FROM', 'info@bonospremium.com');
+//
+// El host/puerto por defecto apuntan a Brevo y pueden sobreescribirse igualmente.
+
+if (!defined('BP_BREVO_HOST')) define('BP_BREVO_HOST', 'smtp-relay.brevo.com');
+if (!defined('BP_BREVO_PORT')) define('BP_BREVO_PORT', 587);
+if (!defined('BP_BREVO_USER')) define('BP_BREVO_USER', '');
+if (!defined('BP_BREVO_PASS')) define('BP_BREVO_PASS', '');
+if (!defined('BP_BREVO_FROM')) define('BP_BREVO_FROM', 'info@bonospremium.com');
+
+// Configuración de cada formulario: email destino CONFIGURABLE
+$bp_forms_config = [
+    'contacto' => [
+        'to'      => apply_filters('bp_form_contacto_to', 'info@bonospremium.com'),
+        'subject' => '📩 Nuevo mensaje de contacto - BonosPremium',
+    ],
+    'promociona' => [
+        'to'      => apply_filters('bp_form_promociona_to', 'info@bonospremium.com'),
+        'subject' => '🏪 Promociona tu negocio - BonosPremium',
+    ],
+    'ofertas' => [
+        'to'      => apply_filters('bp_form_ofertas_to', 'info@bonospremium.com'),
+        'subject' => '🎁 Solicitud de recibir ofertas - BonosPremium',
+    ],
+];
+// Filtro para sobreescribir todos los destinos desde child theme / snippet
+function bp_forms_config() {
+    return apply_filters('bp_forms_config', $GLOBALS['bp_forms_config']);
+}
+
+// Configurar PHPMailer para SMTP Brevo (solo si hay credenciales definidas)
+add_action('phpmailer_init', function($phpmailer) {
+    if (empty(BP_BREVO_USER) || empty(BP_BREVO_PASS)) return; // credenciales aún no configuradas
+    $phpmailer->isSMTP();
+    $phpmailer->Host       = BP_BREVO_HOST;
+    $phpmailer->Port       = BP_BREVO_PORT;
+    $phpmailer->SMTPAuth   = true;
+    $phpmailer->Username   = BP_BREVO_USER;
+    $phpmailer->Password   = BP_BREVO_PASS;
+    $phpmailer->SMTPSecure = 'tls';
+    $phpmailer->From       = BP_BREVO_FROM;
+    $phpmailer->FromName   = 'BonosPremium';
+});
+
+// Procesar envíos de formularios
+add_action('init', function() {
+    if (empty($_POST['bp_form_submit'])) return;
+
+    $form = sanitize_key($_POST['bp_form_submit']);
+    $config = bp_forms_config();
+    if (!isset($config[$form])) return;
+
+    // Nonce
+    if (!wp_verify_nonce($_POST['bp_form_nonce'] ?? '', 'bp_form_' . $form)) {
+        wp_die('Error de seguridad. Recarga la página e inténtalo de nuevo.');
+    }
+
+    $fields = [
+        'contacto'   => ['nombre', 'email', 'telefono', 'mensaje'],
+        'promociona' => ['nombre', 'email', 'telefono', 'negocio', 'web', 'mensaje'],
+        'ofertas'    => ['nombre', 'email', 'ciudad'],
+    ];
+
+    $data = [];
+    foreach (($fields[$form] ?? []) as $f) {
+        $data[$f] = sanitize_text_field(wp_unslash($_POST[$f] ?? ''));
+    }
+
+    // Validar email
+    if (!is_email($data['email'] ?? '')) {
+        wp_safe_redirect(add_query_arg('bp_form', $form, wp_get_referer() ?: home_url()) . '#bp-form-' . $form);
+        exit;
+    }
+
+    // Construir cuerpo del correo
+    $labels = [
+        'nombre'   => 'Nombre',
+        'email'    => 'Email',
+        'telefono' => 'Teléfono',
+        'mensaje'  => 'Mensaje',
+        'negocio'  => 'Nombre del negocio',
+        'web'      => 'Web / RRSS',
+        'ciudad'   => 'Ciudad',
+    ];
+    $body = "Formulario: {$config[$form]['subject']}\n\n";
+    foreach ($data as $k => $v) {
+        $body .= ($labels[$k] ?? ucfirst($k)) . ": " . $v . "\n";
+    }
+
+    $headers = ['Reply-To: ' . $data['email']];
+
+    wp_mail($config[$form]['to'], $config[$form]['subject'], $body, $headers);
+
+    wp_safe_redirect(add_query_arg('bp_form', $form, wp_get_referer() ?: home_url()) . '#bp-form-' . $form . '&bp_ok=1');
+    exit;
+});
+
+// Mostrar aviso de éxito
+function bp_form_success($form) {
+    if (isset($_GET['bp_ok']) && isset($_GET['bp_form']) && $_GET['bp_form'] === $form) {
+        echo '<div class="bp-form-success">✅ ¡Gracias! Tu mensaje se ha enviado correctamente.</div>';
+    }
+}
+
+// Campos comunes reutilizables
+function bp_form_field($type, $name, $label, $required = true, $extra = '') {
+    printf(
+        '<p class="bp-form-row"><label for="%1$s">%2$s %3$s</label><input type="%4$s" name="%1$s" id="%1$s" placeholder="%2$s" %5$s /></p>',
+        esc_attr($name),
+        esc_html($label),
+        $required ? '<span class="bp-form-required">*</span>' : '<span class="bp-form-opt">(opcional)</span>',
+        esc_attr($type),
+        $required ? 'required' : '',
+        $extra
+    );
+}
+
