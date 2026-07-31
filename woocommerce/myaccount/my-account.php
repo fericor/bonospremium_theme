@@ -10,6 +10,7 @@ get_header(); ?>
             <?php if (is_user_logged_in()) : 
                 $current_user = wp_get_current_user();
                 $menu_items = wc_get_account_menu_items();
+                // Icono y grupo por endpoint
                 $icons = [
                     'dashboard'       => 'fa-th-large',
                     'orders'          => 'fa-ticket-alt',
@@ -20,6 +21,26 @@ get_header(); ?>
                     'favoritos'       => 'fa-heart',
                     'customer-logout' => 'fa-sign-out-alt',
                 ];
+                // Agrupamos: [nombre_grupo => [slug=>label]]
+                $menu_groups = [
+                    'Mi cuenta' => [],
+                    'Mi actividad' => [],
+                    'Ajustes' => [],
+                ];
+                $group_of = [
+                    'dashboard'       => 'Mi actividad',
+                    'orders'          => 'Mi actividad',
+                    'downloads'       => 'Mi actividad',
+                    'favoritos'       => 'Mi actividad',
+                    'edit-address'    => 'Mi cuenta',
+                    'edit-account'    => 'Ajustes',
+                    'payment-methods' => 'Ajustes',
+                ];
+                foreach ($menu_items as $endpoint => $label) {
+                    if ($endpoint === 'customer-logout') continue; // el logout va después
+                    $g = isset($group_of[$endpoint]) ? $group_of[$endpoint] : 'Mi cuenta';
+                    $menu_groups[$g][$endpoint] = $label;
+                }
             ?>
                 <div class="bp-prof-header">
                     <div class="bp-prof-avatar"><?php echo get_avatar($current_user->ID, 72); ?></div>
@@ -29,15 +50,28 @@ get_header(); ?>
                     </div>
                 </div>
                 <nav class="bp-prof-menu">
-                    <?php foreach ($menu_items as $endpoint => $label) : 
-                        $icon = isset($icons[$endpoint]) ? $icons[$endpoint] : 'fa-circle';
-                    ?>
-                        <a href="<?php echo esc_url(wc_get_account_endpoint_url($endpoint)); ?>" class="bp-prof-menu-item <?php echo $endpoint === 'customer-logout' ? 'bp-prof-logout' : ''; ?>">
-                            <span class="bp-prof-icon"><i class="fas <?php echo $icon; ?>"></i></span>
-                            <span class="bp-prof-label"><?php echo esc_html($label); ?></span>
+                    <?php foreach ($menu_groups as $group_name => $items) : if (empty($items)) continue; ?>
+                        <div class="bp-prof-group">
+                            <span class="bp-prof-group-title"><?php echo esc_html($group_name); ?></span>
+                            <?php foreach ($items as $endpoint => $label) :
+                                $icon = isset($icons[$endpoint]) ? $icons[$endpoint] : 'fa-circle';
+                                $is_active = is_wc_endpoint_url($endpoint) || ($endpoint === 'dashboard' && is_account_page() && !wc_get_endpoint_url());
+                            ?>
+                                <a href="<?php echo esc_url(wc_get_account_endpoint_url($endpoint)); ?>" class="bp-prof-menu-item<?php echo esc_attr($is_active ? ' active' : ''); ?>">
+                                    <span class="bp-prof-icon"><i class="fas <?php echo $icon; ?>"></i></span>
+                                    <span class="bp-prof-label"><?php echo esc_html($label); ?></span>
+                                    <span class="bp-prof-arrow">›</span>
+                                </a>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endforeach; ?>
+                    <div class="bp-prof-group">
+                        <a href="<?php echo esc_url(wc_get_account_endpoint_url('customer-logout')); ?>" class="bp-prof-menu-item bp-prof-logout">
+                            <span class="bp-prof-icon"><i class="fas fa-sign-out-alt"></i></span>
+                            <span class="bp-prof-label">Cerrar sesión</span>
                             <span class="bp-prof-arrow">›</span>
                         </a>
-                    <?php endforeach; ?>
+                    </div>
                 </nav>
                 <div class="bp-prof-content">
                     <?php woocommerce_account_content(); ?>
