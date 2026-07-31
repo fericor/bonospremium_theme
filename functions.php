@@ -345,6 +345,15 @@ function bp_toggle_wishlist() {
     wp_send_json(['wishlist' => array_values($wishlist)]);
 }
 
+// Forzar el template My Account de WooCommerce para la página de mi cuenta
+add_filter('template_include', function($template) {
+    if (is_account_page()) {
+        $tpl = locate_template('woocommerce/myaccount/my-account.php');
+        if ($tpl) return $tpl;
+    }
+    return $template;
+});
+
 // ============================================================
 // FORMULARIOS: Contacto / Promociona tu negocio / Recibir ofertas
 // ============================================================
