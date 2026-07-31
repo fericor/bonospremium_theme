@@ -47,33 +47,10 @@ get_header(); ?>
                     <div class="bp-auth-brand">
                         <img src="<?php echo get_template_directory_uri(); ?>/assets/logo_rectangulo.png" alt="BonosPremium" class="bp-auth-logo" />
                     </div>
-                    <div class="bp-auth-tabs">
-                        <button class="bp-auth-tab active" data-tab="login">Acceder</button>
-                        <button class="bp-auth-tab" data-tab="register">Registrarse</button>
-                    </div>
-                    <div class="bp-auth-panels">
-                        <div class="bp-auth-panel active" id="bp-login-panel">
-                            <?php woocommerce_login_form(); ?>
-                        </div>
-                        <div class="bp-auth-panel" id="bp-register-panel" style="display:none;">
-                            <?php woocommerce_register_form(); ?>
-                        </div>
+                    <div class="bp-auth-content">
+                        <?php woocommerce_account_content(); ?>
                     </div>
                 </div>
-                <script>
-                jQuery(function($) {
-                    $('.bp-auth-tab').on('click', function() {
-                        $('.bp-auth-tab').removeClass('active');
-                        $(this).addClass('active');
-                        $('.bp-auth-panel').hide();
-                        if ($(this).data('tab') === 'login') {
-                            $('#bp-login-panel').show();
-                        } else {
-                            $('#bp-register-panel').show();
-                        }
-                    });
-                });
-                </script>
             <?php endif; ?>
         </div>
     </div>
