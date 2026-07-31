@@ -1219,68 +1219,50 @@ input.qty { margin: 0px !important; }
     background: #fff;
 }
 
-/* Auth (no logueado) */
+/* ===== AUTH (no logueado) ===== */
 .bp-auth-app {
-    padding: 0;
+    padding: 0 16px 40px;
 }
 .bp-auth-brand {
     text-align: center;
-    padding: 50px 20px 30px;
+    padding: 50px 20px 35px;
 }
 .bp-auth-logo {
-    max-height: 50px;
+    max-height: 55px;
     width: auto;
 }
-.bp-auth-tabs {
-    display: flex;
-    background: #f5f5f7;
-    margin: 0 16px;
-    padding: 4px;
-    border-radius: 0;
-}
-.bp-auth-tab {
-    flex: 1;
-    padding: 12px;
-    border: none;
-    background: transparent;
-    font-size: .9rem;
-    font-weight: 600;
-    color: #888;
-    cursor: pointer;
-    border-radius: 10px;
-    transition: all .2s;
-}
-.bp-auth-tab.active {
+/* Contenido: formularios nativos de WooCommerce (login/registro) */
+.bp-auth-content {
     background: #fff;
-    color: var(--bp-primary);
-    box-shadow: 0 1px 3px rgba(0,0,0,.08);
-}
-.bp-auth-panels {
-    padding: 20px 16px 30px;
-}
-.bp-auth-panel {
-    display: none;
-}
-.bp-auth-panel.active {
-    display: block;
-}
-.bp-auth-panel .woocommerce-form-login,
-.bp-auth-panel .woocommerce-form-register {
-    background: #fff;
-    border: 1px solid #f0f0f0 !important;
-    border-radius: 0 !important;
-    padding: 24px 20px !important;
-    margin: 0 !important;
+    border: 1px solid #f0f0f0;
     box-shadow: 0 1px 3px rgba(0,0,0,.04);
+    padding: 24px 20px;
 }
-.bp-auth-panel .woocommerce-form-login p,
-.bp-auth-panel .woocommerce-form-register p {
-    font-size: .85rem;
-    color: #666;
-    margin-bottom: 12px;
+.bp-auth-content .woocommerce h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--bp-primary);
     text-align: left;
 }
-.bp-auth-panel .form-row label {
+.bp-auth-content .woocommerce > h2:first-of-type {
+    margin-top: 0;
+}
+.bp-auth-content .woocommerce-form-login,
+.bp-auth-content .woocommerce-form-register {
+    margin: 0 0 30px;
+}
+.bp-auth-content .woocommerce-form-login {
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 24px;
+    margin-bottom: 24px;
+}
+.bp-auth-content .form-row {
+    margin-bottom: 14px;
+}
+.bp-auth-content label {
     font-size: .75rem;
     font-weight: 600;
     color: #999;
@@ -1288,25 +1270,27 @@ input.qty { margin: 0px !important; }
     letter-spacing: .3px;
     margin-bottom: 4px;
     display: block;
+    text-align: left;
 }
-.bp-auth-panel .form-row input[type="text"],
-.bp-auth-panel .form-row input[type="email"],
-.bp-auth-panel .form-row input[type="password"] {
+.bp-auth-content .form-row input[type="text"],
+.bp-auth-content .form-row input[type="email"],
+.bp-auth-content .form-row input[type="password"] {
     width: 100%;
-    padding: 12px 14px;
+    padding: 13px 14px;
     border: 1.5px solid #e0e0e0;
     border-radius: 0;
     font-size: 1rem;
     background: #fff;
     transition: border-color .2s;
     box-sizing: border-box;
+    font-family: inherit;
 }
-.bp-auth-panel .form-row input:focus {
+.bp-auth-content .form-row input:focus {
     border-color: var(--bp-primary);
     outline: none;
     box-shadow: 0 0 0 3px rgba(var(--bp-primary-rgb), .12);
 }
-.bp-auth-panel .button {
+.bp-auth-content .button {
     width: 100%;
     background: var(--bp-primary) !important;
     color: #fff !important;
@@ -1317,28 +1301,41 @@ input.qty { margin: 0px !important; }
     font-size: 1rem !important;
     transition: all .2s;
 }
-.bp-auth-panel .button:hover {
+.bp-auth-content .button:hover {
     background: var(--bp-primary-dark) !important;
 }
-.bp-auth-panel .woocommerce-privacy-policy-text {
+.bp-auth-content .woocommerce-privacy-policy-text {
     font-size: .75rem;
     color: #999;
     margin-bottom: 12px;
+    text-align: left;
 }
-.bp-auth-panel .woocommerce-privacy-policy-text a {
+.bp-auth-content .woocommerce-privacy-policy-text a {
     color: var(--bp-primary);
 }
-.bp-auth-panel .woocommerce-LostPassword {
+.bp-auth-content .woocommerce-LostPassword {
     text-align: right;
-    margin-top: -8px;
-    margin-bottom: 16px;
+    margin: -8px 0 16px;
 }
-.bp-auth-panel .woocommerce-LostPassword a {
+.bp-auth-content .woocommerce-LostPassword a {
     font-size: .8rem;
     color: var(--bp-primary);
 }
+.bp-auth-content .woocommerce-form-login .rememberme {
+    font-size: .85rem;
+    color: #555;
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 400;
+}
+.bp-auth-content .woocommerce-form-login .rememberme input {
+    accent-color: var(--bp-primary);
+    width: 16px;
+    height: 16px;
+    margin-right: 6px;
+}
 
-/* Profile header (logueado) */
+/* ===== PROF (logueado) ===== */
 .bp-prof-header {
     display: flex;
     align-items: center;
@@ -1428,8 +1425,9 @@ input.qty { margin: 0px !important; }
 
 @media (max-width: 768px) {
     .bp-prof-content { padding: 0 16px 30px; }
-    .bp-auth-panels { padding: 20px 16px 30px; }
+    .bp-auth-app { padding: 0 16px 40px; }
 }
+
 /* === THANK YOU === */
 .bp-thankyou-wrap {
     background: #fff;
