@@ -8,10 +8,11 @@ get_header(); ?>
 
 <main class="bp-main-content">
     <div class="bp-container">
-        <?php if (have_posts()) : while (have_posts()) : the_post(); 
-            global $wp;
-            $order_id = absint($wp->query_vars['order-received'] ?? 0);
-            $order = $order_id ? wc_get_order($order_id) : false;
+        <?php
+        // Obtener el pedido directamente del query var 'order-received'
+        global $wp;
+        $order_id = absint($wp->query_vars['order-received'] ?? 0);
+        $order = $order_id ? wc_get_order($order_id) : false;
         ?>
         <div class="bp-thankyou-wrap">
             <div class="bp-thankyou-header">
@@ -95,7 +96,6 @@ get_header(); ?>
                 </a>
             </div>
         </div>
-        <?php endwhile; endif; ?>
     </div>
 </main>
 
