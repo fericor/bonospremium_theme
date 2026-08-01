@@ -18,7 +18,6 @@ get_header(); ?>
                     'edit-address'    => 'fa-map-marker-alt',
                     'payment-methods' => 'fa-credit-card',
                     'edit-account'    => 'fa-user-cog',
-                    'favoritos'       => 'fa-heart',
                     'customer-logout' => 'fa-sign-out-alt',
                 ];
                 // Agrupamos: [nombre_grupo => [slug=>label]]
@@ -31,7 +30,6 @@ get_header(); ?>
                     'dashboard'       => 'Mi actividad',
                     'orders'          => 'Mi actividad',
                     'downloads'       => 'Mi actividad',
-                    'favoritos'       => 'Mi actividad',
                     'edit-address'    => 'Mi cuenta',
                     'edit-account'    => 'Ajustes',
                     'payment-methods' => 'Ajustes',
@@ -118,8 +116,8 @@ get_header(); ?>
                             </span>
                         </a>
 
-                        <!-- Favoritos -->
-                        <a href="<?php echo esc_url(wc_get_account_endpoint_url('favoritos')); ?>" class="bp-dash-card">
+                        <!-- Favoritos (lista de deseos del plugin) -->
+                        <a href="<?php echo esc_url(home_url('/favoritos/')); ?>" class="bp-dash-card">
                             <span class="bp-dash-card-icon bp-dash-icon-wish"><i class="fas fa-heart"></i></span>
                             <span class="bp-dash-card-info">
                                 <span class="bp-dash-card-value"><?php echo (int) $wishlist_count; ?></span>

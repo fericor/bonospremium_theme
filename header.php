@@ -53,7 +53,11 @@
                     <?php endif; ?>
                 </div>
                 <?php if (class_exists('WooCommerce')): ?>
-                <a href="<?php echo esc_url(wc_get_page_permalink('myaccount') . 'favoritos/'); ?>" class="bp-header-action bp-wishlist-icon" title="Favoritos">
+                <?php
+                // Link del corazón -> lista de deseos (página wishlist del plugin smart-wishlist /favoritos/)
+                $bp_wishlist_url = function_exists('wlfmc_get_wishlist_url') ? wlfmc_get_wishlist_url() : home_url('/favoritos/');
+                ?>
+                <a href="<?php echo esc_url($bp_wishlist_url); ?>" class="bp-header-action bp-wishlist-icon" title="Lista de deseos">
                     <i class="far fa-heart"></i>
                 </a>
                 <?php endif; ?>
