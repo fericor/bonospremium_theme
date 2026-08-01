@@ -133,16 +133,46 @@ defined('ABSPATH') || exit;
 .bp-thankyou-table tfoot td,
 .bp-thankyou-table tfoot th { padding: 8px 4px; border: none; font-weight: 600; }
 .bp-text-right { text-align: right; }
-.bp-thankyou-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.bp-thankyou-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 8px; }
+
+/* Ambos botones con LA MISMA forma y tamaño */
 .bp-btn-primary, .bp-btn-secondary {
-    display: inline-flex; align-items: center; gap: 8px;
-    padding: 12px 28px; border-radius: 0;
-    font-size: 14px; font-weight: 600; text-decoration: none; transition: all .2s;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    min-width: 200px !important;
+    padding: 14px 30px !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    border: none !important;
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
+    line-height: 1.2 !important;
+    box-sizing: border-box !important;
+    transition: all .2s !important;
+    cursor: pointer;
 }
-.bp-btn-primary { background: var(--bp-primary); color: #fff; }
-.bp-btn-primary:hover { background: var(--bp-primary-dark); color: #fff; }
-.bp-btn-secondary { background: #f3f4f6; color: var(--bp-text); }
-.bp-btn-secondary:hover { background: #e5e7eb; color: var(--bp-text); }
+/* "Ir a mi cuenta" -> color primario (azul) */
+.bp-btn-primary {
+    background: var(--bp-primary) !important;
+    color: #fff !important;
+}
+.bp-btn-primary:hover {
+    background: var(--bp-primary-dark) !important;
+    color: #fff !important;
+}
+/* "Seguir comprando" -> mismo tamaño, color distinto (gris / neutro) */
+.bp-btn-secondary {
+    background: #f3f4f6 !important;
+    color: var(--bp-text) !important;
+    border: 1px solid #e0e0e0 !important;
+}
+.bp-btn-secondary:hover {
+    background: #e5e7eb !important;
+    color: var(--bp-text) !important;
+}
 
 /* Grid de detalles en desktop: 2 columnas */
 @media (min-width: 769px) {
