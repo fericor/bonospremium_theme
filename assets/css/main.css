@@ -2302,10 +2302,10 @@ input.qty { margin: 0px !important; }
 
 /* Estilo de la tarjeta de error */
 .woocommerce-error {
-    background: #ffffff;
+    background: #fff8f8;
     border-radius: 16px;
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12), 0 4px 10px rgba(0, 0, 0, 0.05);
-    padding: 20px 24px;
+    padding: 20px 24px 20px 58px;
     list-style: none;
     border-left: 6px solid #e74c3c;
     transition: all 0.2s ease;
@@ -2313,14 +2313,18 @@ input.qty { margin: 0px !important; }
     font-size: 15px;
     line-height: 1.5;
     color: #2d3748;
+    position: relative;
 }
 
-/* Ícono decorativo (opcional) */
+/* Ícono decorativo en una esquina sin tapar el texto */
 .woocommerce-error::before {
     content: "⚠️";
-    display: block;
+    position: absolute;
+    top: 50%;
+    left: 16px;
+    transform: translateY(-50%);
     font-size: 28px;
-    margin-bottom: 8px;
+    line-height: 1;
 }
 
 /* Elementos de lista */
@@ -2351,10 +2355,11 @@ input.qty { margin: 0px !important; }
 /* Ajuste para móviles */
 @media (max-width: 480px) {
     .woocommerce-error {
-        padding: 16px 18px;
+        padding: 16px 18px 16px 44px;
         font-size: 14px;
     }
     .woocommerce-error::before {
         font-size: 24px;
+        left: 12px;
     }
 }
