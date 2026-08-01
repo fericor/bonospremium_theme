@@ -42,13 +42,6 @@ get_header(); ?>
                     $menu_groups[$g][$endpoint] = $label;
                 }
             ?>
-                <div class="bp-prof-header">
-                    <div class="bp-prof-avatar"><?php echo get_avatar($current_user->ID, 72); ?></div>
-                    <div class="bp-prof-info">
-                        <h2><?php echo esc_html($current_user->display_name); ?></h2>
-                        <p><?php echo esc_html($current_user->user_email); ?></p>
-                    </div>
-                </div>
                 <nav class="bp-prof-menu">
                     <?php foreach ($menu_groups as $group_name => $items) : if (empty($items)) continue; ?>
                         <div class="bp-prof-group">
