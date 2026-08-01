@@ -42,6 +42,7 @@ get_header(); ?>
                     $menu_groups[$g][$endpoint] = $label;
                 }
             ?>
+                <div class="bp-account-layout">
                 <nav class="bp-prof-menu">
                     <?php foreach ($menu_groups as $group_name => $items) : if (empty($items)) continue; ?>
                         <div class="bp-prof-group">
@@ -68,6 +69,7 @@ get_header(); ?>
                 </nav>
                 <div class="bp-prof-content">
                     <?php woocommerce_account_content(); ?>
+                </div>
                 </div>
             <?php else : ?>
                 <div class="bp-auth-app">
