@@ -146,6 +146,80 @@ add_action('wp_head', function() {
     <?php
 }, 1);
 
+// Mensaje disuasorio + textos en español en la página de Eliminar cuenta
+add_action('wp_footer', function() {
+    if (!is_user_logged_in()) return;
+    global $wp;
+    $current_url = trailingslashit(home_url($wp->request));
+    if (strpos($current_url, 'wpf-delete-account') === false) return;
+    ?>
+    <style>
+    .bp-delete-account-notice {
+        background: #fff;
+        border: 1px solid #ffd1d1;
+        border-left: 6px solid #e74c3c;
+        padding: 24px;
+        margin-bottom: 16px;
+        max-width: 480px;
+        box-shadow: 0 1px 3px rgba(0,0,0,.04);
+    }
+    .bp-delete-account-notice h3 {
+        margin: 0 0 10px;
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #c0392b;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .bp-delete-account-notice h3 i { color: #e74c3c; }
+    .bp-delete-account-notice p {
+        margin: 0 0 10px;
+        font-size: .9rem;
+        color: #555;
+        line-height: 1.6;
+        text-align: left;
+    }
+    .bp-delete-account-notice ul {
+        margin: 8px 0 0;
+        padding: 0;
+        list-style: none;
+    }
+    .bp-delete-account-notice li {
+        padding: 6px 0;
+        font-size: .88rem;
+        color: #666;
+        border-bottom: 1px solid #f5f5f5;
+        text-align: left;
+    }
+    .bp-delete-account-notice li:last-child { border: none; }
+    .bp-delete-account-notice li i {
+        color: #e74c3c;
+        margin-right: 8px;
+        width: 16px;
+    }
+    </style>
+    <script>
+    jQuery(function($) {
+        var $box = $('.wpfda-delete-account-container');
+        if (!$box.length) return;
+        $box.prepend(
+            '<div class="bp-delete-account-notice">' +
+              '<h3><i class="fas fa-exclamation-triangle"></i> ¿Seguro que quieres eliminar tu cuenta?</h3>' +
+              '<p>Esta acción es <strong>permanente e irreversible</strong>. Al eliminar tu cuenta perderás:</p>' +
+              '<ul>' +
+                '<li><i class="fas fa-times-circle"></i> Todos tus bonos y compras realizadas</li>' +
+                '<li><i class="fas fa-times-circle"></i> El acceso a tus favoritos y pedidos</li>' +
+                '<li><i class="fas fa-times-circle"></i> Cualquier saldo o crédito disponible</li>' +
+              '</ul>' +
+              '<p style="margin-top:12px;margin-bottom:0;"><strong>Si tienes bonos activos o sin canjear, te recomendamos usarlos antes de eliminar tu cuenta.</strong></p>' +
+            '</div>'
+        );
+    });
+    </script>
+    <?php
+});
+
 // ===== QUANTITY EN PRODUCTO ÚNICO =====
 // En single product: cantidad fija a 1, ocultar selector
 add_filter('woocommerce_quantity_input_args', function($args, $product) {
