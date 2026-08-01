@@ -346,20 +346,14 @@ function bp_toggle_wishlist() {
 }
 
 // Forzar el template My Account de WooCommerce para la página de mi cuenta
-// ⚠️ DESACTIVADO temporalmente por error crítico. Reactivar tras diagnóstico.
-/*
+// La página oficial (sin shortcode) usa el template app personalizado
 add_filter('template_include', function($template) {
     if (is_account_page()) {
-        global $post;
-        if ($post && strpos($post->post_content, 'woocommerce_my_account') !== false) {
-            return $template;
-        }
         $tpl = locate_template('woocommerce/myaccount/my-account.php');
         if ($tpl) return $tpl;
     }
     return $template;
 });
-*/
 
 // ============================================================
 // FORMULARIOS: Contacto / Promociona tu negocio / Recibir ofertas
