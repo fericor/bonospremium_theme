@@ -48,7 +48,7 @@ defined('ABSPATH') || exit;
         </div>
         <?php endif; ?>
 
-        <div class="bp-detail-card bp-detail-card--full">
+        <div class="bp-detail-card">
             <h3><i class="fas fa-box"></i> Productos</h3>
             <table class="bp-thankyou-table">
                 <thead>
@@ -152,12 +152,7 @@ defined('ABSPATH') || exit;
         gap: 20px;
         align-items: start;
     }
-    .bp-thankyou-details .bp-detail-card--full {
-        grid-column: 1 / -1;
-    }
-    .bp-detail-card:nth-child(odd):last-child {
-        grid-column: 1 / -1;
-    }
+    /* Tarjeta descargas (si aparece sola) puede ocupar columna */
 }
 /* Móvil: 1 columna */
 @media (max-width: 768px) {
