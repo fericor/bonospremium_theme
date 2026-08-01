@@ -1769,6 +1769,80 @@ input.qty { margin: 0px !important; }
 .bp-orders-empty p { font-size: .85rem; color: #888; margin-bottom: 18px; text-align: center; }
 .bp-orders-pagination { display: flex; justify-content: center; gap: 10px; margin-top: 20px; }
 
+/* ===== VOUCHERS (descarga de bonos PDF) ===== */
+.bp-vouchers-box {
+    background: #fff;
+    border: 1px solid #f0f0f0;
+    box-shadow: 0 1px 3px rgba(0,0,0,.04);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+.bp-vouchers-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 2px solid var(--bp-primary);
+    padding-bottom: 10px;
+}
+.bp-vouchers-title i { color: var(--bp-primary); }
+.bp-vouchers-sub {
+    font-size: .85rem;
+    color: #888;
+    margin-bottom: 16px;
+    text-align: left;
+}
+.bp-vouchers-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.bp-voucher-btn {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    background: #f7fbff;
+    border: 1px solid #d0e7f5;
+    text-decoration: none;
+    transition: all .2s;
+}
+.bp-voucher-btn:hover {
+    background: #eaf4fc;
+    border-color: var(--bp-primary);
+}
+.bp-voucher-icon {
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #ff4d4d;
+    color: #fff;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+.bp-voucher-info { flex: 1; text-align: left; }
+.bp-voucher-name {
+    display: block;
+    font-size: .95rem;
+    font-weight: 700;
+    color: #222;
+}
+.bp-voucher-file {
+    display: block;
+    font-size: .75rem;
+    color: #888;
+    word-break: break-all;
+}
+.bp-voucher-arrow {
+    color: var(--bp-primary);
+    font-size: 1rem;
+}
+
 /* ===== THANK YOU ==== */
 .bp-thankyou-wrap {
     background: #fff;
