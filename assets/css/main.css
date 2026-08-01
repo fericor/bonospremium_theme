@@ -1126,6 +1126,23 @@ form.woocommerce-form-login.bp-login-open {
     display: flex;
     gap: 8px;
 }
+.bp-coupon-apply {
+    background: var(--bp-primary) !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding: 12px 28px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .2s;
+    white-space: nowrap;
+}
+.bp-coupon-apply:hover {
+    background: var(--bp-primary-dark) !important;
+    color: #fff !important;
+}
 .bp-coupon-input {
     flex: 1;
     padding: 10px 12px;

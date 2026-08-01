@@ -16,7 +16,6 @@ $checkout = WC()->checkout();
         <!-- Columna izquierda: formulario -->
         <div class="bp-checkout-col bp-checkout-col-form">
             <div class="bp-checkout-section">
-                <h3 class="bp-section-title">Tus datos</h3>
                 <?php do_action('woocommerce_checkout_billing', $checkout); ?>
             </div>
 
