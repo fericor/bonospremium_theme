@@ -20,6 +20,9 @@
                 <button class="bp-menu-toggle" aria-label="Menú">
                     <span></span><span></span><span></span>
                 </button>
+                <button class="bp-back-btn" aria-label="Volver">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
                 <nav class="bp-user-nav">
                     <?php
                     wp_nav_menu([

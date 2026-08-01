@@ -2,6 +2,42 @@ jQuery(document).ready(function($) {
     // ===== HEADER DROPDOWN (menú hamburguesa) =====
     var $menuToggle = $('.bp-menu-toggle');
     var $userMenu = $('.bp-user-nav-menu');
+    var $backBtn = $('.bp-back-btn');
+
+    // Determinar si estamos en inicio o en categorías/archivo de productos
+    // (clases del body: home, page-id..., post-type-archive-product, tax-product_cat, archive)
+    function bpIsNavPage() {
+        var $body = document.body;
+        // Inicio (home) o archivo de productos o categoría de producto
+        return $body.classList.contains('home')
+            || $body.classList.contains('post-type-archive-product')
+            || $body.classList.contains('tax-product_cat')
+            || $body.classList.contains('woocommerce-page') && $body.classList.contains('archive')
+            || $body.classList.contains('blog');
+    }
+
+    function bpUpdateHeaderControls() {
+        if (bpIsNavPage()) {
+            // En inicio/categorías: hamburguesa (mostrar) - flecha oculta
+            $('body').removeClass('bp-is-back-page');
+            $('body').addClass('bp-is-nav-page');
+        } else {
+            // En otras páginas: flecha atrás - hamburguesa oculta
+            $('body').removeClass('bp-is-nav-page');
+            $('body').addClass('bp-is-back-page');
+        }
+    }
+    bpUpdateHeaderControls();
+
+    // Flecha atrás: vuelve a la página anterior (o a la tienda si no hay historial)
+    $backBtn.on('click', function(e) {
+        e.preventDefault();
+        if (window.history.length > 1) {
+            window.history.back();
+        } else {
+            window.location.href = '/';
+        }
+    });
 
     $menuToggle.on('click', function(e) {
         e.stopPropagation();
