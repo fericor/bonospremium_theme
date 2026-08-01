@@ -2851,9 +2851,10 @@ input.qty { margin: 0px !important; }
 
 /* ===== CORAZÓN WISHLIST EN LOOP DE PRODUCTOS (plugin smart-wishlist) ===== */
 /* El corazón del plugin va ANTES de .bp-product-card dentro del <li> del producto */
-li.product { position: relative; }
 .bp-products-grid li.product,
-.woocommerce ul.products li.product { position: relative; }
+.woocommerce ul.products li.product {
+    position: relative !important;
+}
 
 li.product .wlfmc-add-to-wishlist {
     position: absolute !important;
