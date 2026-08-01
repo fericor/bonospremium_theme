@@ -1899,8 +1899,8 @@ input.qty { margin: 0px !important; }
     cursor: pointer;
 }
 .bp-order-btn:hover { background: var(--bp-primary-dark); color: #fff; }
-.bp-order-btn-view { background: #222; }
-.bp-order-btn-view:hover { background: #000; }
+.bp-order-btn-view { background: var(--bp-primary); }
+.bp-order-btn-view:hover { background: var(--bp-primary-dark); }
 .bp-orders-empty {
     text-align: center;
     padding: 40px 20px;

@@ -28,9 +28,6 @@ do_action( 'woocommerce_before_account_orders', $has_orders ); ?>
 			$order      = wc_get_order( $customer_order );
 			$item_count = $order->get_item_count() - $order->get_item_count_refunded();
 			$status     = $order->get_status();
-			$has_actions = false;
-			$actions    = wc_get_account_orders_actions( $order );
-			if ( ! empty( $actions ) ) $has_actions = true;
 			?>
 			<div class="bp-order-card status-<?php echo esc_attr( $status ); ?>">
 				<div class="bp-order-top">
@@ -52,21 +49,9 @@ do_action( 'woocommerce_before_account_orders', $has_orders ); ?>
 						<span class="bp-order-value"><?php echo wp_kses_post( sprintf( _n( '%1$s for %2$s item', '%1$s for %2$s items', $item_count, 'woocommerce' ), $order->get_formatted_order_total(), $item_count ) ); ?></span>
 					</div>
 				</div>
-				<?php if ( $has_actions ) : ?>
-					<div class="bp-order-actions">
-						<?php
-						foreach ( $actions as $key => $action ) {
-							$label = isset( $action['name'] ) ? $action['name'] : $key;
-							echo '<a href="' . esc_url( $action['url'] ) . '" class="bp-order-btn ' . sanitize_html_class( $key ) . '">' . esc_html( $label ) . '</a>';
-						}
-						?>
-						<a href="<?php echo esc_url( $order->get_view_order_url() ); ?>" class="bp-order-btn bp-order-btn-view">Ver detalle</a>
-					</div>
-				<?php else : ?>
-					<div class="bp-order-actions">
-						<a href="<?php echo esc_url( $order->get_view_order_url() ); ?>" class="bp-order-btn bp-order-btn-view">Ver detalle</a>
-					</div>
-				<?php endif; ?>
+				<div class="bp-order-actions">
+					<a href="<?php echo esc_url( $order->get_view_order_url() ); ?>" class="bp-order-btn bp-order-btn-view">Detalle</a>
+				</div>
 			</div>
 			<?php
 		}
