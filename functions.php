@@ -128,10 +128,8 @@ add_action('send_headers', function() {
     header('Expires: Wed, 11 Jan 1984 05:00:00 GMT');
 });
 
-// Ocultar wishlist duplicado del plugin
-add_action('wp_head', function() {
-    echo '<style>.wlfmc-add-to-wishlist { display: none !important; }</style>';
-});
+// Ocultar wishlist duplicado del plugin YA NO se oculta: el plugin es el sistema principal
+// de favoritos. Se eliminó la ocultación para que el corazón del plugin sea el visible.
 
 // ===== QUANTITY EN PRODUCTO ÚNICO =====
 // En single product: cantidad fija a 1, ocultar selector
@@ -231,7 +229,6 @@ add_action('woocommerce_before_shop_loop_item', function() {
     echo '<a href="' . get_permalink() . '">';
     echo $product->get_image('medium_large');
     echo '</a>';
-    echo '<a href="#" class="bp-wishlist-btn" data-product-id="' . get_the_ID() . '"><i class="far fa-heart"></i></a>';
     echo '</div>';
     echo '<div class="bp-product-info">';
     echo '<h3 class="bp-product-title"><a href="' . get_permalink() . '">' . esc_html($nombre_establecimiento) . '</a></h3>';
