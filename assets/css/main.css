@@ -2865,27 +2865,35 @@ li.product .wlfmc-add-to-wishlist {
     z-index: 20;
     margin: 0 !important;
 }
-/* Círculo de fondo para el corazón */
+/* Botón del corazón: sin fondo, solo el icono */
 li.product .wlfmc-add-button a {
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     width: 40px !important;
     height: 40px !important;
-    background: rgba(255,255,255,.95) !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
     border-radius: 50% !important;
-    box-shadow: 0 2px 8px rgba(0,0,0,.15) !important;
     transition: all .2s !important;
     text-decoration: none !important;
 }
 li.product .wlfmc-add-button a:hover {
-    background: var(--bp-primary) !important;
+    background: rgba(0,0,0,.15) !important;
     transform: scale(1.1);
 }
-/* El icono corazón */
+/* El icono corazón: blanco por defecto */
 li.product .wlfmc-icon-heart {
-    color: #666 !important;
-    font-size: 1.1rem !important;
+    color: var(--bp-text-white) !important;
+    font-size: 1.3rem !important;
     transition: color .2s;
+    text-shadow: 0 1px 3px rgba(0,0,0,.4);
 }
-li.product .wlfmc-add-button a:hover .wlfmc-icon-heart { color: #fff !important; }
+/* Hover: icono en color primario */
+li.product .wlfmc-add-button a:hover .wlfmc-icon-heart { color: var(--bp-primary) !important; text-shadow: none; }
+/* Seleccionado (ya añadido a wishlist): icono en color primario */
+li.product .wlfmc-add-button a.wlfmc-added .wlfmc-icon-heart,
+li.product .wlfmc-add-button a.added .wlfmc-icon-heart,
+li.product .wlfmc-add-button a.wlfmc-btn-fill-ico.wlfmc-active .wlfmc-icon-heart,
+li.product .wlfmc-add-button a.wlfmc-btn-outofstock .wlfmc-icon-heart { color: var(--bp-primary) !important; text-shadow: none; }
