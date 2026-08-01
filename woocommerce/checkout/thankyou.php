@@ -54,7 +54,7 @@ get_header(); ?>
                 </div>
                 <?php endif; ?>
 
-                <div class="bp-detail-card">
+                <div class="bp-detail-card bp-detail-card--full">
                     <h3><i class="fas fa-box"></i> Productos</h3>
                     <table class="bp-thankyou-table">
                         <thead>
@@ -100,7 +100,7 @@ get_header(); ?>
 </main>
 
 <style>
-.bp-thankyou-wrap { max-width: 700px; margin: 40px auto; }
+.bp-thankyou-wrap { max-width: 1100px; margin: 40px auto; }
 .bp-thankyou-header { text-align: center; margin-bottom: 32px; }
 .bp-thankyou-icon {
     width: 72px; height: 72px;
@@ -152,6 +152,27 @@ get_header(); ?>
 .bp-btn-primary:hover { background: var(--bp-primary-dark); color: #fff; }
 .bp-btn-secondary { background: #f3f4f6; color: var(--bp-text); }
 .bp-btn-secondary:hover { background: #e5e7eb; color: var(--bp-text); }
+
+/* Grid de detalles en desktop: 2 columnas */
+@media (min-width: 769px) {
+    .bp-thankyou-details {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        align-items: start;
+    }
+    .bp-thankyou-details .bp-detail-card--full {
+        grid-column: 1 / -1;
+    }
+    .bp-detail-card:nth-child(odd):last-child {
+        grid-column: 1 / -1;
+    }
+}
+/* Móvil: 1 columna */
+@media (max-width: 768px) {
+    .bp-thankyou-wrap { max-width: 480px; padding: 0 16px; }
+    .bp-thankyou-details { grid-template-columns: 1fr; }
+}
 </style>
 
 <?php get_footer(); ?>
