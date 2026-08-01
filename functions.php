@@ -215,6 +215,12 @@ add_action('wp_footer', function() {
               '<p style="margin-top:12px;margin-bottom:0;"><strong>Si tienes bonos activos o sin canjear, te recomendamos usarlos antes de eliminar tu cuenta.</strong></p>' +
             '</div>'
         );
+        // Traducir el aviso del administrador del plugin (está en inglés)
+        $('p:contains("Just a heads up")').each(function() {
+            $(this).html('<strong>Atención:</strong> eres el administrador del sitio. Si continúas, tu propia cuenta será eliminada.');
+        });
+        // Asegurar que el wrapper del botón no añada estilos extra
+        $('.wpfda-submit').css('width', '100%');
     });
     </script>
     <?php

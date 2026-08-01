@@ -2469,8 +2469,8 @@ input.qty { margin: 0px !important; }
     outline: none !important;
     box-shadow: 0 0 0 3px rgba(var(--bp-primary-rgb), .12) !important;
 }
-/* El botón principal (Confirm / Delete Account) */
-.wpfda-delete-account-container .wpfda-submit,
+/* El botón principal (Confirm / Delete Account) - el botón está en un div .wpfda-submit */
+.wpfda-delete-account-container .wpfda-submit button,
 .wpfda-delete-account-container input[type="submit"],
 .wpf-delete-account-button button {
     background: var(--bp-primary) !important;
@@ -2485,8 +2485,9 @@ input.qty { margin: 0px !important; }
     width: 100% !important;
     text-transform: uppercase;
     letter-spacing: .4px;
+    font-family: inherit;
 }
-.wpfda-delete-account-container .wpfda-submit:hover,
+.wpfda-delete-account-container .wpfda-submit button:hover,
 .wpfda-delete-account-container input[type="submit"]:hover,
 .wpf-delete-account-button button:hover {
     background: var(--bp-primary-dark) !important;
