@@ -131,6 +131,21 @@ add_action('send_headers', function() {
 // Ocultar wishlist duplicado del plugin YA NO se oculta: el plugin es el sistema principal
 // de favoritos. Se eliminó la ocultación para que el corazón del plugin sea el visible.
 
+// Definir variables JS globales que usa el plugin woocommerce-bonospremium
+// en el modal de vista previa del BonoPremium (BP_IMG_BASE, BP_PRIMARY_COLOR)
+add_action('wp_head', function() {
+    $img_base = (!defined('BP_IMG_BASE') ? home_url() . '/wp-content/uploads/bonospremium' : BP_IMG_BASE);
+    $color    = (!defined('BP_PRIMARY_COLOR') ? '#039CDC' : BP_PRIMARY_COLOR);
+    ?>
+    <script>
+    window.BP_IMG_BASE = '<?php echo esc_js($img_base); ?>';
+    window.BP_PRIMARY_COLOR = '<?php echo esc_js($color); ?>';
+    var BP_IMG_BASE = window.BP_IMG_BASE;
+    var BP_PRIMARY_COLOR = window.BP_PRIMARY_COLOR;
+    </script>
+    <?php
+}, 1);
+
 // ===== QUANTITY EN PRODUCTO ÚNICO =====
 // En single product: cantidad fija a 1, ocultar selector
 add_filter('woocommerce_quantity_input_args', function($args, $product) {

@@ -2363,3 +2363,71 @@ input.qty { margin: 0px !important; }
         left: 12px;
     }
 }
+
+/* === MODAL VISTA PREVIA BONOPREMIUM === */
+.simple-modal-overlay {
+    background: rgba(0, 0, 0, 0.5) !important;
+    backdrop-filter: blur(4px);
+}
+.simple-modal-box {
+    border-radius: 16px !important;
+    padding: 24px !important;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3) !important;
+}
+.simple-modal-box .simple-modal-title {
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    color: #222 !important;
+    text-align: center !important;
+    margin-bottom: 12px !important;
+}
+.simple-modal-box .simple-modal-close {
+    background: var(--bp-primary) !important;
+    color: #fff !important;
+    border-radius: 50% !important;
+    width: 32px !important;
+    height: 32px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 16px !important;
+    line-height: 1 !important;
+}
+.simple-modal-box .simple-modal-body {
+    text-align: center !important;
+}
+.simple-modal-box .simple-modal-body img {
+    max-width: 100% !important;
+    height: auto !important;
+    border-radius: 12px !important;
+}
+/* El texto del bono dentro del preview */
+.simple-modal-box .textBPView {
+    width: 100% !important;
+}
+.simple-modal-box .textBPView p {
+    text-align: center !important;
+    color: #333 !important;
+    font-size: 15px !important;
+    line-height: 1.6 !important;
+    margin: 12px 0 0 !important;
+}
+/* Botón Vista previa */
+#bpPrevio_pdf {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    background: var(--bp-primary) !important;
+    color: #fff !important;
+    padding: 11px 22px !important;
+    border-radius: 0 !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
+    transition: background .2s !important;
+    margin-top: 4px !important;
+}
+#bpPrevio_pdf:hover {
+    background: var(--bp-primary-dark) !important;
+    color: #fff !important;
+}
