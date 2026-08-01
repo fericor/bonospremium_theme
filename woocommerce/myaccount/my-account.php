@@ -68,6 +68,75 @@ get_header(); ?>
                     </div>
                 </nav>
                 <div class="bp-prof-content">
+                <?php
+                // ===== RESUMEN DEL ESCRITORIO (solo en dashboard) =====
+                $is_dashboard = is_account_page() && ! is_wc_endpoint_url();
+                if ($is_dashboard) :
+
+                    // Pedidos del usuario
+                    $customer_orders = wc_get_orders([
+                        'customer' => get_current_user_id(),
+                        'limit'    => 1,
+                        'status'   => array_keys(wc_get_order_statuses()),
+                        'return'   => 'ids',
+                    ]);
+                    $order_count = count($customer_orders);
+
+                    // Crédito BonosPremium
+                    $wallet = function_exists('bp_get_user_wallet') ? bp_get_user_wallet(get_current_user_id()) : ['saldo' => 0];
+                    $saldo_credito = $wallet['saldo'];
+
+                    // Favoritos (plugin smart-wishlist / list de deseos)
+                    $wishlist_count = 0;
+                    $wishlist_ids = get_user_meta(get_current_user_id(), 'wlfmc_wishlist', true);
+                    if (is_array($wishlist_ids)) $wishlist_count = count($wishlist_ids);
+
+                    // Nombre del usuario
+                    $nombre = wp_get_current_user()->display_name;
+                    ?>
+                    <div class="bp-dash-hello">
+                        <h2>¡Hola, <?php echo esc_html($nombre); ?>!</h2>
+                        <p>Esto es un resumen de tu cuenta BonosPremium.</p>
+                    </div>
+
+                    <div class="bp-dash-grid">
+                        <!-- Saldo de crédito -->
+                        <a href="<?php echo esc_url(wc_get_account_endpoint_url('credito-bonospremium')); ?>" class="bp-dash-card">
+                            <span class="bp-dash-card-icon bp-dash-icon-credit"><i class="fas fa-wallet"></i></span>
+                            <span class="bp-dash-card-info">
+                                <span class="bp-dash-card-value"><?php echo number_format($saldo_credito, 2); ?> €</span>
+                                <span class="bp-dash-card-label">Crédito disponible</span>
+                            </span>
+                        </a>
+
+                        <!-- Pedidos -->
+                        <a href="<?php echo esc_url(wc_get_account_endpoint_url('orders')); ?>" class="bp-dash-card">
+                            <span class="bp-dash-card-icon bp-dash-icon-order"><i class="fas fa-ticket-alt"></i></span>
+                            <span class="bp-dash-card-info">
+                                <span class="bp-dash-card-value"><?php echo (int) $order_count; ?></span>
+                                <span class="bp-dash-card-label">Pedidos</span>
+                            </span>
+                        </a>
+
+                        <!-- Favoritos -->
+                        <a href="<?php echo esc_url(wc_get_account_endpoint_url('favoritos')); ?>" class="bp-dash-card">
+                            <span class="bp-dash-card-icon bp-dash-icon-wish"><i class="fas fa-heart"></i></span>
+                            <span class="bp-dash-card-info">
+                                <span class="bp-dash-card-value"><?php echo (int) $wishlist_count; ?></span>
+                                <span class="bp-dash-card-label">Favoritos</span>
+                            </span>
+                        </a>
+
+                        <!-- Direcciones -->
+                        <a href="<?php echo esc_url(wc_get_account_endpoint_url('edit-address')); ?>" class="bp-dash-card">
+                            <span class="bp-dash-card-icon bp-dash-icon-address"><i class="fas fa-map-marker-alt"></i></span>
+                            <span class="bp-dash-card-info">
+                                <span class="bp-dash-card-value">2</span>
+                                <span class="bp-dash-card-label">Direcciones</span>
+                            </span>
+                        </a>
+                    </div>
+                <?php endif; ?>
                     <?php woocommerce_account_content(); ?>
                 </div>
                 </div>
