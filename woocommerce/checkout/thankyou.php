@@ -1,103 +1,94 @@
 <?php
 /**
- * Custom thank you / order received page
- * BonosPremium Theme
+ * Custom thank you / order received content
+ * Override de WooCommerce checkout/thankyou.php - SOLO contenido (sin header/footer,
+ * porque WooCommerce lo renderiza dentro de la página de checkout).
  */
 
-get_header(); ?>
+defined('ABSPATH') || exit;
+?>
+<div class="bp-thankyou-wrap">
+    <div class="bp-thankyou-header">
+        <div class="bp-thankyou-icon">&#10003;</div>
+        <h1 class="bp-thankyou-title">¡Gracias por tu compra!</h1>
+        <p class="bp-thankyou-sub">Tu pedido ha sido recibido y está siendo procesado.</p>
+        <?php if ($order) : ?>
+        <p class="bp-thankyou-order-num">
+            Pedido: <strong>#<?php echo $order->get_order_number(); ?></strong>
+        </p>
+        <?php endif; ?>
+    </div>
 
-<main class="bp-main-content">
-    <div class="bp-container">
-        <?php
-        // Obtener el pedido directamente del query var 'order-received'
-        global $wp;
-        $order_id = absint($wp->query_vars['order-received'] ?? 0);
-        $order = $order_id ? wc_get_order($order_id) : false;
-        ?>
-        <div class="bp-thankyou-wrap">
-            <div class="bp-thankyou-header">
-                <div class="bp-thankyou-icon">&#10003;</div>
-                <h1 class="bp-thankyou-title">¡Gracias por tu compra!</h1>
-                <p class="bp-thankyou-sub">Tu pedido ha sido recibido y está siendo procesado.</p>
-                <?php if ($order) : ?>
-                <p class="bp-thankyou-order-num">
-                    Pedido: <strong>#<?php echo $order->get_order_number(); ?></strong>
-                </p>
-                <?php endif; ?>
+    <?php if ($order) : ?>
+    <div class="bp-thankyou-details">
+        <div class="bp-detail-card">
+            <h3><i class="fas fa-info-circle"></i> Detalles del pedido</h3>
+            <div class="bp-detail-row">
+                <span>Fecha</span>
+                <span><?php echo wc_format_datetime($order->get_date_created()); ?></span>
             </div>
-
-            <?php if ($order) : ?>
-            <div class="bp-thankyou-details">
-                <div class="bp-detail-card">
-                    <h3><i class="fas fa-info-circle"></i> Detalles del pedido</h3>
-                    <div class="bp-detail-row">
-                        <span>Fecha</span>
-                        <span><?php echo wc_format_datetime($order->get_date_created()); ?></span>
-                    </div>
-                    <div class="bp-detail-row">
-                        <span>Total</span>
-                        <span><strong><?php echo $order->get_formatted_order_total(); ?></strong></span>
-                    </div>
-                    <div class="bp-detail-row">
-                        <span>Método de pago</span>
-                        <span><?php echo $order->get_payment_method_title(); ?></span>
-                    </div>
-                    <div class="bp-detail-row">
-                        <span>Estado</span>
-                        <span class="bp-status-<?php echo esc_attr($order->get_status()); ?>"><?php echo wc_get_order_status_name($order->get_status()); ?></span>
-                    </div>
-                </div>
-
-                <?php if ($order->has_downloadable_item()) : ?>
-                <div class="bp-detail-card">
-                    <h3><i class="fas fa-download"></i> Descargas</h3>
-                    <p class="bp-detail-hint">Puedes descargar tus productos desde tu cuenta.</p>
-                </div>
-                <?php endif; ?>
-
-                <div class="bp-detail-card bp-detail-card--full">
-                    <h3><i class="fas fa-box"></i> Productos</h3>
-                    <table class="bp-thankyou-table">
-                        <thead>
-                            <tr>
-                                <th>Producto</th>
-                                <th>Cant.</th>
-                                <th class="bp-text-right">Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($order->get_items() as $item) : ?>
-                            <tr>
-                                <td><?php echo esc_html($item->get_name()); ?></td>
-                                <td><?php echo $item->get_quantity(); ?></td>
-                                <td class="bp-text-right"><?php echo $order->get_formatted_line_subtotal($item); ?></td>
-                            </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                        <tfoot>
-                            <?php foreach ($order->get_order_item_totals() as $total) : ?>
-                            <tr>
-                                <th colspan="2" class="bp-text-right"><?php echo esc_html($total['label']); ?></th>
-                                <td class="bp-text-right"><?php echo $total['value']; ?></td>
-                            </tr>
-                            <?php endforeach; ?>
-                        </tfoot>
-                    </table>
-                </div>
+            <div class="bp-detail-row">
+                <span>Total</span>
+                <span><strong><?php echo $order->get_formatted_order_total(); ?></strong></span>
             </div>
-            <?php endif; ?>
-
-            <div class="bp-thankyou-actions">
-                <a href="<?php echo esc_url(wc_get_page_permalink('myaccount')); ?>" class="bp-btn-primary">
-                    <i class="fas fa-user"></i> Ir a mi cuenta
-                </a>
-                <a href="<?php echo esc_url(wc_get_page_permalink('shop')); ?>" class="bp-btn-secondary">
-                    <i class="fas fa-arrow-left"></i> Seguir comprando
-                </a>
+            <div class="bp-detail-row">
+                <span>Método de pago</span>
+                <span><?php echo $order->get_payment_method_title(); ?></span>
+            </div>
+            <div class="bp-detail-row">
+                <span>Estado</span>
+                <span class="bp-status-<?php echo esc_attr($order->get_status()); ?>"><?php echo wc_get_order_status_name($order->get_status()); ?></span>
             </div>
         </div>
+
+        <?php if ($order->has_downloadable_item()) : ?>
+        <div class="bp-detail-card">
+            <h3><i class="fas fa-download"></i> Descargas</h3>
+            <p class="bp-detail-hint">Puedes descargar tus productos desde tu cuenta.</p>
+        </div>
+        <?php endif; ?>
+
+        <div class="bp-detail-card bp-detail-card--full">
+            <h3><i class="fas fa-box"></i> Productos</h3>
+            <table class="bp-thankyou-table">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Cant.</th>
+                        <th class="bp-text-right">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($order->get_items() as $item) : ?>
+                    <tr>
+                        <td><?php echo esc_html($item->get_name()); ?></td>
+                        <td><?php echo $item->get_quantity(); ?></td>
+                        <td class="bp-text-right"><?php echo $order->get_formatted_line_subtotal($item); ?></td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+                <tfoot>
+                    <?php foreach ($order->get_order_item_totals() as $total) : ?>
+                    <tr>
+                        <th colspan="2" class="bp-text-right"><?php echo esc_html($total['label']); ?></th>
+                        <td class="bp-text-right"><?php echo $total['value']; ?></td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tfoot>
+            </table>
+        </div>
     </div>
-</main>
+    <?php endif; ?>
+
+    <div class="bp-thankyou-actions">
+        <a href="<?php echo esc_url(wc_get_page_permalink('myaccount')); ?>" class="bp-btn-primary">
+            <i class="fas fa-user"></i> Ir a mi cuenta
+        </a>
+        <a href="<?php echo esc_url(wc_get_page_permalink('shop')); ?>" class="bp-btn-secondary">
+            <i class="fas fa-arrow-left"></i> Seguir comprando
+        </a>
+    </div>
+</div>
 
 <style>
 .bp-thankyou-wrap { max-width: 1100px; margin: 40px auto; }
@@ -142,7 +133,7 @@ get_header(); ?>
 .bp-thankyou-table tfoot td,
 .bp-thankyou-table tfoot th { padding: 8px 4px; border: none; font-weight: 600; }
 .bp-text-right { text-align: right; }
-.bp-thankyou-actions { display: flex; gap: 12px; justify-content: center; }
+.bp-thankyou-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
 .bp-btn-primary, .bp-btn-secondary {
     display: inline-flex; align-items: center; gap: 8px;
     padding: 12px 28px; border-radius: 0;
@@ -174,5 +165,3 @@ get_header(); ?>
     .bp-thankyou-details { grid-template-columns: 1fr; }
 }
 </style>
-
-<?php get_footer(); ?>
