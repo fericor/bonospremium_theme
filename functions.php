@@ -664,3 +664,186 @@ function bp_form_field($type, $name, $label, $required = true, $extra = '') {
     );
 }
 
+// ============================================================
+// CRÉDITO BONOSPREMIUM - ENDPOINT Y COMPRA DE CRÉDITO
+// ============================================================
+// Reemplazamos la salida del endpoint credito-bonospremium del plugin
+// por un diseño app + formulario de compra de crédito con pasarela de pago.
+
+// Obtener saldo del usuario
+function bp_get_user_wallet($user_id) {
+    global $wpdb;
+    $saldo = 0;
+    $row = $wpdb->get_row($wpdb->prepare(
+        "SELECT saldo FROM {$wpdb->prefix}usuario_creditos WHERE user_id = %d", $user_id
+    ));
+    if ($row) $saldo = floatval($row->saldo);
+
+    $historial = $wpdb->get_results($wpdb->prepare(
+        "SELECT * FROM {$wpdb->prefix}credito_transacciones WHERE user_id = %d ORDER BY fecha_transaccion DESC LIMIT 15",
+        $user_id
+    ));
+
+    return ['saldo' => $saldo, 'historial' => $historial];
+}
+
+// Handler del endpoint de la página Mi Cuenta
+// Prioridad 1: empieza a capturar el output (para descartar la salida del plugin que corre a prioridad 10)
+add_action('woocommerce_account_credito-bonospremium_endpoint', function() {
+    ob_start(); // capturamos TODO a partir de aquí, incluida la salida del plugin
+}, 1);
+
+// Prioridad 15: descarta lo capturado del plugin y muestra nuestro diseño
+add_action('woocommerce_account_credito-bonospremium_endpoint', function() {
+    ob_end_clean(); // descartar la salida del plugin (bono_wallet)
+    if (!is_user_logged_in()) return;
+    $user_id = get_current_user_id();
+    $wallet = bp_get_user_wallet($user_id);
+    $saldo = $wallet['saldo'];
+    $historial = $wallet['historial'];
+    ?>
+    <div class="bp-credit-app">
+
+        <!-- Cabecera -->
+        <div class="bp-credit-header">
+            <div class="bp-credit-title">
+                <i class="fas fa-wallet"></i>
+                <div>
+                    <h2>Crédito BonosPremium</h2>
+                    <p>Tu saldo y cómo recargarlo</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tarjeta de saldo -->
+        <div class="bp-credit-balance-card">
+            <div class="bp-credit-balance-top">
+                <span class="bp-credit-balance-label">Saldo disponible</span>
+                <span class="bp-credit-balance-amount"><?php echo number_format($saldo, 2); ?> €</span>
+            </div>
+            <p class="bp-credit-balance-info">Este saldo se descuenta automáticamente en tu próximo pedido.</p>
+        </div>
+
+        <!-- Formulario para añadir crédito -->
+        <div class="bp-credit-box">
+            <h3><i class="fas fa-plus-circle"></i> Añadir crédito</h3>
+            <p class="bp-credit-sub">Elige un importe y paga de forma segura con tu tarjeta o Bizum.</p>
+
+            <form method="post" class="bp-credit-form" id="bp-credit-form">
+                <?php wp_nonce_field('bp_credit_purchase', 'bp_credit_nonce'); ?>
+
+                <!-- Importes rápidos -->
+                <div class="bp-credit-presets">
+                    <?php
+                    $presets = [10, 25, 50, 100];
+                    foreach ($presets as $p) {
+                        echo '<button type="button" class="bp-credit-preset" data-amount="' . esc_attr($p) . '">' . esc_html($p) . ' €</button>';
+                    }
+                    ?>
+                </div>
+
+                <div class="bp-credit-amount-wrap">
+                    <span class="bp-credit-euro">€</span>
+                    <input type="number" name="bp_credit_amount" id="bp_credit_amount" class="bp-credit-input" min="1" step="0.01" value="25" placeholder="Importe" required />
+                </div>
+
+                <button type="submit" name="bp_add_credit" class="bp-credit-submit">
+                    <i class="fas fa-arrow-right"></i> Recargar y pagar
+                </button>
+                <p class="bp-credit-note"><i class="fas fa-lock"></i> Pago seguro. Serás redirigido a la pasarela de pago.</p>
+            </form>
+        </div>
+
+        <!-- Historial -->
+        <div class="bp-credit-box">
+            <h3><i class="fas fa-history"></i> Historial reciente</h3>
+            <?php if (!empty($historial)) : ?>
+                <div class="bp-credit-history">
+                    <?php foreach ($historial as $t) :
+                        $es_credito = ($t->tipo === 'credito');
+                        $signo = $es_credito ? '+' : '-';
+                        ?>
+                        <div class="bp-credit-txn">
+                            <div class="bp-credit-txn-icon <?php echo $es_credito ? 'in' : 'out'; ?>">
+                                <i class="fas <?php echo $es_credito ? 'fa-arrow-down' : 'fa-arrow-up'; ?>"></i>
+                            </div>
+                            <div class="bp-credit-txn-info">
+                                <span class="bp-credit-txn-desc"><?php echo esc_html($t->descripcion); ?></span>
+                                <span class="bp-credit-txn-date"><?php echo date('d/m/Y H:i', strtotime($t->fecha_transaccion)); ?></span>
+                            </div>
+                            <span class="bp-credit-txn-amount <?php echo $es_credito ? 'in' : 'out'; ?>"><?php echo $signo . number_format($t->monto, 2); ?> €</span>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php else : ?>
+                <p class="bp-credit-empty">Aún no tienes movimientos en tu crédito.</p>
+            <?php endif; ?>
+        </div>
+
+    </div>
+
+    <script>
+    jQuery(function($) {
+        // Botones de importes rápidos
+        $('.bp-credit-preset').on('click', function() {
+            $('.bp-credit-preset').removeClass('active');
+            $(this).addClass('active');
+            $('#bp_credit_amount').val($(this).data('amount'));
+        });
+
+        // Enviar formulario -> crea pedido y redirige a la pasarela
+        $('#bp-credit-form').on('submit', function(e) {
+            var amount = parseFloat($('#bp_credit_amount').val());
+            if (!amount || amount <= 0) {
+                e.preventDefault();
+                alert('Introduce un importe válido mayor que 0.');
+                return;
+            }
+            // El formulario se envía por POST normal -> PHP crea el pedido y redirige
+        });
+    });
+    </script>
+    <?php
+});
+
+// Procesar la compra de crédito (crea pedido y redirige al checkout/pago)
+add_action('init', function() {
+    if (isset($_POST['bp_add_credit']) && isset($_POST['bp_credit_nonce'])) {
+        if (!wp_verify_nonce($_POST['bp_credit_nonce'], 'bp_credit_purchase')) {
+            wp_die('Nonce inválido.');
+        }
+        if (!is_user_logged_in()) {
+            wp_safe_redirect(wc_get_account_endpoint_url('credito-bonospremium'));
+            exit;
+        }
+
+        $amount = max(1, (float) sanitize_text_field($_POST['bp_credit_amount']));
+        $user_id = get_current_user_id();
+
+        // Crear el pedido de crédito
+        $order = wc_create_order(['customer_id' => $user_id]);
+        $order->add_product(wc_get_product($order->get_id()), 1);
+
+        // Para un pedido de crédito: usamos una línea de item y cero productos reales.
+        $order->remove_order_items();
+        $item = new WC_Order_Item_Product();
+        $item->set_name('Recarga de Crédito BonosPremium');
+        $item->set_quantity(1);
+        $item->set_subtotal($amount);
+        $item->set_total($amount);
+        $order->add_item($item);
+
+        $order->calculate_totals();
+
+        // Meta para que el plugin añada el crédito tras el pago
+        $order->update_meta_data('_bono_credit_add', 'yes');
+        $order->update_meta_data('_bono_credit_add_amount', $amount);
+        $order->update_meta_data('_bono_credit_add_user_id', $user_id);
+        $order->save();
+
+        // Redirigir a la pasarela de pago (checkout del pedido)
+        wp_safe_redirect($order->get_checkout_payment_url());
+        exit;
+    }
+});
+
