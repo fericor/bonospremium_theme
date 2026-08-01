@@ -215,10 +215,25 @@ add_action('wp_footer', function() {
               '<p style="margin-top:12px;margin-bottom:0;"><strong>Si tienes bonos activos o sin canjear, te recomendamos usarlos antes de eliminar tu cuenta.</strong></p>' +
             '</div>'
         );
-        // Traducir el aviso del administrador del plugin (está en inglés)
-        $('p:contains("Just a heads up")').each(function() {
-            $(this).html('<strong>Atención:</strong> eres el administrador del sitio. Si continúas, tu propia cuenta será eliminada.');
-        });
+        // Traducir el aviso del administrador del plugin (está en inglés, React lo inserta después)
+        var traduceAdmin = function() {
+            $('p, div, span').filter(function() {
+                return $(this).text().indexOf('Just a heads up') !== -1 && $(this).children().length === 0;
+            }).first().html('<strong>Atención:</strong> eres el administrador del sitio. Si continúas, tu propia cuenta será eliminada.');
+        };
+        // Intentar ahora y luego observar cambios del DOM (React)
+        traduceAdmin();
+        if ('MutationObserver' in window) {
+            var observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function() {
+                    if (document.body.innerHTML.indexOf('Just a heads up') !== -1) {
+                        traduceAdmin();
+                        observer.disconnect();
+                    }
+                });
+            });
+            observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+        }
         // Asegurar que el wrapper del botón no añada estilos extra
         $('.wpfda-submit').css('width', '100%');
     });
