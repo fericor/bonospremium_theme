@@ -1274,7 +1274,6 @@ input.qty { margin: 0px !important; }
 }
 .bp-account-app {
     min-height: 100vh;
-    background: #fff;
 }
 
 /* Grid del Mi Cuenta (logueado): menú + contenido en 2 columnas (solo no-móvil) */
