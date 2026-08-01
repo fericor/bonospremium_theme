@@ -1216,9 +1216,10 @@ input.qty { margin: 0px !important; }
 
 
 /* === MY ACCOUNT - APP STYLE v2 === */
+/* En desktop/tablet grande: ancho cómodo; en móvil: compacto (app) */
 .bp-account-page .bp-container {
-    max-width: 480px;
-    padding: 0;
+    max-width: 760px;
+    padding: 0 20px;
 }
 .bp-account-app {
     min-height: 100vh;
@@ -1651,6 +1652,8 @@ input.qty { margin: 0px !important; }
 }
 
 @media (max-width: 768px) {
+    /* En móvil el Mi Cuenta vuelve al ancho compacto app */
+    .bp-account-page .bp-container { max-width: 480px; padding: 0; }
     .bp-prof-content { padding: 0 16px 30px; }
     .bp-auth-app { padding: 0 16px 40px; }
     /* Orders table -> cards en móvil */
