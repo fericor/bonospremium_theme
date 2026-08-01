@@ -2848,3 +2848,45 @@ input.qty { margin: 0px !important; }
     background: var(--bp-primary-dark) !important;
     color: #fff !important;
 }
+
+/* ===== CORAZÓN WISHLIST EN LOOP DE PRODUCTOS (plugin smart-wishlist) ===== */
+/* Posicionar el botón del plugin sobre la imagen de la tarjeta producto */
+.bp-product-card { position: relative; }
+.bp-product-card .bp-product-image-wrap { position: relative; }
+
+.wlfmc-add-to-wishlist {
+    position: absolute !important;
+}
+.bp-product-card .wlfmc-add-to-wishlist {
+    top: 12px !important;
+    right: 12px !important;
+    left: auto !important;
+    bottom: auto !important;
+    z-index: 5;
+}
+/* Círculo de fondo para el corazón */
+.bp-product-card .wlfmc-add-button a {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 40px !important;
+    height: 40px !important;
+    background: rgba(255,255,255,.95) !important;
+    border-radius: 50% !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,.15) !important;
+    transition: all .2s !important;
+    text-decoration: none !important;
+}
+.bp-product-card .wlfmc-add-button a:hover {
+    background: var(--bp-primary) !important;
+    transform: scale(1.1);
+}
+/* El icono corazón */
+.bp-product-card .wlfmc-icon-heart {
+    color: #666 !important;
+    font-size: 1.1rem !important;
+    transition: color .2s;
+}
+.bp-product-card .wlfmc-add-button a:hover .wlfmc-icon-heart { color: #fff !important; }
+.bp-product-card .wlfmc-add-button a.wlfmc-stock-wishlist .wlfmc-icon-heart,
+.bp-product-card .wlfmc-add-button a.wlfmc-btn-outofstock .wlfmc-icon-heart { color: #ccc !important; }
