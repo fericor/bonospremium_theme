@@ -55,7 +55,7 @@ get_header(); ?>
                             <span class="bp-prof-group-title"><?php echo esc_html($group_name); ?></span>
                             <?php foreach ($items as $endpoint => $label) :
                                 $icon = isset($icons[$endpoint]) ? $icons[$endpoint] : 'fa-circle';
-                                $is_active = is_wc_endpoint_url($endpoint) || ($endpoint === 'dashboard' && is_account_page() && !wc_get_endpoint_url());
+                                $is_active = is_wc_endpoint_url( $endpoint ) || ( $endpoint === 'dashboard' && is_account_page() && ! is_wc_endpoint_url() );
                             ?>
                                 <a href="<?php echo esc_url(wc_get_account_endpoint_url($endpoint)); ?>" class="bp-prof-menu-item<?php echo esc_attr($is_active ? ' active' : ''); ?>">
                                     <span class="bp-prof-icon"><i class="fas <?php echo $icon; ?>"></i></span>
