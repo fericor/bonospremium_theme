@@ -822,10 +822,8 @@ add_action('init', function() {
 
         // Crear el pedido de crédito
         $order = wc_create_order(['customer_id' => $user_id]);
-        $order->add_product(wc_get_product($order->get_id()), 1);
 
-        // Para un pedido de crédito: usamos una línea de item y cero productos reales.
-        $order->remove_order_items();
+        // Línea de item de crédito (sin producto real)
         $item = new WC_Order_Item_Product();
         $item->set_name('Recarga de Crédito BonosPremium');
         $item->set_quantity(1);
@@ -846,4 +844,68 @@ add_action('init', function() {
         exit;
     }
 });
+
+// ============================================================
+// AÑADIR CRÉDITO TRAS EL PAGO DEL PEDIDO DE RECARGA
+// ============================================================
+add_action('woocommerce_payment_complete', 'bp_add_credit_after_payment', 20, 1);
+add_action('woocommerce_order_status_completed', 'bp_add_credit_after_payment', 20, 1);
+add_action('woocommerce_order_status_processing', 'bp_add_credit_after_payment', 20, 1);
+
+function bp_add_credit_after_payment($order_id) {
+    $order = wc_get_order($order_id);
+    if (!$order) return;
+
+    // Solo pedidos de recarga de crédito (marcados al crearse)
+    if ($order->get_meta('_bono_credit_add') !== 'yes') return;
+    if ($order->get_meta('_bono_credit_processed') === 'yes') return;
+
+    $amount = (float) $order->get_meta('_bono_credit_add_amount');
+    $user_id = (int) $order->get_meta('_bono_credit_add_user_id');
+    if ($amount <= 0 || !$user_id) return;
+
+    global $wpdb;
+    $tabla_saldo  = $wpdb->prefix . 'usuario_creditos';
+    $tabla_history = $wpdb->prefix . 'credito_transacciones';
+
+    // Saldo actual
+    $result = $wpdb->get_row($wpdb->prepare(
+        "SELECT saldo FROM {$tabla_saldo} WHERE user_id = %d", $user_id
+    ));
+    $saldo_actual = $result ? floatval($result->saldo) : 0;
+    $saldo_nuevo = $saldo_actual + $amount;
+
+    // Actualizar o insertar saldo del usuario
+    if ($result) {
+        $wpdb->update($tabla_saldo, ['saldo' => $saldo_nuevo], ['user_id' => $user_id], ['%f'], ['%d']);
+    } else {
+        $wpdb->insert($tabla_saldo, [
+            'user_id'      => $user_id,
+            'saldo'        => $saldo_nuevo,
+            'fecha_creacion' => current_time('mysql'),
+            'fecha_actualizacion' => current_time('mysql'),
+        ]);
+    }
+
+    // Registrar transacción
+    $wpdb->insert($tabla_history, [
+        'user_id'           => $user_id,
+        'tipo'              => 'credito',
+        'monto'             => $amount,
+        'saldo_anterior'    => $saldo_actual,
+        'saldo_nuevo'       => $saldo_nuevo,
+        'descripcion'       => 'Recarga de crédito (pedido #' . $order_id . ')',
+        'order_id'          => $order_id,
+        'fecha_transaccion' => current_time('mysql'),
+    ]);
+
+    // Marcar como procesado
+    $order->update_meta_data('_bono_credit_processed', 'yes');
+    $order->add_order_note(sprintf(
+        'Se añadieron %s € al crédito BonosPremium del usuario. Nuevo saldo: %s €',
+        number_format($amount, 2),
+        number_format($saldo_nuevo, 2)
+    ));
+    $order->save();
+}
 
