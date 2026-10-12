@@ -2,7 +2,6 @@ jQuery(document).ready(function($) {
     // ===== HEADER DROPDOWN (menú hamburguesa) =====
     var $menuToggle = $('.bp-menu-toggle');
     var $userMenu = $('.bp-user-nav-menu');
-    var $backBtn = $('.bp-back-btn');
 
     // Determinar si estamos en inicio o en categorías/archivo de productos
     // (clases del body: home, page-id..., post-type-archive-product, tax-product_cat, archive)
@@ -18,37 +17,28 @@ jQuery(document).ready(function($) {
 
     function bpUpdateHeaderControls() {
         if (bpIsNavPage()) {
-            // En inicio/categorías: hamburguesa (mostrar) - flecha oculta
+            // En inicio/categorías: hamburguesa (mostrar)
             $('body').removeClass('bp-is-back-page');
             $('body').addClass('bp-is-nav-page');
         } else {
-            // En otras páginas: flecha atrás - hamburguesa oculta
-            $('body').removeClass('bp-is-nav-page');
-            $('body').addClass('bp-is-back-page');
+            // En otras páginas: el menú hamburguesa SIEMPRE visible (Félix 10/08:
+            // quitado el botón volver atrás del header — solo el menú)
+            $('body').removeClass('bp-is-back-page');
+            $('body').addClass('bp-is-nav-page');
         }
     }
     bpUpdateHeaderControls();
-
-    // Flecha atrás: vuelve a la página anterior (o a la tienda si no hay historial)
-    $backBtn.on('click', function(e) {
-        e.preventDefault();
-        if (window.history.length > 1) {
-            window.history.back();
-        } else {
-            window.location.href = '/';
-        }
-    });
 
     $menuToggle.on('click', function(e) {
         e.stopPropagation();
         $userMenu.toggleClass('open');
         $(this).toggleClass('active');
+        // X normal: alternar icono hamburguesa <-> X (Félix 11/08)
+        var $icon = $(this).find('i');
         if ($(this).hasClass('active')) {
-            $(this).find('span').eq(0).css('transform', 'rotate(45deg) translate(4px, 4px)');
-            $(this).find('span').eq(1).css('opacity', '0');
-            $(this).find('span').eq(2).css('transform', 'rotate(-45deg) translate(4px, -4px)');
+            $icon.removeClass('fa-bars').addClass('fa-times');
         } else {
-            $(this).find('span').each(function() { $(this).css('transform', '').css('opacity', ''); });
+            $icon.removeClass('fa-times').addClass('fa-bars');
         }
     });
 
@@ -71,7 +61,7 @@ jQuery(document).ready(function($) {
             $('.bp-search-overlay').removeClass('open');
             $('.bp-user-nav-menu').removeClass('open');
             $('.bp-menu-toggle').removeClass('active');
-            $('.bp-menu-toggle span').each(function() { $(this).css('transform', '').css('opacity', ''); });
+            $('.bp-menu-toggle i').removeClass('fa-times').addClass('fa-bars');
         }
     });
 
@@ -80,7 +70,7 @@ jQuery(document).ready(function($) {
         if (!$(e.target).closest('.bp-header-left').length) {
             $('.bp-user-nav-menu').removeClass('open');
             $('.bp-menu-toggle').removeClass('active');
-            $('.bp-menu-toggle span').each(function() { $(this).css('transform', '').css('opacity', ''); });
+            $('.bp-menu-toggle i').removeClass('fa-times').addClass('fa-bars');
         }
     });
 
@@ -154,55 +144,97 @@ jQuery(document).ready(function($) {
     var loadingMore = false;
     var $loadWrap = $('.bp-load-more-wrap');
 
-    // Product image slider dots
+    // Product image slider dots (transform-based, sin overflow scroll)
     $('.bp-slider').each(function() {
         var $slider = $(this);
         var $track = $slider.find('.bp-slider-track');
         var $slides = $track.find('.bp-slide');
         var $dots = $slider.find('.bp-slider-dots');
+        var slidesCount = $slides.length;
+        var currentIndex = 0;
 
-        if ($slides.length > 1) {
+        if (slidesCount > 1) {
             // Create dots
-            for (var i = 0; i < $slides.length; i++) {
+            for (var i = 0; i < slidesCount; i++) {
                 $dots.append('<span data-index="' + i + '"></span>');
             }
             $dots.find('span:first').addClass('active');
 
-            // Update active dot on scroll
-            $track.on('scroll', function() {
-                var index = Math.round($track.scrollLeft() / $track.outerWidth());
+            // Go to slide function (transform-based)
+            function goToSlide(index) {
+                if (index < 0) index = 0;
+                if (index >= slidesCount) index = slidesCount - 1;
+                currentIndex = index;
+                // translateX(-index/slidesCount * 100%) shifts by one slide
+                $track.css('transform', 'translateX(-' + ((index / slidesCount) * 100) + '%)');
                 $dots.find('span').removeClass('active').eq(index).addClass('active');
-            });
+            }
 
-            // Click dot to scroll
+            // Click dot to go to slide
             $dots.on('click', 'span', function() {
-                var idx = $(this).data('index');
-                $track.animate({ scrollLeft: idx * $track.outerWidth() }, 300);
+                goToSlide(parseInt($(this).data('index')));
             });
 
-            // Mouse drag to scroll
-            var isDown = false, startX = 0, scrollStart = 0;
+            // Mouse drag to scroll (transform-based)
+            var isDown = false, startX = 0, dragStartIndex = 0;
             $slider.on('mousedown', function(e) {
                 isDown = true;
                 $slider.addClass('bp-dragging');
                 startX = e.pageX - $slider.offset().left;
-                scrollStart = $track.scrollLeft();
+                dragStartIndex = currentIndex;
                 e.preventDefault();
             });
             $slider.on('mousemove', function(e) {
                 if (!isDown) return;
                 e.preventDefault();
                 var x = e.pageX - $slider.offset().left;
-                var walk = (x - startX) * 1.5;
-                $track.scrollLeft(scrollStart - walk);
+                var walk = (x - startX) / $slider.width();
+                var idx = Math.round(dragStartIndex - walk * 3);
+                if (idx < 0) idx = 0;
+                if (idx >= slidesCount) idx = slidesCount - 1;
+                // Show intermediate positions during drag
+                $track.css('transition', 'none');
+                var dragPos = ((dragStartIndex - (walk * 3)) / slidesCount) * 100;
+                $track.css('transform', 'translateX(-' + Math.min(Math.max(dragPos, 0), ((slidesCount-1) / slidesCount) * 100) + '%)');
             });
             $(document).on('mouseup', function() {
+                if (!isDown) return;
                 isDown = false;
                 $slider.removeClass('bp-dragging');
+                $track.css('transition', 'transform 0.3s ease');
+                // Snap to nearest slide
+                var idx = Math.round(currentIndex);
+                goToSlide(idx);
             });
             $slider.on('mouseleave', function() {
+                if (!isDown) return;
                 isDown = false;
                 $slider.removeClass('bp-dragging');
+                $track.css('transition', 'transform 0.3s ease');
+                goToSlide(currentIndex);
+            });
+
+            // Touch support for mobile
+            var touchStartX = 0, touchStartIndex = 0;
+            $slider.on('touchstart', function(e) {
+                touchStartX = e.originalEvent.touches[0].pageX - $slider.offset().left;
+                touchStartIndex = currentIndex;
+                $track.css('transition', 'none');
+            });
+            $slider.on('touchmove', function(e) {
+                var x = e.originalEvent.touches[0].pageX - $slider.offset().left;
+                var walk = (x - touchStartX) / $slider.width();
+                var dragPos = ((touchStartIndex - (walk * 3)) / slidesCount) * 100;
+                $track.css('transform', 'translateX(-' + Math.min(Math.max(dragPos, 0), ((slidesCount-1) / slidesCount) * 100) + '%)');
+            });
+            $slider.on('touchend', function(e) {
+                $track.css('transition', 'transform 0.3s ease');
+                var x = e.originalEvent.changedTouches[0].pageX - $slider.offset().left;
+                var walk = (x - touchStartX) / $slider.width();
+                var idx = Math.round(touchStartIndex - walk * 3);
+                if (idx < 0) idx = 0;
+                if (idx >= slidesCount) idx = slidesCount - 1;
+                goToSlide(idx);
             });
         }
     });
@@ -282,10 +314,5 @@ jQuery(document).ready(function($) {
         }
     });
 
-    // ===== CONDICIONES TOGGLE (single product) =====
-    $('.bp-condiciones-toggle').on('click', function() {
-        var panel = $(this).closest('.bp-condiciones-panel');
-        panel.find('.bp-condiciones-body').slideToggle(250);
-        panel.toggleClass('is-open');
-    });
+    // ===== CONDICIONES (single product) — 08/09: texto normal, sin toggle =====
 });

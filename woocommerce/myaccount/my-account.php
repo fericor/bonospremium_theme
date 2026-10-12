@@ -4,53 +4,81 @@
  * BonosPremium Theme
  */
 get_header(); ?>
-<main class="bp-main-content bp-account-page">
+<main class="bp-main-content">
     <div class="bp-container">
         <div class="bp-account-app">
             <?php if (is_user_logged_in()) : 
                 $current_user = wp_get_current_user();
                 $menu_items = wc_get_account_menu_items();
-                // Icono y grupo por endpoint
-                $icons = [
-                    'dashboard'       => 'fa-th-large',
-                    'orders'          => 'fa-ticket-alt',
-                    'downloads'       => 'fa-download',
-                    'edit-address'    => 'fa-map-marker-alt',
-                    'payment-methods' => 'fa-credit-card',
-                    'edit-account'    => 'fa-user-cog',
-                    'customer-logout' => 'fa-sign-out-alt',
+
+                // ===== ORDEN MANUAL DEL MENÚ =====
+                // Tú decides aquí: grupos y, dentro de cada grupo, el orden de los endpoints.
+                // Los labels reales se rellenan luego desde WooCommerce.
+                $orden = [
+                    'Mi cuenta' => [
+                        'dashboard',
+                        'orders',
+                        'downloads',
+						'credito-bonospremium',
+						'wlfmc-wishlist',
+                    ],
+                    'Ajustes' => [
+                        'edit-address',
+                        'edit-account',
+                        'payment-methods',
+                        'wpf-delete-account',
+                    ],
                 ];
-                // Agrupamos: [nombre_grupo => [slug=>label]]
-                $menu_groups = [
-                    'Mi cuenta' => [],
-                    'Mi actividad' => [],
-                    'Ajustes' => [],
-                ];
-                $group_of = [
-                    'dashboard'       => 'Mi actividad',
-                    'orders'          => 'Mi actividad',
-                    'downloads'       => 'Mi actividad',
-                    'edit-address'    => 'Mi cuenta',
-                    'edit-account'    => 'Ajustes',
-                    'payment-methods' => 'Ajustes',
-                ];
-                foreach ($menu_items as $endpoint => $label) {
-                    if ($endpoint === 'customer-logout') continue; // el logout va después
-                    $g = isset($group_of[$endpoint]) ? $group_of[$endpoint] : 'Mi cuenta';
-                    $menu_groups[$g][$endpoint] = $label;
+
+                // Construimos $menu_groups respetando el orden de $orden
+                $menu_groups = [];
+                foreach ($orden as $group_name => $endpoints) {
+                    $menu_groups[$group_name] = [];
+                    foreach ($endpoints as $endpoint) {
+                        if ($endpoint === 'customer-logout') continue;
+                        if (isset($menu_items[$endpoint])) {
+                            $menu_groups[$group_name][$endpoint] = $menu_items[$endpoint];
+                        }
+                    }
                 }
             ?>
                 <div class="bp-account-layout">
                 <nav class="bp-prof-menu">
+                    <div class="bp-prof-header">
+                        <div class="bp-prof-avatar">
+                            <?php echo get_avatar( get_current_user_id(), 64 ); ?>
+                        </div>
+                        <div class="bp-prof-id">
+                            <span class="bp-prof-name"><?php echo esc_html( wp_get_current_user()->display_name ); ?></span>
+                            <span class="bp-prof-mail"><?php echo esc_html( wp_get_current_user()->user_email ); ?></span>
+                        </div>
+                    </div>
                     <?php foreach ($menu_groups as $group_name => $items) : if (empty($items)) continue; ?>
                         <div class="bp-prof-group">
                             <span class="bp-prof-group-title"><?php echo esc_html($group_name); ?></span>
                             <?php foreach ($items as $endpoint => $label) :
-                                $icon = isset($icons[$endpoint]) ? $icons[$endpoint] : 'fa-circle';
-                                $is_active = is_wc_endpoint_url( $endpoint ) || ( $endpoint === 'dashboard' && is_account_page() && ! is_wc_endpoint_url() );
+                                // ===== Detectar item activo =====
+								$is_active = false;
+
+								// 1) Endpoints estándar de WooCommerce
+								if ( is_wc_endpoint_url( $endpoint ) ) {
+									$is_active = true;
+								}
+
+								// 2) Dashboard (cuando no hay ningún endpoint activo)
+								if ( $endpoint === 'dashboard' && is_account_page() && ! is_wc_endpoint_url() ) {
+									$is_active = true;
+								}
+
+								// 3) Detección por URL actual (para endpoints personalizados / de plugins)
+								$current_url = trailingslashit( home_url( add_query_arg( [], $GLOBALS['wp']->request ) ) );
+								$item_url    = trailingslashit( wc_get_account_endpoint_url( $endpoint ) );
+
+								if ( ! $is_active && strpos( $current_url, $item_url ) === 0 && $endpoint !== 'dashboard' ) {
+									$is_active = true;
+								}
                             ?>
                                 <a href="<?php echo esc_url(wc_get_account_endpoint_url($endpoint)); ?>" class="bp-prof-menu-item<?php echo esc_attr($is_active ? ' active' : ''); ?>">
-                                    <span class="bp-prof-icon"><i class="fas <?php echo $icon; ?>"></i></span>
                                     <span class="bp-prof-label"><?php echo esc_html($label); ?></span>
                                     <span class="bp-prof-arrow">›</span>
                                 </a>
@@ -92,60 +120,34 @@ get_header(); ?>
                     // Nombre del usuario
                     $nombre = wp_get_current_user()->display_name;
                     ?>
-                    <div class="bp-dash-hello">
-                        <h2>¡Hola, <?php echo esc_html($nombre); ?>!</h2>
-                        <p>Esto es un resumen de tu cuenta BonosPremium.</p>
-                    </div>
-
-                    <div class="bp-dash-grid">
-                        <!-- Saldo de crédito -->
-                        <a href="<?php echo esc_url(wc_get_account_endpoint_url('credito-bonospremium')); ?>" class="bp-dash-card">
-                            <span class="bp-dash-card-icon bp-dash-icon-credit"><i class="fas fa-wallet"></i></span>
-                            <span class="bp-dash-card-info">
-                                <span class="bp-dash-card-value"><?php echo number_format($saldo_credito, 2); ?> €</span>
-                                <span class="bp-dash-card-label">Crédito disponible</span>
-                            </span>
-                        </a>
-
-                        <!-- Pedidos -->
-                        <a href="<?php echo esc_url(wc_get_account_endpoint_url('orders')); ?>" class="bp-dash-card">
-                            <span class="bp-dash-card-icon bp-dash-icon-order"><i class="fas fa-ticket-alt"></i></span>
-                            <span class="bp-dash-card-info">
-                                <span class="bp-dash-card-value"><?php echo (int) $order_count; ?></span>
-                                <span class="bp-dash-card-label">Pedidos</span>
-                            </span>
-                        </a>
-
-                        <!-- Favoritos (lista de deseos del plugin) -->
-                        <a href="<?php echo esc_url(home_url('/favoritos/')); ?>" class="bp-dash-card">
-                            <span class="bp-dash-card-icon bp-dash-icon-wish"><i class="fas fa-heart"></i></span>
-                            <span class="bp-dash-card-info">
-                                <span class="bp-dash-card-value"><?php echo (int) $wishlist_count; ?></span>
-                                <span class="bp-dash-card-label">Favoritos</span>
-                            </span>
-                        </a>
-
-                        <!-- Direcciones -->
-                        <a href="<?php echo esc_url(wc_get_account_endpoint_url('edit-address')); ?>" class="bp-dash-card">
-                            <span class="bp-dash-card-icon bp-dash-icon-address"><i class="fas fa-map-marker-alt"></i></span>
-                            <span class="bp-dash-card-info">
-                                <span class="bp-dash-card-value">2</span>
-                                <span class="bp-dash-card-label">Direcciones</span>
-                            </span>
-                        </a>
-                    </div>
                 <?php endif; ?>
                     <?php woocommerce_account_content(); ?>
                 </div>
                 </div>
             <?php else : ?>
                 <div class="bp-auth-app">
-                    <div class="bp-auth-brand">
-                        <img src="<?php echo get_template_directory_uri(); ?>/assets/logo_rectangulo.png" alt="BonosPremium" class="bp-auth-logo" />
-                    </div>
+                    <?php $bp_es_logout = isset($_GET['bp_logout']) || isset($_GET['loggedout']) || isset($_GET['account-logout']); ?>
+                    <?php if ($bp_es_logout) : ?>
+                        <div class="bp-auth-logout-msg">
+                            <div class="bp-auth-logout-icon"><i class="fas fa-check-circle"></i></div>
+                            <h2>Has cerrado la sesión</h2>
+                            <p>Tu sesión se ha cerrado correctamente. ¡Hasta pronto!</p>
+                            <a href="<?php echo esc_url(home_url('/')); ?>" class="bp-auth-btn">Volver al inicio</a>
+                        </div>
+                    <?php endif; ?>
+                    <?php if (!$bp_es_logout) : ?>
                     <div class="bp-auth-content">
-                        <?php woocommerce_account_content(); ?>
+                        <?php
+                        // Forzar el formulario de login SIEMPRE (evita que WooCommerce muestre
+                        // el dashboard residual "Hola..." cuando hay una cookie de sesión a medias)
+                        if (function_exists('wc_get_template')) {
+                            wc_get_template('myaccount/form-login.php');
+                        } else {
+                            woocommerce_account_content();
+                        }
+                        ?>
                     </div>
+                    <?php endif; ?>
                 </div>
             <?php endif; ?>
         </div>

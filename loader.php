@@ -30,7 +30,7 @@
     width: 40px;
     height: 40px;
     border: 4px solid #e0e0e0;
-    border-top-color: #039CDC;
+    border-top-color: var(--bp-primary, #039CDC);
     border-radius: 50%;
     animation: bp-loader-spin .8s linear infinite;
 }
@@ -40,13 +40,22 @@
 </style>
 
 <script>
-window.addEventListener('load', function() {
-    var loader = document.getElementById('bp-loader');
-    if (loader) {
-        loader.classList.add('bp-loader-hidden');
-        setTimeout(function() {
-            loader.style.display = 'none';
-        }, 300);
+// Ocultar el loader lo antes posible (DOMContentLoaded + fallback 2.5s):
+// si un script externo (pixel, fuentes) tarda, la página no queda tapada.
+(function() {
+    function bpHideLoader() {
+        var loader = document.getElementById('bp-loader');
+        if (loader && !loader.classList.contains('bp-loader-hidden')) {
+            loader.classList.add('bp-loader-hidden');
+            setTimeout(function() { loader.style.display = 'none'; }, 300);
+        }
     }
-});
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', bpHideLoader);
+    } else {
+        bpHideLoader();
+    }
+    // Fallback: si window.load tarda (scripts de terceros), ocultar a los 2.5s
+    setTimeout(bpHideLoader, 2500);
+})();
 </script>

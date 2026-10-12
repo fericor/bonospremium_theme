@@ -98,6 +98,34 @@
     </div>
 </footer>
 
+<?php get_template_part('cookies-consent'); ?>
+
+<!-- Modal mapa de bonos (global 03/09) — pantalla completa con todos los markers.
+     Antes vivía solo en single-product.php; movido al footer para poder abrirse
+     desde el menú de WP (enlace con clase bp-open-map) en cualquier página. -->
+<div class="bp-map-modal" id="bp-map-modal" role="dialog" aria-modal="true" aria-label="Mapa de bonos">
+    <button type="button" class="bp-map-modal-close" aria-label="Cerrar mapa">&times;</button>
+    <div class="bp-map-modal-body">
+        <div class="bp-map-rango">
+            <span class="bp-map-rango-ico" aria-hidden="true"><i class="fas fa-location-crosshairs"></i></span>
+            <label class="bp-map-rango-label" for="bp-map-rango-input">Radio</label>
+            <input type="range" id="bp-map-rango-input" class="bp-map-rango-input" min="5" max="100" step="5" value="25" aria-label="Radio de búsqueda en kilómetros" />
+            <span class="bp-map-rango-val" id="bp-map-rango-val">25 km</span>
+        </div>
+        <div id="bp-map-bonos" class="bp-map-bonos"></div>
+        <div id="bp-map-vacio" class="bp-map-vacio" style="display:none;">
+            <div class="bp-map-vacio-card">
+                <button type="button" class="bp-map-vacio-cerrar" id="bp-map-vacio-cerrar" aria-label="Cerrar aviso">×</button>
+                <div class="bp-map-vacio-icon"><i class="fas fa-map-marker-alt"></i></div>
+                <h4 class="bp-map-vacio-titulo">Sin bonos en este radio</h4>
+                <p class="bp-map-vacio-desc">No hay bonos a <strong id="bp-map-vacio-km">25 km</strong> de tu zona.<br />Cierra este aviso para ver todos los bonos del mapa.</p>
+                <button type="button" class="bp-map-vacio-btn" id="bp-map-vacio-btn">Ampliar radio a 100 km</button>
+            </div>
+        </div>
+        <div id="bp-map-tarjeta" class="bp-map-tarjeta" style="display:none;"></div>
+    </div>
+</div>
+
 <?php wp_footer(); ?>
 </body>
 </html>
