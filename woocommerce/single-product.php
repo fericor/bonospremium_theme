@@ -52,17 +52,38 @@ get_header(); ?>
                 <div class="bp-slider">
                     <div class="bp-slider-track">
                         <?php
-                        // Main product image (medium_large ~768px: el slider no necesita el original
-                        // de 2-3MB — Félix 10/08, optimización de velocidad)
-                        echo '<div class="bp-slide">' . wp_get_attachment_image($product->get_image_id(), 'medium_large') . '</div>';
-                        // Gallery images (filtrar la imagen principal si está repetida)
-                        $galleries = $product->get_gallery_image_ids();
-                        $main_id   = $product->get_image_id();
-                        if (!empty($galleries)) {
-                            foreach ($galleries as $gid) {
-                                if ($gid == $main_id) continue;
-                                echo '<div class="bp-slide">' . wp_get_attachment_image($gid, 'medium_large') . '</div>';
+                        // 21/10/2026: portada + galería SIN fotos repetidas y a máxima calidad.
+                        // - Deduplica por contenido (md5 del fichero), no por ID: al subir dos veces
+                        //   la misma foto WP crea IMG_x-1.jpeg con otro ID y salían dos iguales.
+                        // - Tamaño 'full' + srcset con el ancho real del slider (máx 564px): el
+                        //   navegador baja la versión más grande que necesita, no los 3MB siempre.
+                        $bp_sizes  = '(max-width: 768px) 100vw, 564px';
+                        $bp_seen   = array();
+                        $bp_first  = true;
+                        $bp_slides = array_merge(
+                            array((int) $product->get_image_id()),
+                            (array) $product->get_gallery_image_ids()
+                        );
+                        foreach ($bp_slides as $bp_id) {
+                            if (!$bp_id || isset($bp_seen[$bp_id])) { continue; }
+                            $bp_seen[$bp_id] = 1;
+                            $bp_hash = get_post_meta($bp_id, '_bp_file_md5', true);
+                            if (!$bp_hash) {
+                                $bp_path = get_attached_file($bp_id);
+                                if ($bp_path && is_readable($bp_path)) {
+                                    $bp_hash = md5_file($bp_path);
+                                    update_post_meta($bp_id, '_bp_file_md5', $bp_hash);
+                                } else {
+                                    $bp_hash = 'id' . $bp_id;
+                                }
                             }
+                            if (isset($bp_seen[$bp_hash])) { continue; } // copia idéntica con otro ID
+                            $bp_seen[$bp_hash] = 1;
+                            $bp_attr = $bp_first
+                                ? array('sizes' => $bp_sizes, 'loading' => 'eager', 'fetchpriority' => 'high')
+                                : array('sizes' => $bp_sizes, 'loading' => 'lazy');
+                            echo '<div class="bp-slide">' . wp_get_attachment_image($bp_id, 'full', false, $bp_attr) . '</div>';
+                            $bp_first = false;
                         }
                         ?>
                     </div>

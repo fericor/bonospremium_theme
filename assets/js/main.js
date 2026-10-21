@@ -314,5 +314,70 @@ jQuery(document).ready(function($) {
         }
     });
 
+    // ===== PRECIO DE LA VARIACIÓN EN LA FICHA (inmediato) — 16/10 =====
+    // WooCommerce 11.x retrasa a propósito 300 ms el evento `show_variation`
+    // (add-to-cart-variation.js: "Add a delay ... screen readers"), así que el precio
+    // se quedaba ~300 ms con el valor anterior y luego cambiaba (doble pintado).
+    // Aquí se pinta en el MISMO tick del `change`, leyendo la variación del JSON
+    // embebido (data-product_variations) y usando su `price_html`, que es EXACTAMENTE
+    // el HTML formateado por WooCommerce (38€, no 38,00€).
+    function bpPintarPrecioVariacion(variation) {
+        var $dest = $('#bp-single-price');
+        if (!$dest.length) return false;
+        var priceHtml = (variation && variation.price_html) ? variation.price_html : '';
+        if (!priceHtml) return false;
+        var $wrap = $('<div>').html(priceHtml);
+        var $del = $wrap.find('del .woocommerce-Price-amount').first();
+        var $ins = $wrap.find('ins .woocommerce-Price-amount').first();
+        if (!$ins.length) $ins = $wrap.find('.woocommerce-Price-amount').not($del).first();
+        if (!$ins.length) return false;
+        var html = '';
+        if ($del.length) html += '<span class="bp-price-original">' + $del.prop('outerHTML') + '</span> ';
+        html += '<span class="bp-price-sale">' + $ins.prop('outerHTML') + '</span>';
+        if ($dest.html() !== html) $dest.html(html); // sin escritura si ya es el mismo HTML
+        return true;
+    }
+    window.bpPintarPrecioVariacion = bpPintarPrecioVariacion; // el plugin la reutiliza
+
+    // Variación que corresponde a la selección actual (o null si está incompleta)
+    function bpVariacionSeleccionada($form) {
+        var raw = $form.attr('data-product_variations');
+        if (!raw) return null;
+        var variaciones;
+        try { variaciones = JSON.parse(raw); } catch (e) { return null; }
+        if (!variaciones || !variaciones.length) return null;
+        var buscados = {}, completo = true;
+        $form.find('.bp-variation-select').each(function () {
+            var val = $(this).val();
+            var nombre = $(this).attr('name') || $(this).data('attribute_name');
+            if (!val) { completo = false; return; }
+            buscados[nombre] = val;
+        });
+        if (!completo) return null;
+        for (var i = 0; i < variaciones.length; i++) {
+            var attrs = variaciones[i].attributes || {}, ok = true;
+            for (var k in buscados) {
+                if (attrs[k] !== buscados[k]) { ok = false; break; }
+            }
+            if (ok) return variaciones[i];
+        }
+        return null;
+    }
+
+    var bpPrecioInicial = $('#bp-single-price').html();
+
+    $(document).on('change', '.bp-variation-select', function () {
+        var $form = $(this).closest('.variations_form');
+        if (!$form.length) return;
+        var variacion = bpVariacionSeleccionada($form);
+        if (variacion) bpPintarPrecioVariacion(variacion);
+    });
+
+    // Selección incompleta → volver al precio con el que se cargó la ficha
+    $(document).on('hide_variation reset_data', '.variations_form', function () {
+        var $dest = $('#bp-single-price');
+        if (bpPrecioInicial && $dest.length && $dest.html() !== bpPrecioInicial) $dest.html(bpPrecioInicial);
+    });
+
     // ===== CONDICIONES (single product) — 08/09: texto normal, sin toggle =====
 });

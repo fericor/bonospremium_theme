@@ -240,20 +240,62 @@ add_action('wp_enqueue_scripts', function() {
 	wp_enqueue_style('bp-lz-main', get_template_directory_uri() . '/assets/css/main.css', ['bp-lz-style'], $bp_main_css_ver);
 	wp_enqueue_script('bp-lz-main', get_template_directory_uri() . '/assets/js/main.js', ['jquery'], $bp_main_js_ver, true);
     
-    // MapTiler SDK JS v4.1.0 (ejemplo oficial "Display a map" LZ 08/09)
-    wp_enqueue_style('bp-lz-maptiler', 'https://cdn.maptiler.com/maptiler-sdk-js/v4.1.0/maptiler-sdk.css', [], '4.1.0');
-    wp_enqueue_script('bp-lz-maptiler', 'https://cdn.maptiler.com/maptiler-sdk-js/v4.1.0/maptiler-sdk.umd.min.js', [], '4.1.0', true);
+    // Proveedor del mapa (Félix 16/10): elegible en Apariencia → Ajustes
+    // BonosPremium. 'maptiler' = SDK de MapTiler (necesita API Key);
+    // 'osm' = Leaflet + teselas de OpenStreetMap (gratis, sin clave).
+    // Se encola SOLO la librería del proveedor activo.
+    $bp_map_provider = bp_get_setting('map_provider', 'osm');
+    $bp_map_provider = in_array($bp_map_provider, array('osm', 'maptiler', 'gmap'), true) ? $bp_map_provider : 'osm';
+    $bp_gmap_key = bp_get_setting('maps_api_key', '');
+    if ($bp_map_provider === 'gmap') {
+        // Google Maps JS API (la clave va en el src: Google la exige en el cliente
+        // y se restringe por HTTP referrer desde su consola). Sin clave, el JS avisa.
+        if ($bp_gmap_key !== '') {
+            wp_enqueue_script('bp-lz-gmap', 'https://maps.googleapis.com/maps/api/js?key=' . rawurlencode($bp_gmap_key) . '&loading=async', array(), null, true);
+            $bp_mapa_deps = array('jquery', 'bp-lz-gmap');
+        } else {
+            $bp_mapa_deps = array('jquery');
+        }
+    } elseif ($bp_map_provider === 'maptiler') {
+        // MapTiler SDK JS v4.1.0 (ejemplo oficial "Display a map" LZ 08/09)
+        wp_enqueue_style('bp-lz-maptiler', 'https://cdn.maptiler.com/maptiler-sdk-js/v4.1.0/maptiler-sdk.css', [], '4.1.0');
+        wp_enqueue_script('bp-lz-maptiler', 'https://cdn.maptiler.com/maptiler-sdk-js/v4.1.0/maptiler-sdk.umd.min.js', [], '4.1.0', true);
+        $bp_mapa_deps = array('jquery', 'bp-lz-maptiler');
+    } else {
+        // Leaflet 1.9.4 (CDN cdnjs; incluye las imágenes del marcador por defecto)
+        wp_enqueue_style('bp-lz-leaflet', 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css', [], '1.9.4');
+        wp_enqueue_script('bp-lz-leaflet', 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js', [], '1.9.4', true);
+        $bp_mapa_deps = array('jquery', 'bp-lz-leaflet');
+    }
     
     // Barra de compartir + mapa de bonos (27/08) — GLOBAL (03/09): el modal del
     // mapa vive en footer.php y se abre desde la ficha de producto (botón de la
     // barra superior) y desde el menú de WP (enlace con clase bp-open-map).
-    wp_enqueue_script('bp-lz-compartir', get_template_directory_uri() . '/assets/js/bono-compartir.js', ['jquery', 'bp-lz-maptiler'], BP_LZ_VERSION, true);
+    wp_enqueue_script('bp-lz-compartir', get_template_directory_uri() . '/assets/js/bono-compartir.js', $bp_mapa_deps, BP_LZ_VERSION, true);
+    // Capa de teselas (OpenStreetMap) y estilo (MapTiler) elegidos en el panel.
+    $bp_map_layer_osm = bp_get_setting('map_layer_osm', 'osm');
+    $bp_map_layer_osm = in_array($bp_map_layer_osm, array('osm', 'osm_hot', 'carto_light', 'carto_dark', 'carto_voyager', 'topo', 'satellite'), true) ? $bp_map_layer_osm : 'osm';
+    $bp_map_layer_maptiler = bp_get_setting('map_layer_maptiler', 'streets');
+    $bp_map_layer_maptiler = in_array($bp_map_layer_maptiler, array('streets', 'streets_pastel', 'basic', 'bright', 'topo', 'outdoor', 'satellite', 'hybrid', 'dataviz', 'voyager', 'toner'), true) ? $bp_map_layer_maptiler : 'streets';
+    $bp_map_layer_gmap = bp_get_setting('map_layer_gmap', 'roadmap');
+    $bp_map_layer_gmap = in_array($bp_map_layer_gmap, array('roadmap', 'satellite', 'hybrid', 'terrain'), true) ? $bp_map_layer_gmap : 'roadmap';
+
     wp_localize_script('bp-lz-compartir', 'bp_compartir', [
         'ajax_url' => admin_url('admin-ajax.php'),
         'maptiler_api_key' => bp_get_setting('maptiler_api_key', ''),
         'template_uri' => get_template_directory_uri(),
         'map_center_lat' => bp_get_setting('map_center_lat', '28.9784'),
         'map_center_lng' => bp_get_setting('map_center_lng', '-13.6168'),
+        // Zoom inicial configurable en el panel (Apariencia → Ajustes BonosPremium)
+        'map_zoom' => (int) bp_get_setting('map_zoom', 11),
+        // Proveedor del mapa activo: 'osm' (Leaflet), 'maptiler' (SDK) o 'gmap'
+        'map_provider' => $bp_map_provider,
+        // Clave de Google Maps: solo se publica si el proveedor activo es Google
+        'maps_api_key' => ($bp_map_provider === 'gmap') ? $bp_gmap_key : '',
+        // Capa/estilo elegido en el panel (16/10): cada proveedor recuerda el suyo.
+        'map_layer_osm' => $bp_map_layer_osm,
+        'map_layer_maptiler' => $bp_map_layer_maptiler,
+        'map_layer_gmap' => $bp_map_layer_gmap,
     ]);
     
     // Localize script para AJAX
@@ -443,7 +485,7 @@ add_filter("woocommerce_add_to_cart_redirect", function() { return wc_get_checko
 
 // Modificar el loop de WooCommerce - 4 columnas
 add_filter('loop_shop_columns', function() { return 4; });
-add_filter('loop_shop_per_page', function() { return 10; });
+add_filter('loop_shop_per_page', function() { return 30; });
 
 // Nota: el toggle del login y auto-dismiss de notices están ahora en assets/js/main.js
 
@@ -992,6 +1034,12 @@ add_action('wp_footer', function() {
     ?>
     <script>
     jQuery(function($) {
+        // FIX 21/10 (Felix): badge de reCAPTCHA oculto por CSS -> aviso de atribución visible (requisito de Google)
+        $('.bp-form').each(function() {
+            var $f = $(this);
+            if ($f.find('.bp-recaptcha-nota').length) return;
+            $f.append('<p class="bp-recaptcha-nota">Este sitio está protegido por reCAPTCHA y se aplican la <a href="https://policies.google.com/privacy" target="_blank" rel="noopener nofollow">Política de privacidad</a> y los <a href="https://policies.google.com/terms" target="_blank" rel="noopener nofollow">Términos del servicio</a> de Google.</p>');
+        });
         if (typeof grecaptcha === 'undefined' || typeof grecaptcha.ready !== 'function') return;
         grecaptcha.ready(function() {
             function fillCaptcha() {
@@ -1704,3 +1752,36 @@ add_action("template_redirect", function() {
         WC()->cart->empty_cart();
     }
 }, 99);
+
+/**
+ * Carrito o checkout vacios -> pagina de inicio.
+ * Los endpoints de WooCommerce (order-received, order-pay, add-payment-method...)
+ * quedan excluidos para no romper la pagina de gracias ni el pago de un pedido.
+ */
+add_action('template_redirect', function () {
+    if (is_admin() || (defined('DOING_AJAX') && DOING_AJAX) || !empty($_GET['wc-ajax'])) {
+        return;
+    }
+    if (!function_exists('WC') || !WC()->cart) {
+        return;
+    }
+    if (!WC()->cart->is_empty()) {
+        return;
+    }
+    $en_carrito  = function_exists('is_cart') && is_cart();
+    $en_checkout = function_exists('is_checkout') && is_checkout() && !is_wc_endpoint_url();
+    if ($en_carrito || $en_checkout) {
+        wp_safe_redirect(home_url('/'));
+        exit;
+    }
+}, 1);
+
+// ===== CHECKOUT: aviso del campo "Crear una contraseña para la cuenta" =====
+// FIX 22/10 (Felix): el aviso de error salia como "Crear una contraseña para la cuenta es un
+// campo requerido." — se deja unicamente el nombre del campo, con punto final.
+add_filter('woocommerce_checkout_required_field_notice', function($notice, $field_label = '', $field_key = '') {
+    if ($field_key === 'account_password') {
+        return '<strong>' . esc_html($field_label) . '</strong>.';
+    }
+    return $notice;
+}, 10, 3);

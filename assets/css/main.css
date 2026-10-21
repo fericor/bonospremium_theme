@@ -42,8 +42,8 @@
     --bp-card-bg: #fff;
     --bp-border: #f0f0f0;
     --bp-wishlist-color: #e74c3c;
-    --bp-button-bg: #039CDC;
-    --bp-button-hover: #027ba8;
+    --bp-button-bg: #C8A98A;
+    --bp-button-hover: #C8A98A;
     --bp-sale-color: #039CDC;
     --bp-nav-sticky-top: 0;
  	--bp-sub-title-color: #585858;
@@ -53,7 +53,7 @@
 
 /* === RESET & BASE === */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; overflow-x: hidden; width: 100%; max-width: 100%; }
+html { scroll-behavior: smooth; overflow-x: hidden; overflow-x: clip; width: 100%; max-width: 100%; }
 body {
     font-family: "Arial", Sans-serif;
     font-size: 16px;
@@ -61,6 +61,7 @@ body {
     color: var(--bp-text);
     background: var(--bp-bg);
     overflow-x: hidden;
+    overflow-x: clip;
     /* FIX Félix 11/08: sin margen por defecto del navegador (espacio blanco arriba) */
     margin: 0;
 }
@@ -274,8 +275,23 @@ button {
     transform: rotate(-45deg);
 }
 
-/* Botón volver atrás: ELIMINADO (Félix 10/08) — solo menú hamburguesa en el header */
-.bp-menu-toggle { display: flex; }
+/* Botón volver atrás — solo en producto único y checkout */
+.bp-back-button {
+    display: flex;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px 14px;
+    color: #fff;
+    font-size: 1.4rem;
+    line-height: 1;
+    align-items: center;
+}
+.bp-back-button i {
+    display: block;
+    font-size: 1.4rem;
+    line-height: 1;
+}
 
 /* === NAVIGATION === */
 .bp-nav {
@@ -413,7 +429,7 @@ button {
 
 /* Product card */
 .bp-coupon-apply {
-    background: var(--bp-button-bg, var(--bp-primary)) !important;
+    background: var(--bp-primary) !important;
     color: var(--bp-text-white) !important;
 }
 .bp-product-card {
@@ -591,6 +607,9 @@ button {
     width: 100%;
 }
 .bp-single-gallery { position: relative; }
+/* FIX 21/10/2026: sin esto la columna del grid se estira a 564px en movil
+   (min-width:auto + contenido ancho) y el carrusel se sale de la pantalla. */
+.bp-single-product > * { min-width: 0; }
 .bp-slider {
     position: relative;
     overflow: hidden;
@@ -600,9 +619,12 @@ button {
 }
 .bp-slider-track {
     display: flex;
-    overflow: hidden;
-    transition: transform 0.3s ease;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
 }
+.bp-slider-track::-webkit-scrollbar { display: none; }
 .bp-slide {
     flex: 0 0 100%;
     scroll-snap-align: start;
@@ -663,6 +685,10 @@ button {
     line-height: 1.4;
     margin-bottom: 20px;
 }
+/* FIX 21/10/2026: URLs largas en la descripcion forzaban la columna del grid a
+   ~564px y el carrusel se salia de la pantalla en movil. */
+.bp-single-desc, .bp-single-desc a,
+.bp-condiciones-body, .bp-condiciones-body a { overflow-wrap: anywhere; }
 .bp-single-city {
     font-size: .85rem;
     color: #888;
@@ -695,7 +721,7 @@ button {
 }
 .bp-single-cart .single_add_to_cart_button,
 .bp-single-cart .bp-comprar-btn {
-    background: var(--bp-button-bg, var(--bp-primary)) !important;
+    background: var(--bp-primary) !important;
     border: none !important;
     padding: 12px 35px !important;   /* 14-2=12px vertical (Félix 25/08) */
     border-radius: 5px;              /* Félix 25/08 */
@@ -772,10 +798,16 @@ button {
    por JS del plugin). Se oculta SIEMPRE que haya variaciones (desktop + móvil),
    sin depender del JS del plugin (que lo oculta tras cargar la página). */
 .bp-single-cart .single_variation_wrap .woocommerce-variation-price,
-.bp-single-cart .single_variation_wrap .woocommerce-variation-availability,
-.bp-single-summary:has(.variations_form) .single_variation_wrap .woocommerce-variation-price,
-.bp-single-summary:has(.variations_form) .single_variation_wrap .woocommerce-variation-availability {
+.bp-single-summary:has(.variations_form) .single_variation_wrap .woocommerce-variation-price {
     display: none !important;
+}
+.bp-single-cart .single_variation_wrap .woocommerce-variation-availability,
+.bp-single-summary:has(.variations_form) .single_variation_wrap .woocommerce-variation-availability {
+    display: block !important;
+    font-size: 13px;
+    color: var(--bp-primary);
+    font-weight: 600;
+    margin-bottom: 4px;
 }
 
 /* ===== MOVER SELECTOR DE VARIACIONES DEBAJO DEL PRECIO (LZ 26/08) =====
@@ -952,7 +984,7 @@ button {
 }
 .bp-form-submit {
     width: 100%;
-    background: var(--bp-button-bg, var(--bp-primary));
+    background: var(--bp-primary);
     color: #fff;
     border: none;
     padding: 16px;
@@ -1131,7 +1163,7 @@ button {
 .checkout-button {
     margin: 16px auto !important;
     display: grid !important;
-    background: var(--bp-button-bg, var(--bp-primary)) !important;
+    background: var(--bp-primary) !important;
     color: #fff !important;
     border: none !important;
     padding: 16px !important;
@@ -1230,7 +1262,6 @@ form.woocommerce-form-login.bp-login-open {
     width: 100%;
     padding: 12px 14px;
     border: 1.5px solid #e0e0e0;
-    border-radius: 10px;
     font-size: .9rem;
     background: #fff;
     
@@ -1252,7 +1283,7 @@ form.woocommerce-form-login.bp-login-open {
     */
 }
 .woocommerce-form-login .button:hover {
-    background: var(--bp-button-hover, var(--bp-primary-dark)) !important;
+    background: var(--bp-primary-dark) !important;
 }
 
 /* Coupon collapsible wrap (inside order review) */
@@ -1303,7 +1334,7 @@ form.woocommerce-form-login.bp-login-open {
 }
 .checkout_coupon .button {
     width: 100%;
-    background: var(--bp-button-bg, var(--bp-primary)) !important;
+    background: var(--bp-primary) !important;
     color: #fff !important;
     padding: 12px !important;
     border-radius: 10px !important;
@@ -1322,7 +1353,7 @@ form.woocommerce-form-login.bp-login-open {
     min-width: 120px;
 }
 .checkout_coupon .button {
-    background: var(--bp-button-bg, var(--bp-primary)) !important;
+    background: var(--bp-primary) !important;
     color: #fff !important;
     padding: 12px 18px !important;
     border-radius: 10px !important;
@@ -1363,7 +1394,7 @@ form.woocommerce-form-login.bp-login-open {
     gap: 8px;
 }
 .bp-coupon-apply {
-    background: var(--bp-button-bg, var(--bp-primary)) !important;
+    background: var(--bp-primary) !important;
     color: #fff !important;
     border: none !important;
     border-radius: 0 !important;
@@ -1376,7 +1407,7 @@ form.woocommerce-form-login.bp-login-open {
     white-space: nowrap;
 }
 .bp-coupon-apply:hover {
-    background: var(--bp-button-hover, var(--bp-primary-dark)) !important;
+    background: var(--bp-primary-dark) !important;
     color: #fff !important;
 }
 .bp-coupon-input {
@@ -1433,7 +1464,7 @@ form.woocommerce-form-login.bp-login-open {
 input.qty {
     border: 1px solid var(--bp-primary);
     border-radius: 0;
-    height: 29px;
+    height: 30px;
 }
 .quantity-selector {
     display: flex;
@@ -1442,7 +1473,7 @@ input.qty {
 }
 .qty-minus, .qty-plus {
     border: none !important;
-    background: var(--bp-button-bg, var(--bp-primary)) !important;
+    background: var(--bp-primary) !important;
     color: var(--bp-text-white) !important;
     padding: 2px 10px !important;
     cursor: pointer !important;
@@ -1451,7 +1482,7 @@ input.qty {
 }
 .quantity .qty-minus,
 .quantity .qty-plus {
-    background: var(--bp-button-bg, var(--bp-primary));
+    background: var(--bp-primary);
     color: #fff;
     border: none;
     width: 36px;
@@ -1466,7 +1497,7 @@ input.qty {
 }
 .quantity .qty-minus:hover,
 .quantity .qty-plus:hover {
-    background: var(--bp-button-hover, var(--bp-primary-dark));
+    background: var(--bp-primary-dark);
 }
 
 /* Remove default WooCommerce borders */
@@ -1504,7 +1535,7 @@ input.qty {
 }
 .bp-btn-primary {
     display: inline-block;
-    background: var(--bp-button-bg, var(--bp-primary));
+    background: var(--bp-primary);
     color: #fff;
     padding: 14px 30px;
     border-radius: 0;
@@ -1512,7 +1543,7 @@ input.qty {
     text-decoration: none;
     margin-top: 15px;
 }
-.bp-btn-primary:hover { background: var(--bp-button-hover, var(--bp-primary-dark)); color: #fff; }
+.bp-btn-primary:hover { background: var(--bp-primary-dark); color: #fff; }
 
 /* Grid del Mi Cuenta (logueado): menú + contenido en 2 columnas (solo no-móvil) */
 .bp-account-page .bp-account-layout {
@@ -1654,7 +1685,7 @@ input.qty {
 }
 .bp-auth-content .button {
     width: 100%;
-    background: var(--bp-button-bg, var(--bp-primary)) !important;
+    background: var(--bp-primary) !important;
     color: #fff !important;
     border: none !important;
     padding: 15px !important;
@@ -1760,7 +1791,43 @@ input.qty {
     .bp-nav-menu a { padding: 8px 14px; border-bottom: none; white-space: nowrap; font-size: 13px; color: var(--bp-text-primary); text-transform: uppercase; }
     .bp-nav-menu a:hover { /*color: var(--bp-primary);*/ }
 
-    /* Productos: 1 por fila */
+    
+/* Password eye toggle */
+.bp-password-wrap { position: relative; }
+.bp-password-wrap input[type="password"],
+.bp-password-wrap input[type="text"] {
+    width: 100% !important;
+    padding: 12px 40px 12px 14px !important;
+    font-size: .9rem !important;
+    background: #fafbfc !important;
+    transition: border-color .2s, box-shadow .2s !important;
+    box-sizing: border-box !important;
+    border: 1px solid #b1b1b1 !important;
+    border-radius: 0px !important;
+    font-family: inherit !important;
+}
+.bp-toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    font-size: 1rem;
+    line-height: 1;
+    opacity: .5;
+    transition: opacity .2s;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.bp-toggle-password:hover { opacity: 1; }
+.bp-toggle-password.visible { opacity: 1; }
+
+/* Productos: 1 por fila */
     .bp-products-grid { grid-template-columns: 1fr !important; gap: 15px !important; }
     .bp-product-card { width: 100%; border-radius: 0; margin: 0; }
     .bp-product-image-wrap {
@@ -1800,7 +1867,7 @@ input.qty {
 
     .bp-single-product { grid-template-columns: 1fr; gap: 20px; padding: 0; }
     .bp-single-title { font-size: 1.25rem; padding: 0 15px; }
-    .bp-single-name { line-height: 1.2; font-size: 1.25rem; padding: 0 15px; font-size: 1rem; font-weight: 100; text-align: center; color: var(--bp-text-black); }
+    .bp-single-name { line-height: 1.2; padding: 0 15px; font-size: 18px; font-weight: 100; text-align: center; color: var(--bp-text-black); }
     .bp-single-summary-rest { padding: 0 15px; }
     /* .bp-single-desc ya no lleva padding propio en móvil: lo da .bp-single-summary-rest */
     .bp-single-city { padding: 0 15px; }
@@ -1927,11 +1994,33 @@ input.qty {
 		font-weight: 600 !important;
 		margin-top: 5px !important;
     }
-    .bp-single-summary:has(.variations_form) .single_variation_wrap .woocommerce-variation-price,
-    .bp-single-summary:has(.variations_form) .single_variation_wrap .woocommerce-variation-availability {
+    .bp-single-summary:has(.variations_form) .single_variation_wrap .woocommerce-variation-price {
         display: none;
     }
+    .bp-single-summary:has(.variations_form) .single_variation_wrap .woocommerce-variation-availability {
+        display: block;
+        font-size: 13px;
+        color: var(--bp-primary);
+        font-weight: 600;
+    }
 
+    /* Mobile: related scroller como grid en vez de scroll horizontal */
+    .bp-related-scroller-track {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        overflow: visible;
+        overscroll-behavior: auto;
+        -webkit-overflow-scrolling: auto;
+        scrollbar-width: auto;
+        padding-bottom: 0;
+    }
+    .bp-related-scroller-track::-webkit-scrollbar { display: initial; }
+    .bp-related-card {
+        flex: none;
+        width: 100%;
+    }
+    .bp-related-scroller-title { margin: 20px 0 10px; }
     .bp-account-grid { grid-template-columns: 1fr; }
     .bp-account-nav { border-right: none; border-bottom: 1px solid #f0f0f0; }
     .bp-thankyou-wrap { padding: 25px 15px; }
@@ -2205,7 +2294,7 @@ input.qty {
 }
 .woocommerce-MyAccount-orders tr:last-child td { border-bottom: none; }
 .woocommerce-MyAccount-orders .button {
-    background: var(--bp-button-bg, var(--bp-primary)) !important;
+    background: var(--bp-primary) !important;
     color: #fff !important;
     padding: 8px 14px !important;
     border-radius: 0 !important;
@@ -2213,7 +2302,7 @@ input.qty {
     border: none !important;
     font-weight: 600 !important;
 }
-.woocommerce-MyAccount-orders .button:hover { background: var(--bp-button-hover, var(--bp-primary-dark)) !important; }
+.woocommerce-MyAccount-orders .button:hover { background: var(--bp-primary-dark) !important; }
 
 /* Addresses - app cards */
 .woocommerce-Address {
@@ -2238,14 +2327,15 @@ input.qty {
 }
 .woocommerce-Address .edit {
     display: inline-block;
-    background: var(--bp-button-bg, var(--bp-primary));
+    background: var(--bp-primary))
+		;
     color: #fff;
     padding: 8px 16px;
     font-size: .8rem;
     font-weight: 600;
     text-decoration: none;
 }
-.woocommerce-Address .edit:hover { background: var(--bp-button-hover, var(--bp-primary-dark)); color: #fff; }
+.woocommerce-Address .edit:hover { background: var(--bp-primary-dark); color: #fff; }
 
 /* Edit account / address forms - app */
 .woocommerce-MyAccount-content form > h3,
@@ -2345,7 +2435,7 @@ input.qty {
 .woocommerce button.button,
 .woocommerce-EditAccountForm button[type="submit"],
 .edit-account button[type="submit"] {
-    background: var(--bp-button-bg, var(--bp-primary)) !important;
+    background: var(--bp-primary) !important;
     color: #fff !important;
     border: none !important;
     padding: 15px 45px !important;
@@ -2358,7 +2448,7 @@ input.qty {
 .woocommerce-button:hover,
 .woocommerce-EditAccountForm button[type="submit"]:hover,
 .edit-account button[type="submit"]:hover {
-    background: var(--bp-button-hover, var(--bp-primary-dark)) !important;
+    background: var(--bp-primary-dark) !important;
 }
 
 /* Downloads - app list */
@@ -2471,7 +2561,7 @@ input.qty {
 }
 .bp-order-btn {
     display: inline-block;
-    background: var(--bp-button-bg, var(--bp-primary));
+    background: var(--bp-primary);
     color: #fff;
     padding: 9px 16px;
     font-size: .8rem;
@@ -2482,9 +2572,9 @@ input.qty {
     border: none;
     cursor: pointer;
 }
-.bp-order-btn:hover { background: var(--bp-button-hover, var(--bp-primary-dark)); color: #fff; }
-.bp-order-btn-view { background: var(--bp-button-bg, var(--bp-primary)); }
-.bp-order-btn-view:hover { background: var(--bp-button-hover, var(--bp-primary-dark)); }
+.bp-order-btn:hover { background: var(--bp-primary-dark); color: #fff; }
+.bp-order-btn-view { background: var(--bp-primary); }
+.bp-order-btn-view:hover { background: var(--bp-primary-dark); }
 .bp-orders-empty {
     text-align: center;
     padding: 40px 20px;
@@ -2626,7 +2716,7 @@ input.qty {
     border: 2px solid var(--bp-primary);
     text-decoration: none;
 }
-.bp-btn-secondary:hover { background: var(--bp-button-hover, var(--bp-primary-dark)); color: #fff; }
+.bp-btn-secondary:hover { background: var(--bp-primary-dark); color: #fff; }
 
 /* === FOOTER === */
 .bp-footer {
@@ -2681,16 +2771,21 @@ input.qty {
 .bp-footer-menu a {
     color: rgba(255,255,255,.6);
     font-size: .85rem;
-	padding-left: 20px;
-    
+    padding-left: 20px;
+    font-weight: 300;
+    text-decoration: none;
+    transition: color .2s ease;
 }
+
+/* FIX 21/10 (Felix): hover en blanco, sin desplazamiento y en fino */
 .bp-footer-menu a:hover {
-    color: var(--bp-primary);
-    padding-left: 3px;
+    color: #fff;
+    padding-left: 20px;
 }
 .bp-footer-contact p { margin-bottom: 10px; }
-.bp-footer-contact a { color: rgba(255,255,255,.6); font-size: .85rem; }
-.bp-footer-contact a:hover { color: var(--bp-primary); }
+.bp-footer-contact a { color: rgba(255,255,255,.6); font-size: .85rem; font-weight: 300; text-decoration: none; transition: color .2s ease; }
+/* FIX 21/10 (Felix): hover en blanco, sin desplazamiento y en fino */
+.bp-footer-contact a:hover { color: #fff; }
 .bp-footer-social {
     display: flex;
     gap: 12px;
@@ -3030,7 +3125,7 @@ input.qty {
 }
 .woocommerce-EditAddressForm .bp-edit-address-submit .button,
 .woocommerce-EditAddressForm .bp-edit-address-submit .woocommerce-Button {
-    background: var(--bp-button-bg, var(--bp-primary)) !important;
+    background: var(--bp-primary) !important;
     color: #fff !important;
     border: none !important;
     padding: 14px 32px !important;
@@ -3043,7 +3138,7 @@ input.qty {
 }
 .woocommerce-EditAddressForm .bp-edit-address-submit .button:hover,
 .woocommerce-EditAddressForm .bp-edit-address-submit .woocommerce-Button:hover {
-    background: var(--bp-button-hover, var(--bp-primary-dark)) !important;
+    background: var(--bp-primary-dark) !important;
 }
 /* Móvil: columnas apiladas */
 /* ── Móvil pequeño (≤480px): formulario editar dirección ── */
@@ -3125,14 +3220,14 @@ input.qty {
 .bp-dash-ultimo-pedido-fecha { font-size: .8rem; color: #888; flex: 1; min-width: 120px; }
 .bp-dash-ultimo-pedido-total { font-weight: 700; color: #222; }
 .bp-dash-ultimo-pedido-ver {
-    background: var(--bp-button-bg, var(--bp-primary));
+    background: var(--bp-primary);
     color: #fff;
     padding: 8px 16px;
     font-size: .8rem;
     font-weight: 600;
     text-decoration: none;
 }
-.bp-dash-ultimo-pedido-ver:hover { background: var(--bp-button-hover, var(--bp-primary-dark)); color: #fff; }
+.bp-dash-ultimo-pedido-ver:hover { background: var(--bp-primary-dark); color: #fff; }
 
 /* ===== RESUMEN ESCRITORIO FIN ===== */
 
@@ -3193,7 +3288,7 @@ input.qty {
     
 }
 .bp-credit-preset:hover { border-color: var(--bp-primary); }
-.bp-credit-preset.active { background: var(--bp-button-bg, var(--bp-primary)); border-color: var(--bp-button-bg, var(--bp-primary)); color: #fff; }
+.bp-credit-preset.active { background: var(--bp-primary); border-color: var(--bp-primary); color: #fff; }
 
 /* Campo de importe */
 .bp-credit-amount-wrap { position: relative; margin-bottom: 16px; }
@@ -3215,7 +3310,7 @@ input.qty {
 /* Botón recargar */
 .bp-credit-submit {
     width: 100%;
-    background: var(--bp-button-bg, var(--bp-primary));
+    background: var(--bp-primary);
     color: #fff;
     border: none;
     padding: 16px;
@@ -3224,7 +3319,7 @@ input.qty {
     display: flex; align-items: center; justify-content: center; gap: 8px;
     
 }
-.bp-credit-submit:hover { background: var(--bp-button-hover, var(--bp-primary-dark)); }
+.bp-credit-submit:hover { background: var(--bp-primary-dark); }
 .bp-credit-note { font-size: .75rem; color: #999; margin: 10px 0 0; text-align: center; }
 
 /* Historial */
@@ -3305,7 +3400,7 @@ input.qty {
 .wpfda-delete-account-container .wpfda-submit button,
 .wpfda-delete-account-container input[type="submit"],
 .wpf-delete-account-button button {
-    background: var(--bp-button-bg, var(--bp-primary)) !important;
+    background: var(--bp-primary) !important;
     color: #fff !important;
     border: 1px solid var(--bp-primary) !important;
     border-radius: 0 !important;
@@ -3322,7 +3417,7 @@ input.qty {
 .wpfda-delete-account-container .wpfda-submit button:hover,
 .wpfda-delete-account-container input[type="submit"]:hover,
 .wpf-delete-account-button button:hover {
-    background: var(--bp-button-hover, var(--bp-primary-dark)) !important;
+    background: var(--bp-primary-dark) !important;
     border-color: var(--bp-primary-dark) !important;
     color: #fff !important;
 }
@@ -3421,7 +3516,7 @@ input.qty {
 	font-size: 16px !important;
 }
 #bpPrevio_pdf:hover {
-    /*background: var(--bp-button-hover, var(--bp-primary-dark)) !important;
+    /*background: var(--bp-primary-dark) !important;
     color: #fff !important;*/
 }
 
@@ -3549,7 +3644,7 @@ li.product .wlfmc-add-button a.wlfmc-btn-outofstock .wlfmc-icon-heart { color: v
 }
 .bp-auth-btn {
     display: inline-block;
-    background: var(--bp-button-bg, var(--bp-primary));
+    background: var(--bp-primary);
     color: #fff;
     padding: 12px 28px;
     border-radius: 10px;
@@ -3655,6 +3750,17 @@ li.product .wlfmc-add-button a.wlfmc-btn-outofstock .wlfmc-icon-heart { color: v
     min-width: 30px;
     height: 30px;
     padding: 0 10px;
+}
+/* El pin de precio se pinta con el overlay propio de la clase .bp-gmap-pin (todos
+   los motores), así que NO le llegan las reglas de .leaflet-marker-icon.bp-leaflet-pin
+   ni .maplibregl-marker y el precio quedaba a 1px del borde de la burbuja.
+   Aquí se fija la separación texto-borde en 5px (16/10/2026). */
+.bp-gmap-pin .bp-map-pin-ico {
+    width: auto;
+    min-width: 30px;
+    height: 30px;
+    padding: 0 5px;
+    box-sizing: border-box;
 }
 .bp-map-pin-ico::after {
     content: ''; position: absolute; inset: 0; border-radius: inherit;
@@ -3772,6 +3878,7 @@ li.product .wlfmc-add-button a.wlfmc-btn-outofstock .wlfmc-icon-heart { color: v
     line-height: 1;
     text-decoration: none !important;
     margin-right: 6px;
+	color: var(--bp-primary) !important;
 }
 .woocommerce a.remove1 i {
     font-size: .9em;
@@ -3825,16 +3932,32 @@ li.product .wlfmc-add-button a.wlfmc-btn-outofstock .wlfmc-icon-heart { color: v
     display: none;
 }
 
+/* ===== IMAGEN JUNTO AL TEXTO "¿ES UN REGALO?" (16/10) =====
+   El texto del campo es un nodo suelto dentro del <label> del checkbox (no
+   tiene elemento propio ni clase), así que la imagen se añade con ::after
+   sobre el label: queda justo después del emoji 🎁 del texto.
+   El icono vive en /wp-content/uploads/bonospremium/icono-regalo.svg
+   Sustituye ese fichero por otro con el mismo nombre para cambiar la imagen
+   (aquí solo se ajusta tamaño, separación y alineación). */
+#additional_wooccm0_field label.checkbox::after {
+    content: "";
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    margin-left: 0px;
+    vertical-align: -3px;
+    background: url('/wp-content/uploads/bonospremium/icono-regalo.svg') center center / contain no-repeat;
+}
+
 /* ===== BOTÓN DE COMPRAR DESACTIVADO SIN VARIACIÓN SELECCIONADA (31/08) =====
    WooCommerce añade `disabled` + clase `.disabled` al botón (vía JS) cuando no
    hay variación elegida. Antes el CSS no lo estilizaba → parecía activo.
    Ahora: opacidad, cursor prohibido y sin hover. SOLO productos con variaciones. */
 .bp-single-summary:has(.variations_form) .single_add_to_cart_button:disabled,
 .bp-single-summary:has(.variations_form) .single_add_to_cart_button.disabled {
-    opacity: .45 !important;
+    opacity: .8 !important;
     cursor: not-allowed !important;
     pointer-events: none !important;
-    filter: grayscale(.6) !important;
 }
 
 
@@ -4122,9 +4245,9 @@ li.product .wlfmc-add-button a.wlfmc-btn-outofstock .wlfmc-icon-heart { color: v
 }
 /* ===== SOCIAL LOGIN BUTTONS (Mi Cuenta) ===== */
 .bp-social-login {
-    margin-top: 18px;
-    padding-top: 18px;
-    border-top: 1px solid #f0f0f0;
+    margin-bottom: 10px;
+    /*padding-top: 18px;
+    border-top: 1px solid #f0f0f0;*/
 }
 .bp-social-divider {
     text-align: center;
@@ -4153,7 +4276,6 @@ li.product .wlfmc-add-button a.wlfmc-btn-outofstock .wlfmc-icon-heart { color: v
     padding: 5px 16px;
     border-radius: 8px;
     font-size: .9rem;
-    font-weight: 600;
     text-decoration: none;
     transition: box-shadow .15s;
     cursor: pointer;
@@ -4188,13 +4310,13 @@ li.product .wlfmc-add-button a.wlfmc-btn-outofstock .wlfmc-icon-heart { color: v
 	position: relative;
     margin-top: 40px;
     padding: 0 0 20px;
-    border-top: 1px solid var(--bp-border, #e5e5e7);
+    /*border-top: 1px solid var(--bp-border, #e5e5e7);*/
 }
 .bp-related-scroller-title {
-    font-size: 1.15rem;
+    font-size: 1.2rem;
     font-weight: 700;
     color: var(--bp-text, #222);
-    margin: 20px 0 14px;
+    margin: 0px 10px 5px;
 }
 .bp-related-scroller-track {
     display: flex;
@@ -4264,3 +4386,94 @@ li.product .wlfmc-add-button a.wlfmc-btn-outofstock .wlfmc-icon-heart { color: v
     }
     .bp-related-card img { height: 130px; }
 }
+
+.bp-password-wrap input[type="password"], .bp-password-wrap input[type="text"] {
+	width: 100% !important;
+	padding: 12px 40px 12px 14px !important;
+	font-size: .9rem !important;
+	background: #fafbfc !important;
+	transition: border-color .2s, box-shadow .2s !important;
+	box-sizing: border-box !important;
+	border: 1px solid #b1b1b1 !important;
+	border-radius: 0px !important;
+	font-family: inherit !important;
+}
+
+.bp-toggle-password {
+	position: absolute;
+	right: 10px;
+	top: 50%;
+	transform: translateY(-50%);
+	background: none;
+	border: none;
+	cursor: pointer;
+	padding: 4px;
+	font-size: 1rem;
+	line-height: 1;
+	opacity: .5;
+	transition: opacity .2s;
+	z-index: 2;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.bp-password-wrap {
+	position: relative;
+}
+
+
+/* ===== CHECKBOX "He leído y acepto los términos" del checkout (15/10/2026) =====
+   - Centrado: el párrafo del checkbox de términos queda centrado en su columna.
+   - Tamaño de la casilla: se cambia SOLO el valor de --bp-terms-checkbox-size (abajo).
+   Solo se aplica en las tiendas con este tema (Tenerife usa otro tema y no se toca). */
+:root {
+    --bp-terms-checkbox-size: 11px;
+}
+
+.woocommerce-terms-and-conditions-wrapper p.form-row,
+.woocommerce-terms-and-conditions-wrapper p.form-row label.woocommerce-form__label-for-checkbox,
+.woocommerce-terms-and-conditions-wrapper p.form-row label.checkbox {
+    text-align: center !important;
+}
+
+.woocommerce-terms-and-conditions-wrapper p.form-row input#terms,
+.woocommerce-terms-and-conditions-wrapper p.form-row input.input-checkbox {
+    width: var(--bp-terms-checkbox-size) !important;
+    height: var(--bp-terms-checkbox-size) !important;
+    min-width: var(--bp-terms-checkbox-size) !important;
+    margin: 0 6px 0 0 !important;
+    vertical-align: middle !important;
+}
+/* ===== FIN checkbox términos ===== */
+
+/* ===== Mapa con Leaflet / OpenStreetMap (proveedor 'osm', Félix 16/10) ===== */
+/* El contenedor del mapa necesita posición para que Leaflet coloque sus panes */
+.bp-map-bonos.leaflet-container,
+.bp-bono-mapa.leaflet-container { position: relative; background: #e9e6e1; }
+/* Marcador de precio (.bp-map-pin): el divIcon de Leaflet se ancla por su punta inferior */
+.leaflet-marker-icon.bp-leaflet-pin { width: 0 !important; height: 0 !important; background: none; border: 0; }
+.leaflet-marker-icon.bp-leaflet-pin > .bp-map-pin {
+    display: inline-block; position: absolute; left: 0; top: 0;
+    transform: translate(-50%, -100%);
+}
+.leaflet-marker-icon.bp-leaflet-pin .bp-map-pin-ico { width: auto; min-width: 30px; height: 30px; padding: 0 10px; }
+/* Controles de Leaflet: zoom arriba a la derecha (igual que en MapTiler) */
+.leaflet-control-zoom { border: none !important; box-shadow: 0 1px 6px rgba(0,0,0,.2); }
+.leaflet-control-attribution { font-size: 10px; }
+/* ===== FIN Leaflet ===== */
+
+.woocommerce a.remove1 i:hover {
+    color: var(--bp-primary) !important;
+}
+
+.woocommerce form .show-password-input::before, .woocommerce-page form .show-password-input::before {
+    height: 18px !important;
+    width: 18px !important;
+}
+
+/* FIX 21/10 (Felix): badge de reCAPTCHA oculto + aviso de atribucion visible (requisito de Google) */
+.grecaptcha-badge { visibility: hidden !important; }
+.bp-recaptcha-nota { font-size: .72rem; line-height: 1.45; margin: 12px 0 0; text-align: center; color: inherit; opacity: .72; }
+.bp-recaptcha-nota a { color: inherit; text-decoration: underline; }
+.bp-recaptcha-nota a:hover { color: var(--bp-primary); opacity: 1; }

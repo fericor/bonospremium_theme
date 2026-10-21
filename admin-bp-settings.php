@@ -47,8 +47,12 @@ function bp_get_settings() {
         'maptiler_api_key'     => '',
         'map_center_lat'       => '28.9784',
         'map_center_lng'       => '-13.6168',
+        'map_zoom'             => 11,
         'related_max_products'  => 8,
         'map_provider'         => 'osm',
+        'map_layer_osm'        => 'osm',
+        'map_layer_maptiler'   => 'streets',
+        'map_layer_gmap'       => 'roadmap',
         // Logo y Favicon
         'logo_url'             => '',
         'favicon_url'          => '',
@@ -132,8 +136,19 @@ function bp_save_settings_handler() {
     $s['maptiler_api_key']     = isset($in['maptiler_api_key'])     ? sanitize_text_field($in['maptiler_api_key'])     : '';
     $s['map_center_lat']       = isset($in['map_center_lat'])       ? sanitize_text_field($in['map_center_lat'])       : '28.9784';
     $s['map_center_lng']       = isset($in['map_center_lng'])       ? sanitize_text_field($in['map_center_lng'])       : '-13.6168';
+    // Zoom inicial del mapa: entero 1-20 (Félix 15/10). Fuera de rango o vacío -> 11.
+    $s['map_zoom']             = (isset($in['map_zoom']) && $in['map_zoom'] !== '' && is_numeric($in['map_zoom']))
+                                    ? min(20, max(1, intval($in['map_zoom']))) : 11;
     $s['related_max_products']   = isset($in['related_max_products']) ? absint($in['related_max_products']) : 8;
-    $s['map_provider']         = isset($in['map_provider']) && in_array($in['map_provider'], array('gmap', 'osm', 'maptiler'), true) ? $in['map_provider'] : 'osm';
+    // Proveedor del mapa (Félix 16/10): 'osm' = Leaflet + OpenStreetMap (sin clave);
+    // 'maptiler' = SDK de MapTiler (necesita maptiler_api_key). Cualquier otro valor -> 'osm'.
+    $s['map_provider']         = (isset($in['map_provider']) && in_array($in['map_provider'], array('osm', 'maptiler', 'gmap'), true)) ? $in['map_provider'] : 'osm';
+    $bp_capas_osm_validas      = array('osm', 'osm_hot', 'carto_light', 'carto_dark', 'carto_voyager', 'topo', 'satellite');
+    $s['map_layer_osm']        = (isset($in['map_layer_osm']) && in_array($in['map_layer_osm'], $bp_capas_osm_validas, true)) ? $in['map_layer_osm'] : 'osm';
+    $bp_estilos_mt_validos     = array('streets', 'streets_pastel', 'basic', 'bright', 'topo', 'outdoor', 'satellite', 'hybrid', 'dataviz', 'voyager', 'toner');
+    $s['map_layer_maptiler']   = (isset($in['map_layer_maptiler']) && in_array($in['map_layer_maptiler'], $bp_estilos_mt_validos, true)) ? $in['map_layer_maptiler'] : 'streets';
+    $bp_capas_gmap_validas     = array('roadmap', 'satellite', 'hybrid', 'terrain');
+    $s['map_layer_gmap']       = (isset($in['map_layer_gmap']) && in_array($in['map_layer_gmap'], $bp_capas_gmap_validas, true)) ? $in['map_layer_gmap'] : 'roadmap';
     // Social Login (se guardan aunque vacias)
     $s['google_client_id']       = isset($in['google_client_id'])       ? sanitize_text_field($in['google_client_id'])       : '';
     $s['google_client_secret']   = isset($in['google_client_secret'])   ? sanitize_text_field($in['google_client_secret'])   : '';
@@ -486,13 +501,77 @@ function bp_settings_page() {
                 </div>
 
                 <div class="bp-section">
-                    <h3 class="bp-section__title">🗺️ Mapa de bonos (MapTiler)</h3>
-                    <p class="bp-section__desc">El mapa de bonos usa el <strong>MapTiler SDK</strong> con la capa de calle. Pega aquí tu API Key de MapTiler.</p>
+                    <h3 class="bp-section__title">🗺️ Mapa de bonos <span class="bp-badge">Ahora: <?php echo (isset($s['map_provider']) && $s['map_provider'] === 'maptiler') ? 'MapTiler' : ((isset($s['map_provider']) && $s['map_provider'] === 'gmap') ? 'Google Maps' : 'OpenStreetMap'); ?></span></h3>
+                    <p class="bp-section__desc">Elige aquí el motor con el que se dibuja el mapa de bonos (y el mapa de la ficha del bono). <strong>OpenStreetMap</strong> es el valor por defecto: gratis, sin clave y sin límite de uso. <strong>MapTiler</strong> funciona con la API Key de abajo.</p>
                     <table class="form-table bp-form-table" role="presentation">
+                        <tr>
+                            <th scope="row"><label for="map-provider">Proveedor del mapa</label></th>
+                            <td>
+                                <select id="map-provider" name="bp[map_provider]">
+                                    <option value="osm" <?php selected(isset($s['map_provider']) ? $s['map_provider'] : 'osm', 'osm'); ?>>OpenStreetMap (gratis, sin clave)</option>
+                                    <option value="maptiler" <?php selected(isset($s['map_provider']) ? $s['map_provider'] : 'osm', 'maptiler'); ?>>MapTiler (necesita API Key)</option>
+                                    <option value="gmap" <?php selected(isset($s['map_provider']) ? $s['map_provider'] : 'osm', 'gmap'); ?>>Google Maps (necesita API Key de Google)</option>
+                                </select>
+                                <p class="description" style="margin-top:6px;">Motor con el que se dibuja el mapa de bonos (y el mapa de la ficha). <strong>OpenStreetMap</strong> usa Leaflet: gratis, sin clave ni límite de uso y con la atribución visible. <strong>MapTiler</strong> usa su SDK: necesita la API Key de abajo (plan gratuito = 5.000 vistas de mapa al mes, uso personal/no comercial). <strong>Google Maps</strong> usa la API Key de Google (la misma de la web): cobra por carga de mapa a partir de las 10.000 al mes.</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row"><label for="map-layer-osm">Capa del mapa (OpenStreetMap)</label></th>
+                            <td>
+                                <select id="map-layer-osm" name="bp[map_layer_osm]">
+                                    <option value="osm" <?php selected(isset($s['map_layer_osm']) ? $s['map_layer_osm'] : 'osm', 'osm'); ?>>OpenStreetMap estándar</option>
+                                    <option value="osm_hot" <?php selected(isset($s['map_layer_osm']) ? $s['map_layer_osm'] : 'osm', 'osm_hot'); ?>>Humanitario (HOT — carreteras y servicios)</option>
+                                    <option value="carto_light" <?php selected(isset($s['map_layer_osm']) ? $s['map_layer_osm'] : 'osm', 'carto_light'); ?>>Carto claro (Positron)</option>
+                                    <option value="carto_dark" <?php selected(isset($s['map_layer_osm']) ? $s['map_layer_osm'] : 'osm', 'carto_dark'); ?>>Carto oscuro (Dark Matter)</option>
+                                    <option value="carto_voyager" <?php selected(isset($s['map_layer_osm']) ? $s['map_layer_osm'] : 'osm', 'carto_voyager'); ?>>Carto Voyager (intermedio)</option>
+                                    <option value="topo" <?php selected(isset($s['map_layer_osm']) ? $s['map_layer_osm'] : 'osm', 'topo'); ?>>Topográfico (OpenTopoMap)</option>
+                                    <option value="satellite" <?php selected(isset($s['map_layer_osm']) ? $s['map_layer_osm'] : 'osm', 'satellite'); ?>>Satélite (Esri World Imagery)</option>
+                                </select>
+                                <p class="description" style="margin-top:6px;">Se usa <strong>solo si el proveedor es OpenStreetMap</strong>. Todas son gratuitas y sin clave. <em>Estándar</em> es la de siempre; <em>Humanitario</em> resalta carreteras y servicios; <em>Carto claro/oscuro</em> son más limpias (la oscura queda bien con fotos encima); <em>Voyager</em> es un intermedio; <em>Topográfico</em> añade curvas de nivel; <em>Satélite</em> son fotos aéreas (atribución Esri obligatoria, ya incluida).</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row"><label for="map-layer-maptiler">Estilo del mapa (MapTiler)</label></th>
+                            <td>
+                                <select id="map-layer-maptiler" name="bp[map_layer_maptiler]">
+                                    <option value="streets" <?php selected(isset($s['map_layer_maptiler']) ? $s['map_layer_maptiler'] : 'streets', 'streets'); ?>>Streets (callejero, por defecto)</option>
+                                    <option value="streets_pastel" <?php selected(isset($s['map_layer_maptiler']) ? $s['map_layer_maptiler'] : 'streets', 'streets_pastel'); ?>>Streets Pastel (colores suaves)</option>
+                                    <option value="basic" <?php selected(isset($s['map_layer_maptiler']) ? $s['map_layer_maptiler'] : 'streets', 'basic'); ?>>Basic (minimalista)</option>
+                                    <option value="bright" <?php selected(isset($s['map_layer_maptiler']) ? $s['map_layer_maptiler'] : 'streets', 'bright'); ?>>Bright (vivo)</option>
+                                    <option value="topo" <?php selected(isset($s['map_layer_maptiler']) ? $s['map_layer_maptiler'] : 'streets', 'topo'); ?>>Topo (curvas de nivel)</option>
+                                    <option value="outdoor" <?php selected(isset($s['map_layer_maptiler']) ? $s['map_layer_maptiler'] : 'streets', 'outdoor'); ?>>Outdoor (excursionismo)</option>
+                                    <option value="satellite" <?php selected(isset($s['map_layer_maptiler']) ? $s['map_layer_maptiler'] : 'streets', 'satellite'); ?>>Satélite (fotos aéreas)</option>
+                                    <option value="hybrid" <?php selected(isset($s['map_layer_maptiler']) ? $s['map_layer_maptiler'] : 'streets', 'hybrid'); ?>>Híbrido (satélite + calles)</option>
+                                    <option value="dataviz" <?php selected(isset($s['map_layer_maptiler']) ? $s['map_layer_maptiler'] : 'streets', 'dataviz'); ?>>DataViz (sin texto, para datos)</option>
+                                    <option value="voyager" <?php selected(isset($s['map_layer_maptiler']) ? $s['map_layer_maptiler'] : 'streets', 'voyager'); ?>>Voyager</option>
+                                    <option value="toner" <?php selected(isset($s['map_layer_maptiler']) ? $s['map_layer_maptiler'] : 'streets', 'toner'); ?>>Toner (blanco y negro)</option>
+                                </select>
+                                <p class="description" style="margin-top:6px;">Se usa <strong>solo si el proveedor es MapTiler</strong> (necesita la API Key). <em>Streets</em> es el clásico. Los estilos <em>Satélite</em> e <em>Híbrido</em> pueden requerir plan de pago en MapTiler: si no cargan, vuelve a Streets o cambia el proveedor a OpenStreetMap.</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row"><label for="map-layer-gmap">Capa del mapa (Google Maps)</label></th>
+                            <td>
+                                <select id="map-layer-gmap" name="bp[map_layer_gmap]">
+                                    <option value="roadmap" <?php selected(isset($s['map_layer_gmap']) ? $s['map_layer_gmap'] : 'roadmap', 'roadmap'); ?>>Roadmap (callejero, por defecto)</option>
+                                    <option value="satellite" <?php selected(isset($s['map_layer_gmap']) ? $s['map_layer_gmap'] : 'roadmap', 'satellite'); ?>>Satélite</option>
+                                    <option value="hybrid" <?php selected(isset($s['map_layer_gmap']) ? $s['map_layer_gmap'] : 'roadmap', 'hybrid'); ?>>Híbrido (satélite + calles)</option>
+                                    <option value="terrain" <?php selected(isset($s['map_layer_gmap']) ? $s['map_layer_gmap'] : 'roadmap', 'terrain'); ?>>Relieve (terreno)</option>
+                                </select>
+                                <p class="description" style="margin-top:6px;">Se usa <strong>solo si el proveedor es Google Maps</strong>.</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row"><label for="maps-api-key">Google Maps API Key</label></th>
+                            <td>
+                                <input type="text" id="maps-api-key" name="bp[maps_api_key]" value="<?php echo esc_attr(isset($s['maps_api_key']) ? $s['maps_api_key'] : ''); ?>" class="regular-text" placeholder="AIza..." style="min-width:320px;" />
+                                <p class="description" style="margin-top:6px;">La misma clave que usa la web para los mapas de Google (restríngela por HTTP referrer desde la consola de Google). Se usa <strong>solo si el proveedor es Google Maps</strong>; si está vacía, el mapa de bonos avisa y no se dibuja.</p>
+                            </td>
+                        </tr>
                         <tr>
                             <th scope="row"><label for="maptiler-key">MapTiler API Key</label></th>
                             <td><input type="text" id="maptiler-key" name="bp[maptiler_api_key]" value="<?php echo esc_attr($s['maptiler_api_key']); ?>" class="regular-text" placeholder="Tu clave de MapTiler..." style="min-width:320px;" />
-                                <p class="description" style="margin-top:6px;">La consigues gratis en <a href="https://cloud.maptiler.com" target="_blank" rel="noopener">cloud.maptiler.com</a>. Sin clave el mapa no puede cargar.</p>
+                                <p class="description" style="margin-top:6px;">Solo se usa si el proveedor es <strong>MapTiler</strong>. La consigues gratis en <a href="https://cloud.maptiler.com" target="_blank" rel="noopener">cloud.maptiler.com</a> (plan gratuito: 5.000 vistas de mapa al mes, uso personal/no comercial). Si caduca o se borra, el mapa deja de cargar: cambia el proveedor a OpenStreetMap o pega una clave nueva.</p>
                             </td>
                         </tr>
                         <tr>
@@ -505,6 +584,12 @@ function bp_settings_page() {
                             <th scope="row"><label for="map-center-lng">Centro del mapa (longitud)</label></th>
                             <td><input type="text" id="map-center-lng" name="bp[map_center_lng]" value="<?php echo esc_attr($s['map_center_lng']); ?>" class="small-text" placeholder="-13.6168" style="min-width:200px;" />
                                 <p class="description">Longitud del centro del mapa de bonos. Coordenadas actuales de Canarias: <strong>-13.6168</strong></p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row"><label for="map-zoom">Zoom del mapa</label></th>
+                            <td><input type="number" id="map-zoom" name="bp[map_zoom]" value="<?php echo esc_attr(isset($s['map_zoom']) ? $s['map_zoom'] : 11); ?>" class="small-text" min="1" max="20" step="1" style="width:90px;" />
+                                <p class="description">Acercamiento con el que se abre el mapa de bonos. <strong>Más alto = más cerca</strong>: con 13-15 se ve la calle pero muchos bonos quedan fuera de la vista; con 3-6 se ve toda Canarias. Recomendado <strong>11</strong>. Por defecto: <strong>11</strong>. Nota: en pantalla de móvil conviene un valor algo más bajo, porque abarca menos terreno.</p>
                             </td>
                         </tr>
                     </table>

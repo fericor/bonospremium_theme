@@ -9,16 +9,16 @@
     <div class="bp-cookie-banner-inner">
         <div class="bp-cookie-text">
             <p>
-                <strong>Tu privacidad importa</strong><br>
+                <!-- <strong>Tu privacidad importa</strong><br> -->
                 Usamos cookies propias (necesarias para el funcionamiento de la tienda) y de terceros
                 (Google y Facebook) para medir audiencia y mostrar publicidad personalizada.
                 Puedes aceptarlas todas, solo las esenciales o consultar nuestra política de cookies.
             </p>
-            <a href="<?php echo esc_url(home_url('/politica-de-cookies')); ?>">Política de cookies</a>
+            <a href="<?php echo esc_url(home_url('/politica-de-cookies')); ?>">Más información</a>
         </div>
         <div class="bp-cookie-actions">
-            <button type="button" class="bp-cookie-btn bp-cookie-accept" onclick="bpCookieAccept()">Aceptar todas</button>
-            <button type="button" class="bp-cookie-btn bp-cookie-essential" onclick="bpCookieEssential()">Solo esenciales</button>
+            <button type="button" class="bp-cookie-btn bp-cookie-accept" onclick="bpCookieAccept()">ACEPTAR</button>
+            <!-- <button type="button" class="bp-cookie-btn bp-cookie-essential" onclick="bpCookieEssential()">Solo esenciales</button> -->
         </div>
     </div>
 </div>
@@ -51,12 +51,13 @@
     font-size: 13px;
     color: rgba(255,255,255,.9);
     line-height: 1.55;
+	text-align: center;
 }
 .bp-cookie-text p { margin: 0 0 6px; }
 .bp-cookie-text strong { color: #ffffff; }
 .bp-cookie-text a {
     /* FIX Félix 11/08: color primario light de la plantilla */
-    color: var(--bp-primary-light, #33b0e3);
+    color: var(--bp-white, #ffffff);
     font-weight: 700;
     text-decoration: none;
     font-size: 13px;
@@ -66,13 +67,13 @@
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
+    flex: 1 1 100%;
+    justify-content: center;
 }
 .bp-cookie-btn {
     border: none;
-    border-radius: 8px;
     /* FIX Félix 11/08: botones menos altos (padding vertical reducido) */
-    padding: 5px 18px;
-    font-weight: 700;
+    padding: 10px 30px;
     font-size: 13px;
     cursor: pointer;
     transition: all .2s;
@@ -86,7 +87,8 @@
 .bp-cookie-essential:hover { border-color: #ffffff; background: rgba(255,255,255,.1); }
 @media (max-width: 640px) {
     .bp-cookie-banner { padding: 14px 16px 16px; }
-    .bp-cookie-btn { flex: 1; text-align: center; }
+    /* FIX 21/10 (Félix): el botón no ocupa todo el ancho, solo el de su texto + padding */
+    .bp-cookie-btn { flex: 0 0 auto; text-align: center; }
 }
 </style>
 
