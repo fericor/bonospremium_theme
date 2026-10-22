@@ -153,7 +153,7 @@ get_header(); ?>
                 <div class="bp-condiciones-panel">
                     <h3 class="bp-condiciones-title">Condiciones</h3>
                     <div class="bp-condiciones-body">
-                        <?php echo wp_kses_post($condiciones); ?>
+                        <?php echo wpautop(wp_kses_post($condiciones)); ?>
                     </div>
                 </div>
                 <?php endif; ?>

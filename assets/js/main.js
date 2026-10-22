@@ -144,99 +144,90 @@ jQuery(document).ready(function($) {
     var loadingMore = false;
     var $loadWrap = $('.bp-load-more-wrap');
 
-    // Product image slider dots (transform-based, sin overflow scroll)
+    // Product image slider dots (transform-based, sin overflow scroll, bucle infinito)
     $('.bp-slider').each(function() {
         var $slider = $(this);
-        var $track = $slider.find('.bp-slider-track');
+        var $track  = $slider.find('.bp-slider-track');
         var $slides = $track.find('.bp-slide');
-        var $dots = $slider.find('.bp-slider-dots');
+        var $dots   = $slider.find('.bp-slider-dots');
         var slidesCount = $slides.length;
         var currentIndex = 0;
 
-        if (slidesCount > 1) {
-            // Create dots
-            for (var i = 0; i < slidesCount; i++) {
-                $dots.append('<span data-index="' + i + '"></span>');
-            }
-            $dots.find('span:first').addClass('active');
+        if (slidesCount < 2) return;
 
-            // Go to slide function (transform-based)
-            function goToSlide(index) {
-                if (index < 0) index = 0;
-                if (index >= slidesCount) index = slidesCount - 1;
-                currentIndex = index;
-                // translateX(-index/slidesCount * 100%) shifts by one slide
-                $track.css('transform', 'translateX(-' + ((index / slidesCount) * 100) + '%)');
-                $dots.find('span').removeClass('active').eq(index).addClass('active');
-            }
-
-            // Click dot to go to slide
-            $dots.on('click', 'span', function() {
-                goToSlide(parseInt($(this).data('index')));
-            });
-
-            // Mouse drag to scroll (transform-based)
-            var isDown = false, startX = 0, dragStartIndex = 0;
-            $slider.on('mousedown', function(e) {
-                isDown = true;
-                $slider.addClass('bp-dragging');
-                startX = e.pageX - $slider.offset().left;
-                dragStartIndex = currentIndex;
-                e.preventDefault();
-            });
-            $slider.on('mousemove', function(e) {
-                if (!isDown) return;
-                e.preventDefault();
-                var x = e.pageX - $slider.offset().left;
-                var walk = (x - startX) / $slider.width();
-                var idx = Math.round(dragStartIndex - walk * 3);
-                if (idx < 0) idx = 0;
-                if (idx >= slidesCount) idx = slidesCount - 1;
-                // Show intermediate positions during drag
-                $track.css('transition', 'none');
-                var dragPos = ((dragStartIndex - (walk * 3)) / slidesCount) * 100;
-                $track.css('transform', 'translateX(-' + Math.min(Math.max(dragPos, 0), ((slidesCount-1) / slidesCount) * 100) + '%)');
-            });
-            $(document).on('mouseup', function() {
-                if (!isDown) return;
-                isDown = false;
-                $slider.removeClass('bp-dragging');
-                $track.css('transition', 'transform 0.3s ease');
-                // Snap to nearest slide
-                var idx = Math.round(currentIndex);
-                goToSlide(idx);
-            });
-            $slider.on('mouseleave', function() {
-                if (!isDown) return;
-                isDown = false;
-                $slider.removeClass('bp-dragging');
-                $track.css('transition', 'transform 0.3s ease');
-                goToSlide(currentIndex);
-            });
-
-            // Touch support for mobile
-            var touchStartX = 0, touchStartIndex = 0;
-            $slider.on('touchstart', function(e) {
-                touchStartX = e.originalEvent.touches[0].pageX - $slider.offset().left;
-                touchStartIndex = currentIndex;
-                $track.css('transition', 'none');
-            });
-            $slider.on('touchmove', function(e) {
-                var x = e.originalEvent.touches[0].pageX - $slider.offset().left;
-                var walk = (x - touchStartX) / $slider.width();
-                var dragPos = ((touchStartIndex - (walk * 3)) / slidesCount) * 100;
-                $track.css('transform', 'translateX(-' + Math.min(Math.max(dragPos, 0), ((slidesCount-1) / slidesCount) * 100) + '%)');
-            });
-            $slider.on('touchend', function(e) {
-                $track.css('transition', 'transform 0.3s ease');
-                var x = e.originalEvent.changedTouches[0].pageX - $slider.offset().left;
-                var walk = (x - touchStartX) / $slider.width();
-                var idx = Math.round(touchStartIndex - walk * 3);
-                if (idx < 0) idx = 0;
-                if (idx >= slidesCount) idx = slidesCount - 1;
-                goToSlide(idx);
-            });
+        for (var i = 0; i < slidesCount; i++) {
+            $dots.append('<span data-index="' + i + '"></span>');
         }
+        $dots.find('span:first').addClass('active');
+
+        // Indice circular: al pasar de la ultima vuelve a la primera y al reves
+        var normalizar = function(i) { return ((i % slidesCount) + slidesCount) % slidesCount; };
+
+        var goToSlide = function(index) {
+            var n = normalizar(index);
+            currentIndex = n;
+            $track.css('transform', 'translateX(-' + ((n / slidesCount) * 100) + '%)');
+            $dots.find('span').removeClass('active').eq(n).addClass('active');
+        };
+
+        $dots.on('click', 'span', function() {
+            goToSlide(parseInt($(this).data('index'), 10) || 0);
+        });
+
+        // Arrastre con raton (al soltar da la vuelta si se pasa del final)
+        var isDown = false, startX = 0, dragStartIndex = 0, dragIdx = 0;
+        $slider.on('mousedown', function(e) {
+            isDown = true;
+            $slider.addClass('bp-dragging');
+            startX = e.pageX - $slider.offset().left;
+            dragStartIndex = currentIndex;
+            dragIdx = currentIndex;
+            e.preventDefault();
+        });
+        $slider.on('mousemove', function(e) {
+            if (!isDown) return;
+            e.preventDefault();
+            var x = e.pageX - $slider.offset().left;
+            var walk = (x - startX) / $slider.width();
+            dragIdx = Math.round(dragStartIndex - walk * 3);
+            $track.css('transition', 'none');
+            var dragPos = ((dragStartIndex - (walk * 3)) / slidesCount) * 100;
+            $track.css('transform', 'translateX(-' + Math.min(Math.max(dragPos, 0), ((slidesCount - 1) / slidesCount) * 100) + '%)');
+        });
+        $(document).on('mouseup', function() {
+            if (!isDown) return;
+            isDown = false;
+            $slider.removeClass('bp-dragging');
+            $track.css('transition', 'transform 0.3s ease');
+            goToSlide(dragIdx);
+        });
+        $slider.on('mouseleave', function() {
+            if (!isDown) return;
+            isDown = false;
+            $slider.removeClass('bp-dragging');
+            $track.css('transition', 'transform 0.3s ease');
+            goToSlide(dragIdx);
+        });
+
+        // Tactil
+        var touchStartX = 0, touchStartIndex = 0, touchIdx = 0;
+        $slider.on('touchstart', function(e) {
+            touchStartX = e.originalEvent.touches[0].pageX - $slider.offset().left;
+            touchStartIndex = currentIndex;
+            touchIdx = currentIndex;
+            $track.css('transition', 'none');
+        });
+        $slider.on('touchmove', function(e) {
+            var x = e.originalEvent.touches[0].pageX - $slider.offset().left;
+            var walk = (x - touchStartX) / $slider.width();
+            touchIdx = Math.round(touchStartIndex - walk * 3);
+            var dragPos = ((touchStartIndex - (walk * 3)) / slidesCount) * 100;
+            $track.css('transform', 'translateX(-' + Math.min(Math.max(dragPos, 0), ((slidesCount - 1) / slidesCount) * 100) + '%)');
+        });
+        $slider.on('touchend', function() {
+            $track.css('transition', 'transform 0.3s ease');
+            goToSlide(touchIdx);
+        });
     });
 
     // Sticky nav on scroll
@@ -264,31 +255,44 @@ jQuery(document).ready(function($) {
     });
 
     function loadMoreProducts() {
+        // FIX 22/10 (Felix): carga por DESPLAZAMIENTO (lo que ya hay en pantalla) con el
+        // mismo tamano de pagina que el archivo. Antes pedia la pagina 2 con 10 elementos
+        // mientras el archivo mostraba 30 → los bonos salian repetidos.
         var $wrap = $('.bp-load-more-wrap');
-        var page = parseInt($wrap.data('page')) + 1;
-        var max = parseInt($wrap.data('max'));
+        if (!$wrap.length) { loadingMore = false; return; }
+        var $grid = $('.bp-products-grid');
+        var perPage = parseInt($wrap.data('per-page'), 10) || 30;
+        var total = parseInt($wrap.data('total'), 10) || 0;
+        var offset = $grid.children('li.product').length;
         var category = $wrap.data('category') || '';
+
+        if (total && offset >= total) { $wrap.remove(); loadingMore = false; return; }
 
         $('.bp-load-more-spinner').show();
 
         $.post(bp_lz_ajax.ajax_url, {
             action: 'bp_load_more',
-            page: page,
+            offset: offset,
+            per_page: perPage,
             category: category
         }, function(data) {
             $('.bp-load-more-spinner').hide();
-            if (data) {
-            $('.bp-products-grid').append(data);
-            $wrap.data('page', page);
-                if (page >= max) {
-                    $wrap.remove();
-                } else {
-                    loadingMore = false;
-                    // Re-trigger in case still visible
-                    $(window).trigger('scroll');
-                }
-            } else {
+            if (!data) { $wrap.remove(); return; }
+
+            var anadidos = 0;
+            $('<div>').append(data).find('li.product').each(function() {
+                var m = ($(this).attr('class') || '').match(/post-(\d+)/);
+                if (m && $grid.children('li.product.post-' + m[1]).length) return; // ya estaba
+                $grid.append(this);
+                anadidos++;
+            });
+
+            if (anadidos === 0 || anadidos < perPage || (total && $grid.children('li.product').length >= total)) {
                 $wrap.remove();
+                loadingMore = false;
+            } else {
+                loadingMore = false;
+                $(window).trigger('scroll');
             }
         }).fail(function() {
             $('.bp-load-more-spinner').hide();

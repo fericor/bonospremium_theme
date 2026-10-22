@@ -707,19 +707,33 @@ remove_action('woocommerce_before_shop_loop', 'woocommerce_catalog_ordering', 30
 add_action('wp_ajax_bp_load_more', 'bp_load_more_products');
 add_action('wp_ajax_nopriv_bp_load_more', 'bp_load_more_products');
 function bp_load_more_products() {
-    $page = (int)($_POST['page'] ?? 1);
+    // FIX 22/10 (Felix): los bonos salian duplicados porque el archivo muestra 30 por
+    // pagina (loop_shop_per_page) y aqui se pedia de 10 en 10 con 'paged': las paginas
+    // 2 y 3 devolvian productos ya visibles. Ahora se pide por DESPLAZAMIENTO con el
+    // mismo tamano de pagina que el archivo, y se excluye lo mismo que la consulta
+    // principal (productos ocultos del catalogo).
+    $per_page = isset($_POST['per_page']) ? max(1, min(100, (int) $_POST['per_page'])) : 30;
+    $offset   = isset($_POST['offset']) ? max(0, (int) $_POST['offset']) : 0;
+
     $args = [
         'post_type' => 'product',
-        'posts_per_page' => 10,
-        'paged' => $page,
         'post_status' => 'publish',
+        'posts_per_page' => $per_page,
+        'offset' => $offset,
+        'ignore_sticky_posts' => true,
+        'tax_query' => [[
+            'taxonomy' => 'product_visibility',
+            'field' => 'name',
+            'terms' => 'exclude-from-catalog',
+            'operator' => 'NOT IN',
+        ]],
     ];
     if (!empty($_POST['category'])) {
-        $args['tax_query'] = [[
+        $args['tax_query'][] = [
             'taxonomy' => 'product_cat',
             'field' => 'slug',
             'terms' => sanitize_text_field($_POST['category']),
-        ]];
+        ];
     }
     $loop = new WP_Query($args);
     ob_start();

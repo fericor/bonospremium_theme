@@ -31,6 +31,8 @@ get_header(); ?>
             ?>
             <div class="bp-load-more-wrap" 
                  data-page="1" 
+                 data-per-page="<?php echo (int) $wp_query->query_vars['posts_per_page']; ?>"
+                 data-total="<?php echo (int) $wp_query->found_posts; ?>"
                  data-max="<?php echo $wp_query->max_num_pages; ?>" 
                  data-category="<?php echo esc_attr($current_cat); ?>">
                 <div class="bp-load-more-spinner" style="display:none;">

@@ -4477,3 +4477,23 @@ li.product .wlfmc-add-button a.wlfmc-btn-outofstock .wlfmc-icon-heart { color: v
 .bp-recaptcha-nota { font-size: .72rem; line-height: 1.45; margin: 12px 0 0; text-align: center; color: inherit; opacity: .72; }
 .bp-recaptcha-nota a { color: inherit; text-decoration: underline; }
 .bp-recaptcha-nota a:hover { color: var(--bp-primary); opacity: 1; }
+
+/* FIX 22/10 (Felix): la ficha respeta el HTML original de los textos (listas, parrafos, enlaces) */
+.bp-condiciones-body ul,
+.bp-single-desc ul,
+.bp-condiciones-body ol,
+.bp-single-desc ol { margin: 0 0 14px; padding-left: 22px; }
+.bp-condiciones-body ul > li,
+.bp-single-desc ul > li { list-style: disc outside; }
+.bp-condiciones-body ol > li,
+.bp-single-desc ol > li { list-style: decimal outside; }
+.bp-condiciones-body ul ul > li,
+.bp-single-desc ul ul > li { list-style: circle outside; }
+.bp-condiciones-body li,
+.bp-single-desc li { list-style-position: outside; }
+.bp-condiciones-body p,
+.bp-single-desc p { margin: 0 0 14px; }
+.bp-condiciones-body p:last-child,
+.bp-single-desc p:last-child { margin-bottom: 0; }
+.bp-condiciones-body a,
+.bp-single-desc a { text-decoration: underline; }
